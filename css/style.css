@@ -2042,3 +2042,28 @@ button, a.btn-action, a.btn-save-contact, .social-icon-link {
 
 /* KDS CLIENT ADMIN/APP LAYOUT OVERRIDES — premium card styling is inherited from the original KDS design above. */
 .top-actions{display:flex;align-items:center;gap:8px}.admin-wrap-inner{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.auth-panel{max-width:520px;margin:50px auto;grid-column:1/-1}.auth-panel form{display:grid;gap:14px;margin-top:18px}.auth-panel .full{margin-top:4px}@media(max-width:800px){.admin-wrap-inner{grid-template-columns:1fr}.auth-panel{margin:20px auto}}
+
+/* Client card business extension — follows the original KDS visual language */
+.client-business-block{
+  margin:4px 20px 20px;
+  padding:22px 18px;
+  text-align:center;
+  background:linear-gradient(145deg,rgba(56,189,248,.08),rgba(2,132,199,.035));
+  border:1px solid rgba(56,189,248,.18);
+  border-radius:var(--radius-lg);
+}
+.client-business-logo{
+  width:76px;height:76px;margin:0 auto 12px;padding:5px;
+  border-radius:var(--radius-md);background:var(--bg-surface);
+  border:1px solid var(--border-color);box-shadow:0 8px 18px rgba(0,0,0,.25);
+}
+.client-business-logo img{width:100%;height:100%;object-fit:cover;border-radius:9px;display:block}
+.client-business-block h2{font-family:'Outfit',sans-serif;font-size:1.35rem;margin:0 0 3px;color:var(--text-main)}
+.client-business-role{font-size:.86rem;font-weight:700;color:var(--accent-cyan)}
+.client-business-tagline{font-size:.85rem;color:var(--text-muted);margin:8px 0 0}
+.client-website{display:inline-flex;margin-top:14px;flex:none}
+.client-services{margin-top:18px;text-align:left}
+.client-services .section-title{margin-bottom:10px}
+.client-card-container{max-width:520px}
+.client-card-container .profile-card{width:100%}
+.client-card-container .qr-card{width:100%}
