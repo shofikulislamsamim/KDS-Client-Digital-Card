@@ -2,16 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Visiting Card</title>
-  <meta name="description" content="Digital Visiting Card" />
-  <link rel="stylesheet" href="./css/style.css?v=20260919-premium-card" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Digital Visiting Card • KDS</title>
+  <meta name="description" content="KDS Premium Client Digital Visiting Card - Connect, Save, and Network Instantly" />
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content="Digital Visiting Card • KDS" />
+  <meta property="og:description" content="View professional contact information and save directly to your phone with KDS Digital Visiting Card." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80" />
+  <meta property="og:url" content="./card.html" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Digital Visiting Card • KDS" />
+  <meta name="twitter:description" content="View professional contact information and save directly to your phone with KDS Digital Visiting Card." />
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css?v=20260919" />
 </head>
-<body>
-  <main id="cardRoot"></main>
+<body class="card-body">
+  <main id="cardRoot">
+    <div class="page-container client-card-container">
+      <div class="card-loading-skeleton">
+        <div class="skeleton-cover"></div>
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line sub"></div>
+      </div>
+    </div>
+  </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase.js"></script>
+  <script src="./js/qrcode.min.js"></script>
   <script src="./js/app.js"></script>
-  <script>renderCard();</script>
+  <script>
+    renderCard();
+  </script>
 </body>
 </html>
