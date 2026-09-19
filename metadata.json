@@ -1,0 +1,8 @@
+{
+  "name": "KDS Client Digital Card",
+  "description": "Digital visiting card system for creating and sharing client profiles and business cards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
