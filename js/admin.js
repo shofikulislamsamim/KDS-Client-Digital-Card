@@ -147,7 +147,8 @@ function fillForm(c) {
     "facebook",
     "instagram",
     "linkedin",
-    "youtube"
+    "youtube",
+    "tiktok"
   ];
   fields.forEach((k) => {
     const el = qs("#" + k);
@@ -657,9 +658,7 @@ if (form) {
 async function initAdmin() {
   try {
     if (!window.supabaseClient) {
-      showAdmin();
-      clearForm();
-      await loadAndRenderList();
+      showLogin("Secure database connection is unavailable. Please try again.");
       return;
     }
 
@@ -670,16 +669,6 @@ async function initAdmin() {
     if (!session) {
       showLogin();
       return;
-    }
-
-    // Try claim first admin RPC if available
-    try {
-      const { error: claimError } = await supabaseClient.rpc("claim_first_admin");
-      if (claimError && claimError.code !== "42501") {
-        console.warn("Admin claim notice:", claimError.message);
-      }
-    } catch (e) {
-      console.warn("claim_first_admin check bypassed", e);
     }
 
     // Strict admin verification in admin_users

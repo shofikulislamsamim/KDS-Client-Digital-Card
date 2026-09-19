@@ -44,6 +44,8 @@ function slugify(v) {
     String(v || "client")
       .toLowerCase()
       .trim()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "")
       .slice(0, 50) || "client"
@@ -147,6 +149,7 @@ function dbToClient(c) {
     instagram: c.social_links?.instagram || c.instagram || "",
     linkedin: c.social_links?.linkedin || c.linkedin || "",
     youtube: c.social_links?.youtube || c.youtube || "",
+    tiktok: c.social_links?.tiktok || c.tiktok || "",
     subscriptionActive: c.subscription_active !== undefined ? !!c.subscription_active : (c.subscriptionActive !== undefined ? !!c.subscriptionActive : true),
     subscriptionStart: c.subscription_start || c.subscriptionStart || null,
     subscriptionEnd: c.subscription_end || c.subscriptionEnd || null
@@ -180,7 +183,8 @@ function clientToDb(c) {
       facebook: c.facebook || "",
       instagram: c.instagram || "",
       linkedin: c.linkedin || "",
-      youtube: c.youtube || ""
+      youtube: c.youtube || "",
+      tiktok: c.tiktok || ""
     },
     subscription_active: !!c.subscriptionActive,
     subscription_start: c.subscriptionStart || null,
@@ -190,22 +194,19 @@ function clientToDb(c) {
 
 async function getClients() {
   try {
-    if (window.supabaseClient) {
-      const { data, error } = await supabaseClient
-        .from("client_cards")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (!error && Array.isArray(data)) {
-        const clients = data.map(dbToClient);
-        setLocalCache(clients);
-        return clients;
-      }
-      if (error) console.warn("Supabase getClients error, using fallback cache:", error);
-    }
+    if (!window.supabaseClient) return [];
+    const { data, error } = await supabaseClient
+      .from("client_cards")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    const clients = (data || []).map(dbToClient);
+    setLocalCache(clients);
+    return clients;
   } catch (e) {
-    console.warn("Supabase error in getClients:", e);
+    console.error("Supabase getClients error:", e);
+    return [];
   }
-  return getLocalCache().map(dbToClient);
 }
 
 async function getClient(identifier) {
@@ -215,7 +216,7 @@ async function getClient(identifier) {
 
   try {
     if (window.supabaseClient) {
-      let query = supabaseClient.from("client_cards").select("*");
+      let query = supabaseClient.from("public_client_cards").select("*");
 
       // UUID vs slug check to avoid PostgreSQL 22P02 invalid input syntax error
       if (UUID_REGEX.test(idStr)) {
@@ -234,10 +235,7 @@ async function getClient(identifier) {
     console.warn("Supabase error in getClient:", e);
   }
 
-  // Fallback to local cache
-  const cached = getLocalCache();
-  const match = cached.find((x) => x.id === idStr || x.slug === idStr);
-  return match ? dbToClient(match) : null;
+  return null;
 }
 
 async function saveClient(c) {
@@ -301,10 +299,37 @@ async function saveClient(c) {
 
 async function removeClient(id) {
   try {
-    if (window.supabaseClient) {
-      const { error } = await supabaseClient.from("client_cards").delete().eq("id", id);
-      if (error) throw error;
+    if (!window.supabaseClient) throw new Error("Secure database connection is unavailable.");
+
+    const { data: client, error: fetchError } = await supabaseClient
+      .from("client_cards")
+      .select("profile_image_url,cover_image_url,company_logo_url")
+      .eq("id", id)
+      .maybeSingle();
+    if (fetchError) throw fetchError;
+
+    const assetUrls = [client?.profile_image_url, client?.cover_image_url, client?.company_logo_url]
+      .filter(Boolean)
+      .map((url) => {
+        try {
+          const marker = "/storage/v1/object/public/card-assets/";
+          const index = String(url).indexOf(marker);
+          return index >= 0 ? decodeURIComponent(String(url).slice(index + marker.length)) : null;
+        } catch (_) {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    if (assetUrls.length) {
+      const { error: storageError } = await supabaseClient.storage
+        .from("card-assets")
+        .remove(assetUrls);
+      if (storageError) console.warn("Some card assets could not be removed:", storageError);
     }
+
+    const { error } = await supabaseClient.from("client_cards").delete().eq("id", id);
+    if (error) throw error;
   } catch (e) {
     console.error("Supabase removeClient error:", e);
     throw e;
@@ -537,7 +562,9 @@ async function renderCard() {
     }
 
     // Active Template selection (supports ?template=personal / ?template=business for testing/preview)
-    const activeTemplate = urlParams.get("template") || c.template || "business";
+    const activeTemplate = isPreviewDemo
+    ? (urlParams.get("template") || c.template || "business")
+    : (c.template || "personal");
     const isPersonal = activeTemplate === "personal";
 
     // Assets & sanitized URLs
