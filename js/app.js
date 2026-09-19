@@ -299,10 +299,37 @@ async function saveClient(c) {
 
 async function removeClient(id) {
   try {
-    if (window.supabaseClient) {
-      const { error } = await supabaseClient.from("client_cards").delete().eq("id", id);
-      if (error) throw error;
+    if (!window.supabaseClient) throw new Error("Secure database connection is unavailable.");
+
+    const { data: client, error: fetchError } = await supabaseClient
+      .from("client_cards")
+      .select("profile_image_url,cover_image_url,company_logo_url")
+      .eq("id", id)
+      .maybeSingle();
+    if (fetchError) throw fetchError;
+
+    const assetUrls = [client?.profile_image_url, client?.cover_image_url, client?.company_logo_url]
+      .filter(Boolean)
+      .map((url) => {
+        try {
+          const marker = "/storage/v1/object/public/card-assets/";
+          const index = String(url).indexOf(marker);
+          return index >= 0 ? decodeURIComponent(String(url).slice(index + marker.length)) : null;
+        } catch (_) {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    if (assetUrls.length) {
+      const { error: storageError } = await supabaseClient.storage
+        .from("card-assets")
+        .remove(assetUrls);
+      if (storageError) console.warn("Some card assets could not be removed:", storageError);
     }
+
+    const { error } = await supabaseClient.from("client_cards").delete().eq("id", id);
+    if (error) throw error;
   } catch (e) {
     console.error("Supabase removeClient error:", e);
     throw e;
