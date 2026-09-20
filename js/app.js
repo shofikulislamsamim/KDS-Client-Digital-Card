@@ -943,6 +943,14 @@ async function renderCard() {
             </svg>
             <div class="motto-text">CONNECT &nbsp; • &nbsp; COLLABORATE &nbsp; • &nbsp; GROW</div>
           </div>`}
+          <!-- Bottom Footer Motto: shown on every card -->
+          <div class="kds-card-bottom-motto">
+            <svg class="motto-wave" viewBox="0 0 400 40" preserveAspectRatio="none">
+              <path d="M0,30 Q200,5 400,30 L400,40 L0,40 Z" fill="rgba(14, 165, 233, 0.2)"/>
+            </svg>
+            <div class="motto-text">CONNECT &nbsp; • &nbsp; COLLABORATE &nbsp; • &nbsp; GROW</div>
+          </div>
+
         </article>
       `;
     } else {
