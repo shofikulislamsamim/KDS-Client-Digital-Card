@@ -894,12 +894,7 @@ async function renderCard() {
 
           ${personalServicesChipsHtml}
 
-          <!-- 5 Circular Colorful Social Media Buttons -->
-          ${socialsHtml}
-
-          ${c.template === "business" ? `<div class="kds-cta-container kds-business-profile-link-wrap"><a class="kds-glowing-cta-btn" href="${esc(businessProfileUrl)}"><div class="cta-icon-circle">${SVG_ICONS.briefcase}</div><div class="cta-text-group"><span class="cta-main-label">Business Profile</span><span class="cta-sub-label">${esc(c.company || "View Company Profile")}</span></div></a></div>` : ""}
-
-          <!-- 4-Pack Action Grid -->
+          <!-- 4-Pack Action Grid: Call / WhatsApp / Email / Website -->
           <div class="kds-action-grid grid-4">
             ${personalActions.join("")}
           </div>
@@ -916,6 +911,14 @@ async function renderCard() {
               </div>
             </button>
           </div>
+
+          <!-- Social Media -->
+          <div class="kds-personal-socials">
+            ${socialsHtml}
+          </div>
+
+          <!-- Business Profile Link -->
+          ${c.template === "business" ? `<div class="kds-cta-container kds-business-profile-link-wrap"><a class="kds-glowing-cta-btn" href="${esc(businessProfileUrl)}"><div class="cta-icon-circle">${SVG_ICONS.briefcase}</div><div class="cta-text-group"><span class="cta-main-label">Business Profile</span><span class="cta-sub-label">${esc(c.company || "View Company Profile")}</span></div></a></div>` : ""}
 
           <!-- QR Code & Share Box -->
           <div class="kds-qr-connect-box">
