@@ -555,14 +555,14 @@ async function renderCard() {
     const metaIsBusiness = !isPreviewDemo && c.template === "business" && requestedProfile === "business";
     const cardTitle = metaIsBusiness ? (c.company || "Business Profile") + " • Company Profile" : c.name + " • Digital Visiting Card";
     const cardDesc = metaIsBusiness ? ((c.company || "Company") + (c.tagline ? " — " + c.tagline : "") + (c.businessBio ? ". " + c.businessBio : "")) : (c.name + (c.designation ? " - " + c.designation : "") + (c.company ? " at " + c.company : "") + ". Connect and save contact information.");
-    const cardPhoto = sanitizeUrl(c.photo) || (new URL("./css/style.css", window.location.href).href);
+    const cardPhoto = (metaIsBusiness ? sanitizeUrl(c.companyLogo) : sanitizeUrl(c.photo)) || (new URL("./css/style.css", window.location.href).href);
 
     document.title = cardTitle;
     const metaMappings = [
       ['meta[property="og:title"]', cardTitle],
       ['meta[property="og:description"]', cardDesc],
       ['meta[property="og:image"]', cardPhoto],
-      ['meta[property="og:url"]', fullCardUrl],
+      ['meta[property="og:url"]', getCardFullUrl(c, metaIsBusiness ? "business" : "personal")],
       ['meta[name="twitter:title"]', cardTitle],
       ['meta[name="twitter:description"]', cardDesc],
       ['meta[name="twitter:image"]', cardPhoto]
