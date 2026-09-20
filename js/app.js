@@ -594,6 +594,7 @@ async function renderCard() {
     : (c.template || "personal");
     const isBusinessProfile = !isPreviewDemo && activeTemplate === "business" && requestedProfile === "business";
     const isPersonal = !isBusinessProfile && (activeTemplate === "personal" || activeTemplate === "business");
+    const isCombinedPersonal = activeTemplate === "business" && !isBusinessProfile;
 
     // Assets & sanitized URLs
     const photo =
@@ -853,7 +854,7 @@ async function renderCard() {
             </svg>
           </div>
 
-          <!-- Top Row: Good Vibes Only + Personal Badge -->
+          ${isCombinedPersonal ? "" : `          <!-- Top Row: Good Vibes Only + Personal Badge -->
           <div class="kds-top-bar">
             <div class="kds-vibes-tag">
               <span class="vibes-script">Good Vibes Only</span>
@@ -866,7 +867,7 @@ async function renderCard() {
               ${SVG_ICONS.user}
               <span>Personal</span>
             </div>
-          </div>
+          </div>`}
 
           <!-- Centered Glowing Avatar -->
           <div class="kds-avatar-area">
@@ -893,7 +894,7 @@ async function renderCard() {
             </p>
           </div>
 
-          ${personalServicesChipsHtml}
+          ${isCombinedPersonal ? "" : personalServicesChipsHtml}
 
           <!-- 4-Pack Action Grid: Call / WhatsApp / Email / Website -->
           <div class="kds-action-grid grid-4">
@@ -942,13 +943,13 @@ async function renderCard() {
             </div>
           </div>
 
-          <!-- Bottom Footer Motto -->
+          ${isCombinedPersonal ? "" : `          <!-- Bottom Footer Motto -->
           <div class="kds-card-bottom-motto">
             <svg class="motto-wave" viewBox="0 0 400 40" preserveAspectRatio="none">
               <path d="M0,30 Q200,5 400,30 L400,40 L0,40 Z" fill="rgba(14, 165, 233, 0.2)"/>
             </svg>
             <div class="motto-text">CONNECT &nbsp; • &nbsp; COLLABORATE &nbsp; • &nbsp; GROW</div>
-          </div>
+          </div>`}
         </article>
       `;
     } else {
