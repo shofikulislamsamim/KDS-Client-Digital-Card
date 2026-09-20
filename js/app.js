@@ -952,185 +952,174 @@ async function renderCard() {
       `;
     } else {
       // ==========================================================
-      // TEMPLATE 2: PERSONAL + BUSINESS CARD (Reference Right)
+      // TEMPLATE 2: PERSONAL + BUSINESS PROFILE
+      // Simple, commercial business presentation
       // ==========================================================
-      const bizActions = [];
-      if (c.phone) {
-        bizActions.push(`
-          <a class="kds-action-box" href="tel:${esc(c.phone)}">
+      const businessPhone = c.businessPhone || c.phone || "";
+      const businessWhatsapp = c.businessWhatsapp || c.whatsapp || "";
+      const businessEmail = c.businessEmail || c.email || "";
+      const businessAddress = c.businessAddress || c.location || "";
+      const businessWebsite = sanitizeUrl(c.businessWebsite || c.website || "");
+      const businessName = c.company || "Business Profile";
+      const businessTagline = c.tagline || "";
+      const businessBio = c.businessBio || "";
+      const businessLogo = sanitizeUrl(c.companyLogo || "");
+
+      const businessWhatsappClean = normalizeWhatsAppNumber(businessWhatsapp);
+      const businessSocialItems = [
+        ["facebook", c.businessFacebook, "Facebook"],
+        ["instagram", c.businessInstagram, "Instagram"],
+        ["linkedin", c.businessLinkedin, "LinkedIn"],
+        ["youtube", c.businessYoutube, "YouTube"],
+        ["tiktok", c.businessTiktok, "TikTok"]
+      ].filter(([, url]) => url).map(([key, url, label]) => {
+        const safe = sanitizeUrl(url);
+        if (!safe) return "";
+        return `<a class="kds-social-icon-link" href="${esc(safe)}" target="_blank" rel="noopener noreferrer" aria-label="${label}">${SVG_ICONS[key] || SVG_ICONS.share}</a>`;
+      }).join("");
+
+      const businessServices = String(c.businessServices || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+
+      const businessActions = [];
+      if (businessPhone) {
+        businessActions.push(`
+          <a class="kds-action-box" href="tel:${esc(businessPhone)}">
             <div class="action-box-icon">${SVG_ICONS.call}</div>
             <span class="action-box-label">Call</span>
           </a>
         `);
       }
-      if (waClean) {
-        bizActions.push(`
-          <a class="kds-action-box" href="https://wa.me/${waClean}" target="_blank" rel="noopener noreferrer">
+      if (businessWhatsappClean) {
+        businessActions.push(`
+          <a class="kds-action-box" href="https://wa.me/${businessWhatsappClean}" target="_blank" rel="noopener noreferrer">
             <div class="action-box-icon">${SVG_ICONS.whatsapp}</div>
             <span class="action-box-label">WhatsApp</span>
           </a>
         `);
       }
-      if (c.email) {
-        bizActions.push(`
-          <a class="kds-action-box" href="mailto:${esc(c.email)}">
+      if (businessEmail) {
+        businessActions.push(`
+          <a class="kds-action-box" href="mailto:${esc(businessEmail)}">
             <div class="action-box-icon">${SVG_ICONS.email}</div>
             <span class="action-box-label">Email</span>
           </a>
         `);
       }
-      if (websiteClean) {
-        bizActions.push(`
-          <a class="kds-action-box" href="${esc(websiteClean)}" target="_blank" rel="noopener noreferrer">
+      if (businessWebsite) {
+        businessActions.push(`
+          <a class="kds-action-box" href="${esc(businessWebsite)}" target="_blank" rel="noopener noreferrer">
             <div class="action-box-icon">${SVG_ICONS.website}</div>
             <span class="action-box-label">Website</span>
           </a>
         `);
       }
-      bizActions.push(`
-        <button class="kds-action-box" id="quickShareBtn" type="button">
-          <div class="action-box-icon">${SVG_ICONS.share}</div>
-          <span class="action-box-label">Share</span>
-        </button>
-      `);
+
+      const businessMapUrl = businessAddress
+        ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(businessAddress)
+        : "";
 
       cardContentHtml = `
         <article class="kds-card kds-business-card-layout" id="clientProfileCard">
-          <!-- Top Header Brand Row -->
           <div class="kds-biz-top-header">
             <div class="kds-biz-brand-flex">
-              ${logoClean ? `<img class="kds-biz-top-logo" src="${esc(logoClean)}" alt="${esc(c.company || "Company Logo")}">` : kdsBrandLogoSvg}
+              ${businessLogo
+                ? `<img class="kds-biz-top-logo" src="${esc(businessLogo)}" alt="${esc(businessName)}">`
+                : kdsBrandLogoSvg}
               <div class="kds-biz-brand-copy">
-                <div class="biz-company-name">${esc(c.company || "Khan Digital Solution")}</div>
-                <div class="biz-company-motto">${esc(c.tagline || "Your Growth, Our Mission")}</div>
+                <div class="biz-company-name">${esc(businessName)}</div>
+                ${businessTagline ? `<div class="biz-company-motto">${esc(businessTagline)}</div>` : ""}
               </div>
             </div>
             <div class="kds-pill-type-badge">
               ${SVG_ICONS.briefcase}
-              <span>Personal + Business</span>
+              <span>Business Profile</span>
             </div>
           </div>
 
-          <!-- Hero Section with Architectural Skyscraper Backdrop, Avatar, Info & QR -->
-          <div class="kds-biz-hero-card">
-            <div class="biz-hero-bg-photo" style="background-image: url('${esc(coverUrl)}');"></div>
-            <div class="biz-hero-gradient-overlay"></div>
-
-            <div class="biz-hero-inner-content">
-              <!-- Left: Avatar with Glowing Cyan Ring -->
-              <div class="biz-hero-avatar-wrap">
-                <div class="kds-avatar-halo small">
-                  <img class="kds-avatar-img" src="${esc(photo)}" alt="${esc(c.name)}">
-                  <div class="kds-avatar-online-dot" title="Active"></div>
-                </div>
-              </div>
-
-              <!-- Center: Founder Info & Slogan -->
-              <div class="biz-hero-meta-wrap">
-                <h1 class="biz-hero-founder-name">${esc(c.name)}</h1>
-                <div class="biz-hero-founder-role">${esc(c.companyRole || c.designation || "CEO & Owner")}</div>
-                <div class="biz-hero-pill-tag">${esc(c.company || "Khan Digital Solution")}</div>
-                <div class="biz-hero-slogan">${esc(c.tagline || c.bio || "Digital Solutions for a Better Tomorrow")}</div>
-              </div>
-
-              <!-- Right: QR Code Box + Scan to Connect -->
-              <div class="biz-hero-qr-box" id="heroQrBox" title="Click to view/download QR code">
-                <div class="biz-qr-canvas-holder" id="clientQrCanvas"></div>
-                <span class="biz-qr-caption">Scan to Connect</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 5 Circular Colorful Social Media Buttons -->
-          ${socialsHtml}
-
-          <!-- Business Profile Box -->
           <div class="kds-biz-details-container">
-            <!-- Business Header with Logo, Name, Badge, Slogan -->
             <div class="biz-details-header">
               <div class="biz-circle-logo-badge">
-                ${logoClean ? `<img src="${esc(logoClean)}" alt="Logo">` : kdsBrandLogoSvg}
+                ${businessLogo
+                  ? `<img src="${esc(businessLogo)}" alt="${esc(businessName)}">`
+                  : kdsBrandLogoSvg}
               </div>
               <div class="biz-header-text">
-                <div class="biz-title-badge-row">
-                  <h2 class="biz-panel-title">${esc(c.company || "Khan Digital Solution")}</h2>
-                  <span class="biz-category-badge">${esc(c.companyRole ? "Enterprise" : "Digital Agency")}</span>
-                </div>
-                <div class="biz-panel-slogan">${esc(c.tagline || "Your Growth, Our Mission")}</div>
+                <h1 class="biz-panel-title">${esc(businessName)}</h1>
+                ${businessTagline ? `<div class="biz-panel-slogan">${esc(businessTagline)}</div>` : ""}
               </div>
             </div>
 
-            <!-- Services Chips Grid -->
-            ${servicesChipsHtml}
+            ${businessBio ? `
+              <div class="kds-biz-description">
+                <p>${esc(businessBio)}</p>
+              </div>
+            ` : ""}
 
-            <!-- Business Contact List with Cyan Icons -->
             <div class="biz-contact-rows">
-              ${c.phone ? `
-                <a class="biz-contact-row" href="tel:${esc(c.phone)}">
-                  <div class="biz-contact-icon-circle">${SVG_ICONS.call}</div>
-                  <div class="biz-contact-text-pair">
-                    <span class="contact-value">${esc(c.phone)}</span>
-                    <span class="contact-label">Call / WhatsApp</span>
-                  </div>
-                </a>
+              ${businessActions.length ? `
+                <div class="kds-action-grid grid-${Math.min(4, Math.max(1, businessActions.length))}">
+                  ${businessActions.join("")}
+                </div>
               ` : ""}
 
-              ${c.email ? `
-                <a class="biz-contact-row" href="mailto:${esc(c.email)}">
-                  <div class="biz-contact-icon-circle">${SVG_ICONS.email}</div>
-                  <div class="biz-contact-text-pair">
-                    <span class="contact-value">${esc(c.email)}</span>
-                    <span class="contact-label">Email</span>
-                  </div>
-                </a>
-              ` : ""}
-
-              ${c.location ? `
-                <div class="biz-contact-row">
+              ${businessAddress ? `
+                <a class="biz-contact-row" href="${esc(businessMapUrl)}" target="_blank" rel="noopener noreferrer">
                   <div class="biz-contact-icon-circle">${SVG_ICONS.location}</div>
                   <div class="biz-contact-text-pair">
-                    <span class="contact-value">${esc(c.location)}</span>
-                    <span class="contact-label">Location</span>
-                  </div>
-                </div>
-              ` : ""}
-
-              ${websiteClean ? `
-                <a class="biz-contact-row" href="${esc(websiteClean)}" target="_blank" rel="noopener noreferrer">
-                  <div class="biz-contact-icon-circle">${SVG_ICONS.website}</div>
-                  <div class="biz-contact-text-pair">
-                    <span class="contact-value">${esc(c.website.replace(/^https?:\/\//, ""))}</span>
-                    <span class="contact-label">Website</span>
+                    <span class="contact-value">${esc(businessAddress)}</span>
+                    <span class="contact-label">Google Maps</span>
                   </div>
                 </a>
               ` : ""}
             </div>
-          </div>
 
-          <!-- 5-Pack Action Grid -->
-          <div class="kds-action-grid grid-5">
-            ${bizActions.join("")}
-          </div>
-
-          <!-- Glowing Blue Save Contact CTA -->
-          <div class="kds-cta-container">
-            <button class="kds-glowing-cta-btn" id="saveContactMain" type="button">
-              <div class="cta-icon-circle">
-                ${SVG_ICONS.download}
+            ${businessSocialItems ? `
+              <div class="kds-personal-socials kds-business-socials">
+                ${businessSocialItems}
               </div>
+            ` : ""}
+
+            ${businessServices.length ? `
+              <div class="kds-business-services-section">
+                <div class="kds-section-label">Services</div>
+                <div class="kds-services-chips">
+                  ${businessServices.map((service) => `<span class="kds-service-chip">${esc(service)}</span>`).join("")}
+                </div>
+              </div>
+            ` : ""}
+          </div>
+
+          <div class="kds-cta-container kds-business-profile-link-wrap">
+            <a class="kds-glowing-cta-btn" href="${esc(personalProfileUrl)}">
+              <div class="cta-icon-circle">${SVG_ICONS.user}</div>
               <div class="cta-text-group">
-                <span class="cta-main-label">Save Contact</span>
-                <span class="cta-sub-label">Add to your phone</span>
+                <span class="cta-main-label">Personal Profile</span>
+                <span class="cta-sub-label">${esc(c.name || "View Personal Profile")}</span>
               </div>
-            </button>
+            </a>
           </div>
 
-          <!-- Bottom Footer Motto -->
-          <div class="kds-card-bottom-motto">
-            <svg class="motto-wave" viewBox="0 0 400 40" preserveAspectRatio="none">
-              <path d="M0,30 Q200,5 400,30 L400,40 L0,40 Z" fill="rgba(14, 165, 233, 0.2)"/>
-            </svg>
-            <div class="motto-text">INNOVATION &nbsp; • &nbsp; DIGITAL &nbsp; • &nbsp; SUCCESS</div>
+          <div class="kds-qr-connect-box">
+            <div class="kds-qr-square-frame">
+              <div id="clientQrCanvas"></div>
+            </div>
+            <div class="kds-qr-meta">
+              <h3 class="kds-qr-heading">Scan to Connect</h3>
+              <p class="kds-qr-description">Visit our Business Profile and connect with us.</p>
+              <div class="kds-qr-actions-row">
+                <button class="kds-glass-pill-btn" id="downloadQr" type="button">
+                  ${SVG_ICONS.download}
+                  <span>Download QR</span>
+                </button>
+                <button class="kds-glass-pill-btn" id="shareCard" type="button">
+                  ${SVG_ICONS.share}
+                  <span>Share Profile</span>
+                </button>
+              </div>
+            </div>
           </div>
         </article>
       `;
