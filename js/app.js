@@ -98,8 +98,8 @@ function cardUrl(clientOrId) {
   return "./card.html?slug=" + encodeURIComponent(identifier || "demo");
 }
 
-function getCardFullUrl(clientOrId) {
-  const rel = cardUrl(clientOrId);
+function getCardFullUrl(clientOrId, profile = "personal") {
+  const rel = cardUrl(clientOrId) + (profile === "business" ? "&profile=business" : "");
   try {
     return new URL(rel, window.location.href).href;
   } catch (e) {
@@ -152,7 +152,20 @@ function dbToClient(c) {
     tiktok: c.social_links?.tiktok || c.tiktok || "",
     subscriptionActive: c.subscription_active !== undefined ? !!c.subscription_active : (c.subscriptionActive !== undefined ? !!c.subscriptionActive : true),
     subscriptionStart: c.subscription_start || c.subscriptionStart || null,
-    subscriptionEnd: c.subscription_end || c.subscriptionEnd || null
+    subscriptionEnd: c.subscription_end || c.subscriptionEnd || null,
+    businessSlug: c.business_slug || "",
+    businessBio: c.business_bio || "",
+    businessPhone: c.business_phone || "",
+    businessWhatsapp: c.business_whatsapp || "",
+    businessEmail: c.business_email || "",
+    businessAddress: c.business_address || "",
+    businessWebsite: c.business_website || c.website || "",
+    businessServices: Array.isArray(c.business_services) ? c.business_services.join(", ") : (c.business_services || ""),
+    businessFacebook: c.business_social_links?.facebook || "",
+    businessInstagram: c.business_social_links?.instagram || "",
+    businessLinkedin: c.business_social_links?.linkedin || "",
+    businessYoutube: c.business_social_links?.youtube || "",
+    businessTiktok: c.business_social_links?.tiktok || ""
   };
 }
 
@@ -188,7 +201,23 @@ function clientToDb(c) {
     },
     subscription_active: !!c.subscriptionActive,
     subscription_start: c.subscriptionStart || null,
-    subscription_end: c.subscriptionEnd || null
+    subscription_end: c.subscriptionEnd || null,
+    business_slug: c.businessSlug || (c.template === "business" ? slugify(c.company || c.name) + "-business" : null),
+    business_bio: c.businessBio || null,
+    business_phone: c.businessPhone || null,
+    business_whatsapp: c.businessWhatsapp || null,
+    business_email: c.businessEmail || null,
+    business_address: c.businessAddress || null,
+    business_website: c.businessWebsite || null,
+    business_services: String(c.businessServices || "")
+      .split(",").map((x) => x.trim()).filter(Boolean),
+    business_social_links: {
+      facebook: c.businessFacebook || "",
+      instagram: c.businessInstagram || "",
+      linkedin: c.businessLinkedin || "",
+      youtube: c.businessYoutube || "",
+      tiktok: c.businessTiktok || ""
+    }
   };
 }
 
@@ -565,7 +594,8 @@ async function renderCard() {
     const activeTemplate = isPreviewDemo
     ? (urlParams.get("template") || c.template || "business")
     : (c.template || "personal");
-    const isPersonal = activeTemplate === "personal";
+    const isBusinessProfile = !isPreviewDemo && activeTemplate === "business" && requestedProfile === "business";
+    const isPersonal = !isBusinessProfile && (activeTemplate === "personal" || activeTemplate === "business");
 
     // Assets & sanitized URLs
     const photo =
@@ -576,17 +606,18 @@ async function renderCard() {
       sanitizeUrl(c.cover) ||
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
 
-    const waClean = normalizeWhatsAppNumber(c.whatsapp || c.phone);
-    const websiteClean = sanitizeUrl(c.website);
+    const waClean = normalizeWhatsAppNumber(isBusinessProfile ? (c.businessWhatsapp || c.businessPhone) : (c.whatsapp || c.phone));
+    const websiteClean = sanitizeUrl(isBusinessProfile ? c.businessWebsite : c.website);
     const logoClean = sanitizeUrl(c.companyLogo);
+    const profileFullUrl = getCardFullUrl(c, isBusinessProfile ? "business" : "personal");
 
     // Social Links (5 circular colorful buttons matching reference image)
     const socialConfigs = [
-      { name: "Facebook", url: sanitizeUrl(c.facebook) || (isPreviewDemo ? "https://facebook.com" : ""), key: "facebook", bgClass: "soc-fb" },
-      { name: "Instagram", url: sanitizeUrl(c.instagram) || (isPreviewDemo ? "https://instagram.com" : ""), key: "instagram", bgClass: "soc-ig" },
-      { name: "LinkedIn", url: sanitizeUrl(c.linkedin) || (isPreviewDemo ? "https://linkedin.com" : ""), key: "linkedin", bgClass: "soc-li" },
-      { name: "YouTube", url: sanitizeUrl(c.youtube) || (isPreviewDemo ? "https://youtube.com" : ""), key: "youtube", bgClass: "soc-yt" },
-      { name: "TikTok", url: sanitizeUrl(c.tiktok) || (isPreviewDemo ? "https://tiktok.com" : ""), key: "tiktok", bgClass: "soc-tt" }
+      { name: "Facebook", url: sanitizeUrl(isBusinessProfile ? c.businessFacebook : c.facebook) || (isPreviewDemo ? "https://facebook.com" : ""), key: "facebook", bgClass: "soc-fb" },
+      { name: "Instagram", url: sanitizeUrl(isBusinessProfile ? c.businessInstagram : c.instagram) || (isPreviewDemo ? "https://instagram.com" : ""), key: "instagram", bgClass: "soc-ig" },
+      { name: "LinkedIn", url: sanitizeUrl(isBusinessProfile ? c.businessLinkedin : c.linkedin) || (isPreviewDemo ? "https://linkedin.com" : ""), key: "linkedin", bgClass: "soc-li" },
+      { name: "YouTube", url: sanitizeUrl(isBusinessProfile ? c.businessYoutube : c.youtube) || (isPreviewDemo ? "https://youtube.com" : ""), key: "youtube", bgClass: "soc-yt" },
+      { name: "TikTok", url: sanitizeUrl(isBusinessProfile ? c.businessTiktok : c.tiktok) || (isPreviewDemo ? "https://tiktok.com" : ""), key: "tiktok", bgClass: "soc-tt" }
     ];
 
     const activeSocials = socialConfigs.filter(s => s.url);
@@ -601,7 +632,7 @@ async function renderCard() {
     ` : "";
 
     // Services Chips (for Business Card)
-    const servicesList = String(c.services || "Digital Marketing, Video Editing, Graphic Design, Web Design & Development, IT Solution")
+    const servicesList = String(isBusinessProfile ? c.businessServices : c.services || "Digital Marketing, Video Editing, Graphic Design, Web Design & Development, IT Solution")
       .split(",")
       .map(s => s.trim())
       .filter(Boolean);
@@ -677,7 +708,78 @@ async function renderCard() {
     // Render Template HTML
     let cardContentHtml = "";
 
-    if (isPersonal) {
+    if (isBusinessProfile) {
+      const businessActions = [];
+      if (c.businessPhone) businessActions.push(`<a class="kds-action-box" href="tel:${esc(c.businessPhone)}"><div class="action-box-icon">${SVG_ICONS.call}</div><span class="action-box-label">Call</span></a>`);
+      if (waClean) businessActions.push(`<a class="kds-action-box" href="https://wa.me/${waClean}" target="_blank" rel="noopener noreferrer"><div class="action-box-icon">${SVG_ICONS.whatsapp}</div><span class="action-box-label">WhatsApp</span></a>`);
+      if (c.businessEmail) businessActions.push(`<a class="kds-action-box" href="mailto:${esc(c.businessEmail)}"><div class="action-box-icon">${SVG_ICONS.email}</div><span class="action-box-label">Email</span></a>`);
+      if (websiteClean) businessActions.push(`<a class="kds-action-box" href="${esc(websiteClean)}" target="_blank" rel="noopener noreferrer"><div class="action-box-icon">${SVG_ICONS.website}</div><span class="action-box-label">Website</span></a>`);
+
+      const personalUrl = getCardFullUrl(c, "personal");
+      cardContentHtml = `
+        <article class="kds-card kds-business-card-layout kds-company-profile-layout" id="clientProfileCard">
+          <div class="kds-biz-top-header">
+            <div class="kds-biz-brand-flex">
+              ${logoClean ? `<img class="kds-biz-top-logo" src="${esc(logoClean)}" alt="${esc(c.company || "Company Logo")}">` : kdsBrandLogoSvg}
+              <div class="kds-biz-brand-copy">
+                <div class="biz-company-name">${esc(c.company || "Company")}</div>
+                <div class="biz-company-motto">${esc(c.tagline || "")}</div>
+              </div>
+            </div>
+            <div class="kds-pill-type-badge">${SVG_ICONS.briefcase}<span>Business Profile</span></div>
+          </div>
+
+          <div class="kds-biz-hero-card company-profile-hero">
+            <div class="biz-hero-bg-photo" style="background-image: url('${esc(coverUrl)}');"></div>
+            <div class="biz-hero-gradient-overlay"></div>
+            <div class="biz-hero-inner-content company-profile-hero-inner">
+              <div class="biz-hero-avatar-wrap">
+                <div class="kds-avatar-halo small">
+                  ${logoClean ? `<img class="kds-avatar-img" src="${esc(logoClean)}" alt="${esc(c.company || "Company")}">` : kdsBrandLogoSvg}
+                </div>
+              </div>
+              <div class="biz-hero-meta-wrap">
+                <h1 class="biz-hero-founder-name">${esc(c.company || "Company")}</h1>
+                <div class="biz-hero-slogan">${esc(c.tagline || "")}</div>
+                <p class="company-profile-bio">${esc(c.businessBio || "")}</p>
+              </div>
+            </div>
+          </div>
+
+          ${servicesChipsHtml}
+
+          ${c.businessAddress ? `<div class="biz-contact-rows"><div class="biz-contact-row"><div class="biz-contact-icon-circle">${SVG_ICONS.location}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessAddress)}</span><span class="contact-label">Address</span></div></div></div>` : ""}
+
+          <div class="kds-social-row company-social-row">${socialsHtml ? socialsHtml.replace('<div class="kds-social-row">','').replace('</div>','') : ""}</div>
+
+          <div class="kds-action-grid grid-5">
+            ${businessActions.join("")}
+            <button class="kds-action-box" id="quickShareBtn" type="button"><div class="action-box-icon">${SVG_ICONS.share}</div><span class="action-box-label">Share</span></button>
+          </div>
+
+          <div class="kds-cta-container">
+            <a class="kds-glowing-cta-btn company-profile-link-btn" href="${esc(personalUrl)}">
+              <div class="cta-icon-circle">${SVG_ICONS.user}</div>
+              <div class="cta-text-group"><span class="cta-main-label">Personal Profile</span><span class="cta-sub-label">${esc(c.name)}</span></div>
+            </a>
+          </div>
+
+          <div class="kds-qr-connect-box company-qr-bottom">
+            <div class="kds-qr-square-frame"><div id="clientQrCanvas"></div></div>
+            <div class="kds-qr-meta">
+              <h3 class="kds-qr-heading">Scan to Connect</h3>
+              <p class="kds-qr-description">View our company profile and contact details.</p>
+              <div class="kds-qr-actions-row">
+                <button class="kds-glass-pill-btn" id="downloadQr" type="button">${SVG_ICONS.download}<span>Download QR</span></button>
+                <button class="kds-glass-pill-btn" id="shareCard" type="button">${SVG_ICONS.share}<span>Share Profile</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="kds-card-bottom-motto"><svg class="motto-wave" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0,30 Q200,5 400,30 L400,40 L0,40 Z" fill="rgba(14, 165, 233, 0.2)"/></svg><div class="motto-text">BUSINESS &nbsp; • &nbsp; CONNECT &nbsp; • &nbsp; GROW</div></div>
+        </article>
+      `;
+    } else if (isPersonal) {
       // ==========================================
       // TEMPLATE 1: PERSONAL CARD (Reference Left)
       // ==========================================
@@ -1025,9 +1127,9 @@ async function renderCard() {
 
     const shareHandler = async () => {
       const shareData = {
-        title: c.name + " - Digital Visiting Card",
-        text: (c.name + (c.designation ? ` (${c.designation})` : "")) + " Digital Visiting Card",
-        url: fullCardUrl
+        title: (isBusinessProfile ? (c.company || "Business Profile") : c.name) + " - Digital Visiting Card",
+        text: isBusinessProfile ? (c.company || "Business Profile") + " Company Profile" : (c.name + (c.designation ? ` (${c.designation})` : "") + " Digital Visiting Card"),
+        url: profileFullUrl
       };
       try {
         if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -1038,10 +1140,10 @@ async function renderCard() {
       } catch (e) {
         if (e && e.name !== "AbortError") {
           try {
-            await navigator.clipboard.writeText(fullCardUrl);
+            await navigator.clipboard.writeText(profileFullUrl);
             alert("Digital card link copied to clipboard:\n" + fullCardUrl);
           } catch (err) {
-            prompt("Digital card link:", fullCardUrl);
+            prompt("Digital card link:", profileFullUrl);
           }
         }
       }
@@ -1057,10 +1159,10 @@ async function renderCard() {
     const qrContainer = qs("#clientQrCanvas");
     if (qrContainer) {
       qrContainer.innerHTML = "";
-      const qrPixelSize = isPersonal ? 86 : 64;
+      const qrPixelSize = isBusinessProfile ? 160 : 128;
       if (typeof QRCode !== "undefined") {
         new QRCode(qrContainer, {
-          text: fullCardUrl,
+          text: profileFullUrl,
           width: qrPixelSize,
           height: qrPixelSize,
           colorDark: "#050b18",
@@ -1080,7 +1182,7 @@ async function renderCard() {
         const dataUrl = canvas.toDataURL("image/png");
         const a = document.createElement("a");
         a.href = dataUrl;
-        a.download = slugify(c.name) + "-QR.png";
+        a.download = slugify(isBusinessProfile ? (c.company || c.name) : c.name) + "-QR.png";
         a.click();
       } else {
         const img = qs("#clientQrCanvas img");
