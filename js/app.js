@@ -269,28 +269,23 @@ async function getClient(identifier) {
 
 async function saveClient(c) {
   const payload = clientToDb(c);
-  const targetId = c.id;
-  delete payload.id;
+  const targetId = c.id || (crypto.randomUUID ? crypto.randomUUID() : "c_" + Date.now());
+  payload.id = targetId;
 
   let savedRecord = null;
 
   try {
     if (window.supabaseClient) {
       const runSave = async (dataToSave) => {
-        if (targetId) {
+        if (c.id) {
           return await supabaseClient
             .from("client_cards")
             .update(dataToSave)
-            .eq("id", targetId)
-            .select()
-            .single();
-        } else {
-          return await supabaseClient
-            .from("client_cards")
-            .insert(dataToSave)
-            .select()
-            .single();
+            .eq("id", targetId);
         }
+        return await supabaseClient
+          .from("client_cards")
+          .insert(dataToSave);
       };
 
       let res = await runSave(payload);
@@ -304,7 +299,9 @@ async function saveClient(c) {
       }
 
       if (res.error) throw res.error;
-      savedRecord = dbToClient(res.data);
+      // Do not request a SELECT in the same save operation. The admin RLS rules
+      // can save successfully without requiring a returned row.
+      savedRecord = { ...c, id: targetId };
     }
   } catch (err) {
     console.error("Supabase saveClient error:", err);
@@ -312,8 +309,7 @@ async function saveClient(c) {
   }
 
   if (!savedRecord) {
-    // Fallback if offline
-    savedRecord = { ...c, id: targetId || "c_" + Date.now() };
+    savedRecord = { ...c, id: targetId };
   }
 
   // Sync cache
