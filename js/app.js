@@ -651,6 +651,18 @@ async function renderCard() {
       </div>
     ` : "";
 
+
+    const personalServicesChipsHtml = String(c.services || "").split(",").map(s => s.trim()).filter(Boolean).length ? `
+      <div class="kds-services-grid kds-personal-services">
+        ${String(c.services || "").split(",").map(s => s.trim()).filter(Boolean).map(s => `
+          <div class="kds-service-chip">
+            <div class="service-chip-icon">${getServiceIcon(s)}</div>
+            <span class="service-chip-text">${esc(s)}</span>
+          </div>
+        `).join("")}
+      </div>
+    ` : "";
+
     // KDS Signature Brand Monogram SVG (for reference look when no logo is uploaded)
     const kdsBrandLogoSvg = `
       <div class="kds-brand-monogram">
@@ -751,7 +763,13 @@ async function renderCard() {
 
           ${servicesChipsHtml}
 
-          ${c.businessAddress ? `<div class="biz-contact-rows"><div class="biz-contact-row"><div class="biz-contact-icon-circle">${SVG_ICONS.location}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessAddress)}</span><span class="contact-label">Address</span></div></div></div>` : ""}
+          <div class="biz-contact-rows">
+            ${c.businessPhone ? `<a class="biz-contact-row" href="tel:${esc(c.businessPhone)}"><div class="biz-contact-icon-circle">${SVG_ICONS.call}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessPhone)}</span><span class="contact-label">Phone</span></div></a>` : ""}
+            ${c.businessWhatsapp ? `<a class="biz-contact-row" href="https://wa.me/${normalizeWhatsAppNumber(c.businessWhatsapp)}" target="_blank" rel="noopener noreferrer"><div class="biz-contact-icon-circle">${SVG_ICONS.whatsapp}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessWhatsapp)}</span><span class="contact-label">WhatsApp</span></div></a>` : ""}
+            ${c.businessEmail ? `<a class="biz-contact-row" href="mailto:${esc(c.businessEmail)}"><div class="biz-contact-icon-circle">${SVG_ICONS.email}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessEmail)}</span><span class="contact-label">Email</span></div></a>` : ""}
+            ${c.businessAddress ? `<div class="biz-contact-row"><div class="biz-contact-icon-circle">${SVG_ICONS.location}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessAddress)}</span><span class="contact-label">Address</span></div></div>` : ""}
+            ${websiteClean ? `<a class="biz-contact-row" href="${esc(websiteClean)}" target="_blank" rel="noopener noreferrer"><div class="biz-contact-icon-circle">${SVG_ICONS.website}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessWebsite || "")}</span><span class="contact-label">Website</span></div></a>` : ""}
+          </div>
 
           <div class="kds-social-row company-social-row">${socialsHtml ? socialsHtml.replace('<div class="kds-social-row">','').replace('</div>','') : ""}</div>
 
@@ -877,6 +895,8 @@ async function renderCard() {
               ${esc(c.bio || "I help businesses grow through digital marketing, creative design and modern strategies. Passionate about innovation, creativity and results.")}
             </p>
           </div>
+
+          ${personalServicesChipsHtml}
 
           <!-- 5 Circular Colorful Social Media Buttons -->
           ${socialsHtml}
