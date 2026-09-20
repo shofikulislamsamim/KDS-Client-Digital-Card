@@ -609,6 +609,7 @@ async function renderCard() {
     const logoClean = sanitizeUrl(c.companyLogo);
     const profileFullUrl = getCardFullUrl(c, isBusinessProfile ? "business" : "personal");
     const businessProfileUrl = getCardFullUrl(c, "business");
+    const personalProfileUrl = getCardFullUrl(c, "personal");
 
     // Social Links (5 circular colorful buttons matching reference image)
     const socialConfigs = [
