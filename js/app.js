@@ -548,11 +548,13 @@ async function renderCard() {
     }
 
     const sub = subscriptionState(c);
-    const fullCardUrl = getCardFullUrl(c);
+    const fullCardUrl = getCardFullUrl(c, "personal");
 
     // Dynamic Social Share / OpenGraph Meta Update
-    const cardTitle = `${c.name} • Digital Visiting Card`;
-    const cardDesc = `${c.name}${c.designation ? ` - ${c.designation}` : ""}${c.company ? ` at ${c.company}` : ""}. Connect and save contact information.`;
+    const requestedProfile = urlParams.get("profile") === "business" ? "business" : "personal";
+    const metaIsBusiness = !isPreviewDemo && c.template === "business" && requestedProfile === "business";
+    const cardTitle = metaIsBusiness ? (c.company || "Business Profile") + " • Company Profile" : c.name + " • Digital Visiting Card";
+    const cardDesc = metaIsBusiness ? ((c.company || "Company") + (c.tagline ? " — " + c.tagline : "") + (c.businessBio ? ". " + c.businessBio : "")) : (c.name + (c.designation ? " - " + c.designation : "") + (c.company ? " at " + c.company : "") + ". Connect and save contact information.");
     const cardPhoto = sanitizeUrl(c.photo) || (new URL("./css/style.css", window.location.href).href);
 
     document.title = cardTitle;
@@ -610,6 +612,7 @@ async function renderCard() {
     const websiteClean = sanitizeUrl(isBusinessProfile ? c.businessWebsite : c.website);
     const logoClean = sanitizeUrl(c.companyLogo);
     const profileFullUrl = getCardFullUrl(c, isBusinessProfile ? "business" : "personal");
+    const businessProfileUrl = getCardFullUrl(c, "business");
 
     // Social Links (5 circular colorful buttons matching reference image)
     const socialConfigs = [
@@ -862,6 +865,7 @@ async function renderCard() {
           <div class="kds-profile-header">
             <h1 class="kds-name-title">${esc(c.name)}</h1>
             <div class="kds-designation-title">${esc(c.designation || "Digital Marketer | Graphic Designer")}</div>
+            ${c.company ? `<div class="kds-company-name-under-designation">${esc(c.company)}</div>` : ""}
 
             <div class="kds-jewel-divider">
               <span class="jewel-line"></span>
@@ -876,6 +880,8 @@ async function renderCard() {
 
           <!-- 5 Circular Colorful Social Media Buttons -->
           ${socialsHtml}
+
+          ${c.template === "business" ? `<div class="kds-cta-container kds-business-profile-link-wrap"><a class="kds-glowing-cta-btn" href="${esc(businessProfileUrl)}"><div class="cta-icon-circle">${SVG_ICONS.briefcase}</div><div class="cta-text-group"><span class="cta-main-label">Business Profile</span><span class="cta-sub-label">${esc(c.company || "View Company Profile")}</span></div></a></div>` : ""}
 
           <!-- 4-Pack Action Grid -->
           <div class="kds-action-grid grid-4">
