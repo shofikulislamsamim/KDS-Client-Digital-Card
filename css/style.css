@@ -850,8 +850,8 @@ img, svg {
 }
 
 .kds-qr-square-frame {
-  width: 92px;
-  height: 92px;
+  width: 128px;
+  height: 128px;
   border-radius: 12px;
   background: #ffffff;
   padding: 6px;
@@ -2819,5 +2819,59 @@ label.wide {
   .btn-action {
     min-width: 62px;
     padding: 8px 2px;
+  }
+}
+
+
+/* Connected profile information hierarchy */
+.kds-company-name-under-designation {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-top: -7px;
+  margin-bottom: 14px;
+}
+
+.company-profile-bio {
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin: 8px 0 0;
+  max-width: 430px;
+}
+
+.kds-business-profile-link-wrap {
+  margin-top: 16px;
+}
+
+.company-social-row {
+  margin-top: 20px;
+}
+
+.company-qr-bottom {
+  margin-top: 20px;
+}
+
+.kds-company-profile-layout .kds-biz-hero-card {
+  margin-bottom: 16px;
+}
+
+.kds-company-profile-layout .kds-action-grid {
+  margin-top: 18px;
+}
+
+.kds-company-profile-layout .kds-glowing-cta-btn {
+  text-decoration: none;
+}
+
+@media (max-width: 520px) {
+  .kds-company-profile-layout .kds-biz-hero-inner-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .kds-company-profile-layout .biz-hero-meta-wrap {
+    align-items: center;
   }
 }
