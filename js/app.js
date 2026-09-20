@@ -722,77 +722,60 @@ async function renderCard() {
     let cardContentHtml = "";
 
     if (isBusinessProfile) {
-      // ==========================================
-      // BUSINESS PROFILE — simple commercial layout
-      // Order: Logo → Company → Slogan → Bio → Contact → Social → Services → QR → Personal
-      // ==========================================
       const businessActions = [];
       if (c.businessPhone) businessActions.push(`<a class="kds-action-box" href="tel:${esc(c.businessPhone)}"><div class="action-box-icon">${SVG_ICONS.call}</div><span class="action-box-label">Call</span></a>`);
       if (waClean) businessActions.push(`<a class="kds-action-box" href="https://wa.me/${waClean}" target="_blank" rel="noopener noreferrer"><div class="action-box-icon">${SVG_ICONS.whatsapp}</div><span class="action-box-label">WhatsApp</span></a>`);
       if (c.businessEmail) businessActions.push(`<a class="kds-action-box" href="mailto:${esc(c.businessEmail)}"><div class="action-box-icon">${SVG_ICONS.email}</div><span class="action-box-label">Email</span></a>`);
-
-      const businessMapUrl = c.businessAddress
-        ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c.businessAddress)
-        : "";
-
-      const businessWebsiteRow = websiteClean
-        ? `<a class="biz-contact-row" href="${esc(websiteClean)}" target="_blank" rel="noopener noreferrer"><div class="biz-contact-icon-circle">${SVG_ICONS.website}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessWebsite || "")}</span><span class="contact-label">Website</span></div></a>`
-        : "";
-
-      const businessServices = String(c.businessServices || "")
-        .split(",")
-        .map(s => s.trim())
-        .filter(Boolean);
+      if (websiteClean) businessActions.push(`<a class="kds-action-box" href="${esc(websiteClean)}" target="_blank" rel="noopener noreferrer"><div class="action-box-icon">${SVG_ICONS.website}</div><span class="action-box-label">Website</span></a>`);
+      if (c.businessAddress) businessActions.push(`<a class="kds-action-box" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.businessAddress)}" target="_blank" rel="noopener noreferrer"><div class="action-box-icon">${SVG_ICONS.location}</div><span class="action-box-label">Location</span></a>`);
 
       const personalUrl = getCardFullUrl(c, "personal");
-
       cardContentHtml = `
         <article class="kds-card kds-business-card-layout kds-company-profile-layout" id="clientProfileCard">
-          <!-- Company identity -->
           <div class="kds-biz-top-header">
             <div class="kds-biz-brand-flex">
               ${logoClean ? `<img class="kds-biz-top-logo" src="${esc(logoClean)}" alt="${esc(c.company || "Company Logo")}">` : kdsBrandLogoSvg}
               <div class="kds-biz-brand-copy">
                 <div class="biz-company-name">${esc(c.company || "Company")}</div>
-                ${c.tagline ? `<div class="biz-company-motto">${esc(c.tagline)}</div>` : ""}
+                <div class="biz-company-motto">${esc(c.tagline || "")}</div>
+              </div>
+            </div>
+            <div class="kds-pill-type-badge">${SVG_ICONS.briefcase}<span>Business Profile</span></div>
+          </div>
+
+          <div class="kds-biz-hero-card company-profile-hero">
+            <div class="biz-hero-bg-photo" style="background-image: url('${esc(coverUrl)}');"></div>
+            <div class="biz-hero-gradient-overlay"></div>
+            <div class="biz-hero-inner-content company-profile-hero-inner">
+              <div class="biz-hero-avatar-wrap">
+                <div class="kds-avatar-halo small">
+                  ${logoClean ? `<img class="kds-avatar-img" src="${esc(logoClean)}" alt="${esc(c.company || "Company")}">` : kdsBrandLogoSvg}
+                </div>
+              </div>
+              <div class="biz-hero-meta-wrap">
+                <h1 class="biz-hero-founder-name">${esc(c.company || "Company")}</h1>
+                <div class="biz-hero-slogan">${esc(c.tagline || "")}</div>
+                <p class="company-profile-bio">${esc(c.businessBio || "")}</p>
               </div>
             </div>
           </div>
 
-          <!-- Business Bio -->
-          ${c.businessBio ? `
-            <div class="kds-biz-description">
-              <p>${esc(c.businessBio)}</p>
-            </div>
-          ` : ""}
+          ${servicesChipsHtml}
 
-          <!-- Business Contact -->
-          ${businessActions.length || c.businessAddress || businessWebsiteRow ? `
-            <div class="biz-contact-rows">
-              ${businessActions.length ? `<div class="kds-action-grid grid-${Math.min(3, Math.max(1, businessActions.length))}">${businessActions.join("")}</div>` : ""}
-              ${c.businessAddress ? `<a class="biz-contact-row" href="${esc(businessMapUrl)}" target="_blank" rel="noopener noreferrer"><div class="biz-contact-icon-circle">${SVG_ICONS.location}</div><div class="biz-contact-text-pair"><span class="contact-value">${esc(c.businessAddress)}</span><span class="contact-label">Google Maps</span></div></a>` : ""}
-              ${businessWebsiteRow}
-            </div>
-          ` : ""}
+          <div class="kds-action-grid grid-5">
+            ${businessActions.join("")}
+            <button class="kds-action-box" id="quickShareBtn" type="button"><div class="action-box-icon">${SVG_ICONS.share}</div><span class="action-box-label">Share</span></button>
+          </div>
 
-          <!-- Business Social Media -->
-          ${socialsHtml ? `
-            <div class="kds-social-row company-social-row">
-              ${socialsHtml.replace('<div class="kds-social-row">','').replace('</div>','')}
-            </div>
-          ` : ""}
+          <div class="kds-social-row company-social-row">${socialsHtml ? socialsHtml.replace('<div class="kds-social-row">','').replace('</div>','') : ""}</div>
 
-          <!-- Services -->
-          ${businessServices.length ? `
-            <div class="kds-business-services-section">
-              <div class="kds-section-label">Services</div>
-              <div class="kds-services-chips">
-                ${businessServices.map(s => `<span class="kds-service-chip">${esc(s)}</span>`).join("")}
-              </div>
-            </div>
-          ` : ""}
+          <div class="kds-cta-container">
+            <a class="kds-glowing-cta-btn company-profile-link-btn" href="${esc(personalUrl)}">
+              <div class="cta-icon-circle">${SVG_ICONS.user}</div>
+              <div class="cta-text-group"><span class="cta-main-label">Personal Profile</span><span class="cta-sub-label">${esc(c.name)}</span></div>
+            </a>
+          </div>
 
-          <!-- QR always near the bottom -->
           <div class="kds-qr-connect-box company-qr-bottom">
             <div class="kds-qr-square-frame"><div id="clientQrCanvas"></div></div>
             <div class="kds-qr-meta">
@@ -805,13 +788,7 @@ async function renderCard() {
             </div>
           </div>
 
-          <!-- Back to Personal Profile -->
-          <div class="kds-cta-container kds-business-profile-link-wrap">
-            <a class="kds-glowing-cta-btn company-profile-link-btn" href="${esc(personalUrl)}">
-              <div class="cta-icon-circle">${SVG_ICONS.user}</div>
-              <div class="cta-text-group"><span class="cta-main-label">Personal Profile</span><span class="cta-sub-label">${esc(c.name || "View Personal Profile")}</span></div>
-            </a>
-          </div>
+          <div class="kds-card-bottom-motto"><svg class="motto-wave" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0,30 Q200,5 400,30 L400,40 L0,40 Z" fill="rgba(14, 165, 233, 0.2)"/></svg><div class="motto-text">BUSINESS &nbsp; • &nbsp; CONNECT &nbsp; • &nbsp; GROW</div></div>
         </article>
       `;
     } else if (isPersonal) {
