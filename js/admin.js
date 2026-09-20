@@ -148,7 +148,19 @@ function fillForm(c) {
     "instagram",
     "linkedin",
     "youtube",
-    "tiktok"
+    "tiktok",
+    "businessBio",
+    "businessPhone",
+    "businessWhatsapp",
+    "businessEmail",
+    "businessAddress",
+    "businessWebsite",
+    "businessServices",
+    "businessFacebook",
+    "businessInstagram",
+    "businessLinkedin",
+    "businessYoutube",
+    "businessTiktok"
   ];
   fields.forEach((k) => {
     const el = qs("#" + k);
@@ -632,7 +644,20 @@ if (form) {
       "facebook",
       "instagram",
       "linkedin",
-      "youtube"
+      "youtube",
+      "tiktok",
+      "businessBio",
+      "businessPhone",
+      "businessWhatsapp",
+      "businessEmail",
+      "businessAddress",
+      "businessWebsite",
+      "businessServices",
+      "businessFacebook",
+      "businessInstagram",
+      "businessLinkedin",
+      "businessYoutube",
+      "businessTiktok"
     ];
     keys.forEach((k) => {
       const el = qs("#" + k);
