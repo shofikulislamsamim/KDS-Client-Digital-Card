@@ -77,13 +77,13 @@ function showError(msg) {
 }
 
 function setTemplate(t) {
-  selectedTemplate = t === "business" ? "business" : "personal";
+  selectedTemplate = ["personal", "personal_business", "business_only"].includes(t) ? t : "personal";
   if (qs("#template")) qs("#template").value = selectedTemplate;
   document.querySelectorAll(".template-pick button").forEach((b) => {
     b.classList.toggle("active", b.dataset.template === selectedTemplate);
   });
   const bf = qs("#businessFields");
-  if (bf) bf.classList.toggle("hidden", selectedTemplate !== "business");
+  if (bf) bf.classList.toggle("hidden", selectedTemplate === "personal");
 }
 
 function updateImagePreviews() {
@@ -115,7 +115,7 @@ function clearForm() {
   if (form) form.reset();
   if (qs("#clientId")) qs("#clientId").value = "";
   const paramTemplate = new URLSearchParams(location.search).get("template");
-  setTemplate(paramTemplate === "business" ? "business" : "personal");
+  setTemplate(["personal", "personal_business", "business_only"].includes(paramTemplate) ? paramTemplate : "personal");
   if (qs("#formTitle")) qs("#formTitle").textContent = "New Client";
   if (qs("#formSubtitle")) qs("#formSubtitle").textContent = "Fill in the client details to generate a visiting card";
   if (qs("#duration")) qs("#duration").value = "30";
@@ -275,7 +275,7 @@ function renderListItems(list) {
   box.innerHTML = list
     .map((c) => {
       const s = subscriptionState(c);
-      const isBiz = c.template === "business" || c.template === "personal_business";
+      const isBiz = c.template === "business" || c.template === "personal_business" || c.template === "business_only";
       const fullUrl = getCardFullUrl(c);
 
       return `
