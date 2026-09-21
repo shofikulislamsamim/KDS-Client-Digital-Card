@@ -129,7 +129,7 @@ function dbToClient(c) {
   return {
     id: c.id,
     slug: c.slug || slugify(c.full_name || c.name),
-    template: c.template === "business" || c.template === "personal_business" ? "business" : "personal",
+    template: c.template === "business" || c.template === "personal_business" || c.template === "business_only" ? c.template : "personal",
     name: c.full_name || c.name || "",
     designation: c.designation || "",
     phone: c.phone || "",
@@ -173,7 +173,7 @@ function clientToDb(c) {
   return {
     id: c.id || undefined,
     slug: c.slug || slugify(c.name),
-    template: c.template === "business" ? "business" : "personal",
+    template: ["personal", "personal_business", "business_only"].includes(c.template) ? c.template : "personal",
     full_name: c.name || "",
     designation: c.designation || null,
     phone: c.phone || null,
