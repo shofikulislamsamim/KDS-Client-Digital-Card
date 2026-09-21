@@ -2875,3 +2875,343 @@ label.wide {
     align-items: center;
   }
 }
+
+
+/* ==========================================================================
+   KDS CLIENT CARD — COMPACT REFERENCE SCALE
+   Keep the reusable renderer visually close to the original reference card.
+   This scope intentionally tightens oversized elements on phones and desktop.
+   ========================================================================== */
+
+#cardRoot > .page-container {
+  width: min(100%, 460px);
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 10px 10px 28px;
+  gap: 14px;
+}
+
+#cardRoot .profile-card,
+#cardRoot .business-hero,
+#cardRoot .qr-card {
+  width: 100%;
+  max-width: 460px;
+  border-radius: 22px;
+}
+
+#cardRoot .profile-cover {
+  height: 118px;
+}
+
+#cardRoot .card-header {
+  padding: 0 18px 14px;
+}
+
+#cardRoot .avatar-wrapper {
+  width: 112px;
+  height: 112px;
+  margin-top: -56px;
+  margin-bottom: 11px;
+  padding: 3px;
+}
+
+#cardRoot .status-badge {
+  width: 14px;
+  height: 14px;
+  bottom: 4px;
+  right: 4px;
+  border-width: 2px;
+}
+
+#cardRoot .founder-name {
+  font-size: clamp(1.25rem, 5.5vw, 1.5rem);
+  line-height: 1.18;
+  margin-bottom: 3px;
+}
+
+#cardRoot .founder-title {
+  font-size: .84rem;
+  line-height: 1.3;
+}
+
+#cardRoot .company-badge {
+  font-size: .76rem;
+  padding: 3px 10px;
+  margin-top: 3px;
+}
+
+#cardRoot .founder-bio {
+  font-size: .78rem;
+  line-height: 1.45;
+  max-width: 380px;
+  margin-top: 9px;
+}
+
+#cardRoot .actions-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  padding: 0 14px 14px;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+#cardRoot .btn-action {
+  min-width: 0;
+  min-height: 64px;
+  padding: 9px 4px;
+  gap: 4px;
+  border-radius: 11px;
+  font-size: .68rem;
+}
+
+#cardRoot .btn-action svg {
+  width: 20px;
+  height: 20px;
+}
+
+#cardRoot .save-tools {
+  padding: 0 14px 14px;
+  gap: 7px;
+}
+
+#cardRoot .btn-save-contact {
+  width: 100%;
+  margin: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: .78rem;
+}
+
+#cardRoot .btn-save-contact svg {
+  width: 18px;
+  height: 18px;
+}
+
+#cardRoot .socials-section {
+  padding: 0 14px 16px;
+}
+
+#cardRoot .section-title {
+  font-size: .68rem;
+  letter-spacing: .07em;
+  margin-bottom: 9px;
+}
+
+#cardRoot .social-icons-list {
+  gap: 9px;
+}
+
+#cardRoot .social-icon-link {
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+  border-radius: 11px;
+}
+
+#cardRoot .social-icon-link svg {
+  width: 21px;
+  height: 21px;
+}
+
+#cardRoot .card-nav-switch {
+  padding: 11px 14px;
+}
+
+#cardRoot .switch-content {
+  gap: 9px;
+  min-width: 0;
+}
+
+#cardRoot .switch-logo {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+}
+
+#cardRoot .switch-title {
+  font-size: .78rem;
+}
+
+#cardRoot .switch-subtitle {
+  font-size: .66rem;
+}
+
+#cardRoot .qr-card {
+  padding: 16px 14px;
+}
+
+#cardRoot .qr-frame {
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+#cardRoot .qr-frame canvas,
+#cardRoot .qr-frame img {
+  width: 150px !important;
+  height: 150px !important;
+}
+
+#cardRoot .qr-title {
+  font-size: .9rem;
+  margin-bottom: 3px;
+}
+
+#cardRoot .qr-desc {
+  font-size: .7rem;
+  line-height: 1.4;
+  max-width: 320px;
+  margin-bottom: 10px;
+}
+
+#cardRoot .qr-btn-group {
+  gap: 7px;
+  max-width: 300px;
+}
+
+#cardRoot .btn-secondary {
+  min-height: 40px;
+  padding: 8px 9px;
+  font-size: .7rem;
+  gap: 5px;
+}
+
+#cardRoot .btn-secondary svg {
+  width: 14px;
+  height: 14px;
+}
+
+#cardRoot .page-footer {
+  padding: 8px 0;
+  font-size: .68rem;
+}
+
+/* Business profile — same visual scale as the personal reference card. */
+#cardRoot .business-hero {
+  padding: 0 0 16px;
+}
+
+#cardRoot .business-hero .profile-cover {
+  height: 118px;
+}
+
+#cardRoot .business-profile-logo {
+  width: 82px;
+  height: 82px;
+  margin: -41px auto 10px;
+  position: relative;
+  z-index: 3;
+  padding: 5px;
+  border-radius: 18px;
+}
+
+#cardRoot .business-name {
+  font-size: clamp(1.25rem, 5.5vw, 1.55rem);
+  line-height: 1.2;
+  margin-bottom: 3px;
+  padding: 0 14px;
+}
+
+#cardRoot .business-tagline {
+  font-size: .8rem;
+  margin-bottom: 8px;
+  padding: 0 14px;
+}
+
+#cardRoot .business-about {
+  font-size: .76rem;
+  line-height: 1.45;
+  margin: 0 auto 12px;
+  padding: 0 18px;
+}
+
+#cardRoot .business-hero > .actions-grid {
+  margin-bottom: 10px !important;
+}
+
+#cardRoot .services-section {
+  gap: 10px;
+}
+
+#cardRoot .services-grid {
+  gap: 9px;
+}
+
+#cardRoot .service-card {
+  padding: 13px;
+  gap: 7px;
+  border-radius: 14px;
+}
+
+#cardRoot .service-icon-box {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
+#cardRoot .service-icon-box svg {
+  width: 18px;
+  height: 18px;
+}
+
+#cardRoot .service-title {
+  font-size: .82rem;
+}
+
+#cardRoot .service-desc {
+  font-size: .68rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 360px) {
+  #cardRoot > .page-container {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  #cardRoot .profile-cover,
+  #cardRoot .business-hero .profile-cover {
+    height: 104px;
+  }
+
+  #cardRoot .avatar-wrapper {
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+  }
+
+  #cardRoot .actions-grid {
+    gap: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #cardRoot .btn-action {
+    min-height: 58px;
+    font-size: .62rem;
+  }
+
+  #cardRoot .social-icon-link {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  #cardRoot .social-icon-link svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  #cardRoot .qr-frame canvas,
+  #cardRoot .qr-frame img {
+    width: 136px !important;
+    height: 136px !important;
+  }
+}
+
+@media (min-width: 640px) {
+  #cardRoot > .page-container {
+    padding-top: 18px;
+    padding-bottom: 42px;
+  }
+}
