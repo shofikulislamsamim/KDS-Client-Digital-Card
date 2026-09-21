@@ -235,10 +235,12 @@
       return;
     }
 
-    const isBusinessTemplate = c.template === "business" || c.template === "business_only";
     const connected = c.template === "personal_business";
     const requestedBusiness = params.get("profile") === "business";
-    const isBusiness = isBusinessTemplate && (c.template === "business_only" || requestedBusiness);
+    // Business view is available for Business-only cards by default, and for
+    // Personal + Business cards only when explicitly requested.
+    const isBusiness = c.template === "business_only"
+      || ((c.template === "business" || connected) && requestedBusiness);
 
     document.title = isBusiness
       ? (c.company || "Business Profile") + " • Company Profile"
