@@ -127,7 +127,6 @@
           </div>
 
           ${businessLink}
-          ${footerMotto()}
         </div>
 
         ${qrBlock("cardQr", "Scan to Connect", "Scan with your smartphone camera to instantly view or share this digital visiting card.", getCardFullUrl(c, "personal"), slugify(c.name))}
@@ -217,7 +216,6 @@
 
         ${qrBlock("cardBusinessQr", "Share Business Profile", "Scan to share or bookmark this business profile and services.", getCardFullUrl(c, "business"), slugify(c.company || c.name) + "-business")}
 
-        ${footerMotto()}
         ${c.template === "personal_business" ? `<div style="text-align:center;margin-top:10px;"><a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-save-contact" style="margin:0 auto;max-width:360px;">${SVG_ICONS.user} Back to Personal Visiting Card</a></div>` : ""}
         <footer class="page-footer"><div>&copy; 2026 Khan Digital Solution. All rights reserved.</div></footer>
       </div>
