@@ -1,0 +1,2350 @@
+/* ==============================================================================
+   Khan Digital Solution – Digital Visiting Card & Business Profile
+   Modern, Premium, Responsive CSS Stylesheet
+   ============================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-dark: #090d16;
+  --bg-surface: #111827;
+  --bg-card: #151d30;
+  --bg-card-hover: #1c263e;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(56, 189, 248, 0.25);
+  
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-glow: rgba(2, 132, 199, 0.25);
+  
+  --accent-cyan: #38bdf8;
+  --accent-whatsapp: #25d366;
+  --accent-whatsapp-hover: #20ba5a;
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-color);
+  --shadow-hover: 0 25px 50px -12px rgba(2, 132, 199, 0.2), 0 0 0 1px var(--border-highlight);
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light Theme Variables if needed */
+[data-theme="light"] {
+  --bg-dark: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-highlight: rgba(2, 132, 199, 0.3);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #94a3b8;
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-color);
+}
+
+/* Reset & Base Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at 50% 0%, #1e293b 0%, var(--bg-dark) 70%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* Page Layout Wrappers */
+.page-container {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.business-container {
+  max-width: 680px;
+}
+
+.admin-container {
+  max-width: 1100px;
+  padding: 24px 20px 60px;
+}
+
+/* Supabase Alert Banner */
+.config-banner {
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  color: #fef08a;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.config-banner.hidden {
+  display: none !important;
+}
+
+/* Global Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Admin Modals */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 13, 22, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.admin-modal-backdrop.hidden,
+.admin-modal-backdrop[style*="display: none"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.admin-modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 500px;
+  padding: 28px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Profile Card Container */
+/* Layering fix: keep interactive controls fully above the card background */
+.profile-card {
+  isolation: isolate;
+}
+
+.profile-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.profile-card::before {
+  display: none;
+}
+
+/* Facebook-style cover photo */
+.profile-cover {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 156px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 42%, #0f172a 100%);
+}
+.profile-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.28) 100%);
+  pointer-events: none;
+}
+.profile-cover-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+.profile-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 78% 20%, rgba(56,189,248,.42), transparent 34%),
+    linear-gradient(135deg, #0284c7 0%, #0369a1 42%, #0f172a 100%);
+}
+
+/* Header & Avatar */
+.card-header {
+  position: relative;
+  z-index: 2;
+  padding: 0 24px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 146px;
+  height: 146px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  margin-top: -73px;
+  margin-bottom: 16px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  display: block;
+}
+
+.status-badge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  background-color: var(--accent-whatsapp);
+  border: 2.5px solid var(--bg-card);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(37, 211, 102, 0.6);
+}
+
+/* Typography */
+.founder-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+
+.founder-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.company-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(2, 132, 199, 0.10));
+  border: 1px solid rgba(56, 189, 248, 0.38);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  margin-top: 4px;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.16);
+  letter-spacing: 0.01em;
+}
+
+.founder-bio {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 420px;
+  margin: 14px auto 0;
+  line-height: 1.55;
+}
+
+/* Action Buttons Grid */
+.actions-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.btn-action {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  padding: 14px 6px;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-action svg {
+  width: 22px;
+  height: 22px;
+  transition: transform var(--transition-fast);
+}
+
+.btn-action:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--border-highlight);
+  transform: translateY(-2px);
+}
+
+.btn-action:hover svg {
+  transform: scale(1.1);
+}
+
+/* Unique Button Colors */
+.btn-action.action-call {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.25);
+  background: rgba(56, 189, 248, 0.06);
+}
+.btn-action.action-whatsapp {
+  color: var(--accent-whatsapp);
+  border-color: rgba(37, 211, 102, 0.25);
+  background: rgba(37, 211, 102, 0.06);
+}
+.btn-action.action-email {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.06);
+}
+.btn-action.action-vcard {
+  color: #a855f7;
+  border-color: rgba(168, 85, 247, 0.25);
+  background: rgba(168, 85, 247, 0.06);
+}
+
+/* Save Contact + Live PDF tools */
+.save-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+.save-tools .btn-save-contact {
+  width: 100%;
+  margin: 0;
+}
+.btn-live-pdf {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.28);
+}
+.btn-live-pdf:hover {
+  background: linear-gradient(135deg, #6d28d9 0%, #4338ca 100%);
+  box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
+}
+
+/* Big Primary Save Contact Button */
+.btn-save-contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: calc(100% - 40px);
+  margin: 0 20px 20px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-save-contact:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(2, 132, 199, 0.5);
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+}
+
+.btn-save-contact svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Social Media Section */
+.socials-section {
+  position: relative;
+  z-index: 3;
+  padding: 0 20px 24px;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-subtle);
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.social-icons-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 14px;
+  margin: 0 auto;
+}
+
+.social-icon-link {
+  position: relative;
+  z-index: 4;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.social-icon-link svg {
+  width: 32px;
+  height: 32px;
+  transition: transform var(--transition-fast);
+}
+
+.social-icon-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.social-icon-link:hover svg {
+  transform: scale(1.15);
+}
+
+/* Tooltip on hover */
+.social-icon-link[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  z-index: 10;
+}
+
+.social-icon-link:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Switcher Card: Link to Business Profile */
+.card-nav-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid var(--border-color);
+  padding: 16px 20px;
+  text-decoration: none;
+  color: var(--text-main);
+  transition: background var(--transition-fast);
+}
+
+.card-nav-switch:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.switch-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.switch-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.switch-texts {
+  display: flex;
+  flex-direction: column;
+}
+
+.switch-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.switch-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.switch-arrow {
+  color: var(--accent-cyan);
+  transition: transform var(--transition-fast);
+}
+
+.card-nav-switch:hover .switch-arrow {
+  transform: translateX(4px);
+}
+
+/* QR Code Card */
+.qr-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 24px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-card);
+}
+
+.qr-frame {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.qr-frame canvas,
+.qr-frame img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.qr-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.qr-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.qr-btn-group {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-secondary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--border-highlight);
+  transform: translateY(-2px);
+}
+
+.btn-secondary svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Footer Section */
+.page-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-link {
+  color: var(--text-subtle);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.admin-link:hover {
+  color: var(--text-muted);
+  border-color: var(--border-color);
+}
+
+/* ==============================================================================
+   BUSINESS PROFILE PAGE STYLES (business.html)
+   ============================================================================== */
+.business-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 16px;
+}
+
+.back-badge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.back-badge-link:hover {
+  background: rgba(56, 189, 248, 0.15);
+  transform: translateX(-2px);
+}
+
+.business-hero {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.business-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #38bdf8, #0284c7, #25d366);
+}
+
+.kds-logo-wrapper {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 16px;
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.kds-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+.business-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.business-tagline {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  margin-bottom: 16px;
+}
+
+.business-about {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  max-width: 580px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+
+/* Services Section */
+.services-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 600px) {
+  .services-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.service-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+}
+
+.service-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-highlight);
+  background: var(--bg-card-hover);
+  box-shadow: var(--shadow-hover);
+}
+
+.service-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-icon-box svg {
+  width: 22px;
+  height: 22px;
+}
+
+.service-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.service-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* ==============================================================================
+   ADMIN PANEL STYLES (admin.html)
+   ============================================================================== */
+
+/* Admin Auth View */
+.admin-auth-box {
+  max-width: 420px;
+  margin: 80px auto;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: 36px 28px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.auth-header-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.form-label span.bengali-hint {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  font-weight: normal;
+  margin-left: 4px;
+}
+
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.form-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #ffffff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  font-size: 0.94rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Admin Dashboard Layout */
+.admin-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-brand-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.admin-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-badge {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+}
+
+.btn-logout {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Admin Tabs Navigation */
+.admin-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tab-btn.active {
+  color: #ffffff;
+  background: var(--primary);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+/* Sticky Action Bar for Admin */
+.admin-sticky-bar {
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.sticky-bar-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.save-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-whatsapp);
+}
+
+.save-status-dot.dirty {
+  background: #f59e0b;
+}
+
+.sticky-bar-btns {
+  display: flex;
+  gap: 10px;
+}
+
+/* Image Upload Control Box */
+.image-upload-box {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.image-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.preview-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  background: var(--bg-surface);
+}
+
+.file-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+/* Service Item in Admin */
+.admin-service-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.service-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.service-reorder-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-highlight);
+}
+
+.btn-icon.btn-danger {
+  color: #f87171;
+}
+.btn-icon.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* Toggle Switch */
+.switch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-slider {
+  width: 40px;
+  height: 22px;
+  background-color: #334155;
+  border-radius: 20px;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+}
+
+.switch-input:checked + .switch-slider {
+  background-color: var(--accent-whatsapp);
+}
+
+.switch-input:checked + .switch-slider::before {
+  transform: translateX(18px);
+}
+
+/* Toast Message */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  background: #1e293b;
+  border: 1px solid var(--border-color);
+  color: #f8fafc;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+.toast.toast-success {
+  border-color: var(--accent-whatsapp);
+  background: #064e3b;
+}
+
+.toast.toast-error {
+  border-color: #ef4444;
+  background: #7f1d1d;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Spinner */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 0 12px 16px;
+  }
+  
+  .btn-action {
+    padding: 13px 3px;
+    min-height: 58px;
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .btn-action svg {
+    width: 21px;
+    height: 21px;
+    flex: 0 0 auto;
+  }
+
+  .social-icons-list {
+    gap: 10px;
+  }
+
+  .social-icon-link {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+  }
+  
+  .founder-name {
+    font-size: 1.45rem;
+  }
+
+  .admin-navbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .admin-sticky-bar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+}
+
+/* Branding upload controls */
+.image-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.image-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.image-upload-row .file-input-wrapper {
+  flex: 1;
+}
+.image-upload-row .form-input {
+  margin-bottom: 8px;
+}
+@media (max-width: 640px) {
+  .image-upload-grid { grid-template-columns: 1fr; }
+  .image-upload-row { align-items: flex-start; }
+}
+
+
+/* Post-save Connect With Me modal */
+.connect-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(3, 7, 18, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.connect-modal-backdrop.hidden { display: none !important; }
+.connect-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px 20px 20px;
+  border-radius: 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-highlight);
+  box-shadow: 0 25px 70px rgba(0,0,0,.55);
+  text-align: center;
+}
+.connect-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+  color: var(--text-muted);
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+.connect-success-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+}
+.connect-modal-card h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.45rem;
+  margin-bottom: 5px;
+}
+.connect-modal-subtitle {
+  color: var(--text-muted);
+  font-size: .88rem;
+  margin-bottom: 16px;
+}
+.connect-options {
+  display: grid;
+  gap: 9px;
+}
+.connect-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 13px;
+  background: rgba(255,255,255,.035);
+  color: var(--text-main);
+  text-decoration: none;
+  text-align: left;
+  transition: transform .18s ease, background .18s ease;
+}
+.connect-option:hover { transform: translateY(-1px); background: rgba(255,255,255,.07); }
+.connect-option-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+.connect-option-icon svg { width: 25px; height: 25px; }
+.connect-option-copy { flex: 1; min-width: 0; }
+.connect-option-name { display: block; font-weight: 700; font-size: .9rem; }
+.connect-option-action { display: block; color: var(--text-muted); font-size: .72rem; margin-top: 1px; }
+.connect-option-arrow { color: var(--text-subtle); font-size: 18px; }
+.connect-close-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(255,255,255,.05);
+  color: var(--text-main);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.connect-option-icon[data-platform="facebook"] { color:#0866ff; background:rgba(8,102,255,.10); }
+.connect-option-icon[data-platform="whatsapp"] { color:#25d366; background:rgba(37,211,102,.10); }
+.connect-option-icon[data-platform="youtube"] { color:#ff0000; background:rgba(255,0,0,.10); }
+.connect-option-icon[data-platform="tiktok"] { color:#fff; background:#000; }
+
+.connect-option-icon[data-platform="linkedin"] { color:#0a66c2; background:rgba(10,102,194,.10); }
+
+/* Only the Contact Saved modal uses Instagram's official multicolor logo */
+.connect-option-icon[data-platform="instagram"] {
+  color: #fff !important;
+  background: transparent !important;
+}
+.connect-option-icon[data-platform="instagram"] .connect-brand-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+  fill: none !important;
+  stroke: none !important;
+}
+
+
+@media (max-width: 480px) {
+  .profile-cover {
+    height: 145px;
+  }
+  .avatar-wrapper {
+    width: 136px;
+    height: 136px;
+    margin-top: -68px;
+  }
+}
+
+/* Admin cover-photo uploader: compact Facebook-style preview */
+.admin-container .image-upload-box:has(#admProfileCoverPreview) {
+  padding: 14px;
+  gap: 12px;
+}
+.admin-container .image-upload-box:has(#admProfileCoverPreview) .image-preview-row {
+  align-items: center;
+  gap: 14px;
+}
+.admin-container .preview-cover-thumb {
+  display: block;
+  width: 220px;
+  height: 88px;
+  min-width: 220px;
+  max-width: 220px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+  border: 1px solid var(--border-highlight);
+  background: var(--bg-surface);
+  box-shadow: 0 6px 18px rgba(0,0,0,.22);
+}
+.admin-container .image-upload-box:has(#admProfileCoverPreview) .file-input-wrapper {
+  min-width: 0;
+}
+.admin-container .image-upload-box:has(#admProfileCoverPreview) .file-input-wrapper .form-input {
+  margin: 0 0 4px;
+  min-height: 40px;
+}
+.admin-container .image-upload-box:has(#admProfileCoverPreview) > div:last-child .form-input {
+  min-height: 40px;
+}
+@media (max-width: 640px) {
+  .admin-container .image-upload-box:has(#admProfileCoverPreview) .image-preview-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .admin-container .preview-cover-thumb {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 120px;
+  }
+}
+
+/* Business profile: exact same cover + profile sizing/border system as personal card */
+.business-hero {
+  padding: 0 24px 32px;
+}
+
+/* The cover uses the exact same .profile-cover dimensions as the personal card. */
+.business-profile-cover {
+  width: calc(100% + 48px);
+  margin-left: -24px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+/* Exact match to the personal .avatar-wrapper: 146px desktop, 136px mobile. */
+.business-profile-logo {
+  position: relative;
+  z-index: 3;
+  width: 146px;
+  height: 146px;
+  margin: -73px auto 16px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+.business-profile-logo .kds-logo-img {
+  border-radius: 50%;
+}
+
+@media (max-width: 480px) {
+  .business-hero {
+    padding: 0 18px 28px;
+  }
+  .business-profile-cover {
+    width: calc(100% + 36px);
+    margin-left: -18px;
+  }
+  .business-profile-logo {
+    width: 136px;
+    height: 136px;
+    margin-top: -68px;
+  }
+}
+
+
+/* ==============================================================================
+   Mobile / Android optimization
+   Designed for 320px–480px touch screens, safe areas and Android browsers.
+   ============================================================================== */
+html {
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+img, svg, canvas {
+  max-width: 100%;
+}
+
+button, a, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a.btn-action, a.btn-save-contact, .social-icon-link {
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .page-container,
+  .business-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 10px calc(28px + env(safe-area-inset-bottom));
+    gap: 12px;
+  }
+
+  .profile-card,
+  .business-hero {
+    width: 100%;
+    border-radius: 18px;
+  }
+
+  .profile-cover {
+    height: clamp(118px, 34vw, 145px);
+  }
+
+  .card-header {
+    padding: 0 14px 16px;
+  }
+
+  .avatar-wrapper,
+  .business-profile-logo {
+    width: 112px;
+    height: 112px;
+    margin-top: -56px;
+    margin-bottom: 12px;
+  }
+
+  .status-badge {
+    width: 16px;
+    height: 16px;
+    right: 4px;
+    bottom: 4px;
+    border-width: 2px;
+  }
+
+  .founder-name {
+    max-width: 100%;
+    font-size: clamp(1.25rem, 6vw, 1.5rem);
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+  }
+
+  .founder-title {
+    font-size: .88rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .company-badge {
+    max-width: 100%;
+    padding: 4px 10px;
+    font-size: .78rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .founder-bio {
+    max-width: 100%;
+    padding: 0 4px;
+    margin-top: 10px;
+    font-size: .84rem;
+    line-height: 1.5;
+  }
+
+  .actions-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    padding: 0 12px 14px;
+  }
+
+  .btn-action {
+    min-width: 0;
+    min-height: 64px;
+    padding: 9px 3px;
+    border-radius: 11px;
+    font-size: .68rem;
+    line-height: 1.15;
+    gap: 5px;
+  }
+
+  .btn-action svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .btn-save-contact {
+    width: calc(100% - 24px);
+    margin: 0 12px 14px;
+    min-height: 48px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: .9rem;
+  }
+
+  .socials-section {
+    padding: 0 12px 18px;
+  }
+
+  .section-title {
+    font-size: .72rem;
+    margin-bottom: 9px;
+  }
+
+  .social-icons-list {
+    gap: 8px;
+  }
+
+  .social-icon-link {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 11px;
+  }
+
+  .social-icon-link svg {
+    width: 27px;
+    height: 27px;
+  }
+
+  /* Tooltips are not useful on touch screens. */
+  .social-icon-link[data-tooltip]::before {
+    display: none;
+  }
+
+  .card-nav-switch {
+    padding: 13px 14px;
+    min-height: 52px;
+    gap: 10px;
+  }
+
+  .switch-content {
+    min-width: 0;
+  }
+
+  .switch-title,
+  .switch-subtitle {
+    overflow-wrap: anywhere;
+  }
+
+  /* Business profile */
+  .business-hero {
+    padding: 0 14px 20px;
+  }
+
+  .business-profile-cover {
+    width: calc(100% + 28px);
+    margin-left: -14px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .business-name {
+    max-width: 100%;
+    font-size: clamp(1.35rem, 6.5vw, 1.65rem);
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+  }
+
+  .business-tagline {
+    font-size: .88rem;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+
+  .business-about {
+    max-width: 100%;
+    margin-bottom: 16px;
+    padding: 0 2px;
+    font-size: .82rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .services-section {
+    gap: 10px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .service-card {
+    padding: 14px;
+    gap: 8px;
+    border-radius: 14px;
+  }
+
+  .service-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .service-icon-box svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .service-title {
+    font-size: .92rem;
+    line-height: 1.25;
+  }
+
+  .service-desc {
+    font-size: .77rem;
+    line-height: 1.45;
+  }
+
+  /* QR section stays compact and centered */
+  .qr-card {
+    padding: 14px !important;
+    overflow: hidden;
+  }
+
+  .qr-frame {
+    width: min(220px, 72vw);
+    height: min(220px, 72vw);
+    margin: 0 auto;
+  }
+
+  .qr-frame canvas,
+  .qr-frame .qr-generated-image {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+  }
+
+  .qr-actions,
+  .qr-card .actions,
+  .qr-card .button-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .qr-actions button,
+  .qr-card button {
+    min-height: 44px;
+    font-size: .8rem;
+  }
+
+  /* Admin also becomes a proper one-column mobile interface. */
+  .admin-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 10px calc(36px + env(safe-area-inset-bottom));
+  }
+
+  .admin-navbar {
+    margin-bottom: 12px;
+    padding: 11px 12px;
+    border-radius: 14px;
+  }
+
+  .admin-brand {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-brand-title {
+    font-size: .95rem;
+  }
+
+  .admin-nav-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .user-badge {
+    max-width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-tabs {
+    gap: 5px;
+    margin: 0 -2px 14px;
+    padding: 3px 2px 7px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    min-height: 42px;
+    padding: 9px 12px;
+    font-size: .78rem;
+  }
+
+  .admin-sticky-bar {
+    top: 6px;
+    margin-bottom: 12px;
+    padding: 9px 10px;
+    border-radius: 13px;
+  }
+
+  .sticky-bar-info {
+    font-size: .76rem;
+  }
+
+  .sticky-bar-btns {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sticky-bar-btns button {
+    min-height: 42px;
+  }
+
+  .admin-modal-backdrop {
+    padding: 10px;
+  }
+
+  .admin-modal-card {
+    max-height: calc(100dvh - 20px);
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    min-height: 44px;
+    font-size: 16px; /* prevents Android Chrome zoom on focus */
+  }
+
+  .form-textarea {
+    min-height: 100px;
+  }
+
+  .image-upload-box {
+    padding: 12px;
+  }
+
+  .image-upload-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .preview-thumb {
+    width: 84px;
+    height: 84px;
+  }
+
+  .toast-container {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .toast {
+    width: 100%;
+    font-size: .8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .page-container,
+  .business-container {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .actions-grid {
+    gap: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .btn-action {
+    font-size: .62rem;
+    min-height: 60px;
+  }
+
+  .social-icon-link {
+    flex-basis: 43px;
+    width: 43px;
+    height: 43px;
+  }
+
+  .social-icon-link svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .business-hero {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .business-profile-cover {
+    width: calc(100% + 20px);
+    margin-left: -10px;
+  }
+
+  .business-profile-logo,
+  .avatar-wrapper {
+    width: 104px;
+    height: 104px;
+    margin-top: -52px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .profile-cover {
+    height: 105px;
+  }
+
+  .avatar-wrapper,
+  .business-profile-logo {
+    width: 92px;
+    height: 92px;
+    margin-top: -46px;
+  }
+
+  .card-header {
+    padding-bottom: 10px;
+  }
+}
+
+
+/* ==============================================================================
+   KDS CARD REFRESH — premium glass / editorial layout
+   Safe visual layer: keeps existing IDs, data bindings and admin-managed content.
+   ============================================================================== */
+:root {
+  --kds-blue: #0ea5e9;
+  --kds-blue-strong: #0284c7;
+  --kds-ink: #07111f;
+  --kds-panel: rgba(10, 20, 36, .78);
+  --kds-line: rgba(148, 163, 184, .16);
+  --kds-soft: rgba(255,255,255,.68);
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(14,165,233,.14), transparent 32%),
+    radial-gradient(circle at 90% 12%, rgba(59,130,246,.10), transparent 30%),
+    #050a12;
+}
+
+.page-container {
+  max-width: 720px;
+  gap: 18px;
+}
+
+.profile-card,
+.business-hero,
+.qr-card {
+  border: 1px solid var(--kds-line);
+  background: linear-gradient(145deg, rgba(15,27,46,.94), rgba(7,15,28,.96));
+  box-shadow: 0 24px 70px rgba(0,0,0,.34);
+}
+
+.profile-card {
+  overflow: hidden;
+}
+
+.profile-cover {
+  height: 190px;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(2,132,199,.82), rgba(7,15,28,.15) 52%, rgba(3,7,18,.9)),
+    radial-gradient(circle at 75% 20%, rgba(56,189,248,.35), transparent 35%);
+}
+
+.profile-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(5,10,18,.58));
+  pointer-events: none;
+}
+
+.profile-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 75% 25%, rgba(56,189,248,.34), transparent 20%),
+    linear-gradient(135deg, #0b1c31, #0a4b70 50%, #06101d);
+}
+
+.profile-cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-header {
+  position: relative;
+  padding-bottom: 22px;
+}
+
+.avatar-wrapper,
+.business-profile-logo {
+  border: 4px solid rgba(255,255,255,.94);
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  box-shadow: 0 18px 42px rgba(0,0,0,.40);
+}
+
+.avatar-img,
+.business-profile-logo .kds-logo-img {
+  background: #07111f;
+}
+
+.status-badge {
+  box-shadow: 0 0 0 4px #0b1728, 0 0 0 6px rgba(34,197,94,.14);
+}
+
+.founder-name,
+.business-name {
+  letter-spacing: -.035em;
+  font-weight: 800;
+}
+
+.founder-title {
+  color: #bae6fd;
+}
+
+.company-badge,
+.business-tagline {
+  border: 1px solid rgba(56,189,248,.24);
+  background: rgba(14,165,233,.09);
+  color: #7dd3fc;
+}
+
+.founder-bio,
+.business-about {
+  color: rgba(226,232,240,.74);
+}
+
+.actions-grid {
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.btn-action {
+  border: 1px solid var(--kds-line);
+  background: rgba(255,255,255,.035);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56,189,248,.34);
+  background: rgba(14,165,233,.08);
+}
+
+.btn-save-contact {
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  box-shadow: 0 12px 30px rgba(2,132,199,.24);
+  border: 0;
+}
+
+.social-icon-link {
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.035);
+  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.social-icon-link:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56,189,248,.42);
+  background: rgba(14,165,233,.10);
+}
+
+.card-nav-switch {
+  margin: 0 14px 16px;
+  border: 1px solid rgba(56,189,248,.18);
+  background: linear-gradient(135deg, rgba(14,165,233,.08), rgba(255,255,255,.025));
+}
+
+.qr-card {
+  padding: 22px;
+}
+
+.qr-frame {
+  width: 236px;
+  height: 236px;
+  padding: 8px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(0,0,0,.30);
+}
+
+.qr-frame canvas,
+.qr-frame .qr-generated-image {
+  border-radius: 10px;
+}
+
+.services-section {
+  padding: 4px;
+}
+
+.services-grid {
+  gap: 12px;
+}
+
+.service-card {
+  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(145deg, rgba(17,31,52,.86), rgba(9,18,31,.9));
+  box-shadow: 0 14px 34px rgba(0,0,0,.18);
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56,189,248,.28);
+}
+
+.service-icon-box {
+  background: rgba(14,165,233,.10);
+  border: 1px solid rgba(56,189,248,.18);
+  color: #38bdf8;
+}
+
+.page-footer {
+  color: rgba(148,163,184,.60);
+  padding-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .page-container,
+  .business-container {
+    gap: 12px;
+  }
+
+  .profile-cover {
+    height: 150px;
+  }
+
+  .profile-card,
+  .business-hero,
+  .qr-card {
+    box-shadow: 0 16px 42px rgba(0,0,0,.28);
+  }
+
+  .qr-frame {
+    width: min(230px, 76vw);
+    height: min(230px, 76vw);
+  }
+}
+
+
+/* Profile photo refinement: larger on phones, one clean border, no live-status dot. */
+.avatar-wrapper,
+.business-profile-logo {
+  width: 146px;
+  height: 146px;
+  padding: 0;
+  background: transparent;
+  border: 4px solid #ffffff;
+  box-shadow: 0 16px 36px rgba(0,0,0,.38);
+}
+
+.status-badge {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .avatar-wrapper,
+  .business-profile-logo {
+    width: 140px;
+    height: 140px;
+    margin-top: -70px;
+    padding: 0;
+    border: 4px solid #ffffff;
+  }
+}
+
+@media (max-width: 360px) {
+  .avatar-wrapper,
+  .business-profile-logo {
+    width: 128px;
+    height: 128px;
+    margin-top: -64px;
+  }
+}
+
+
+/* Profile photo border: restore the original KDS blue gradient as a single border. */
+.avatar-wrapper,
+.business-profile-logo {
+  padding: 4px;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .avatar-wrapper,
+  .business-profile-logo {
+    padding: 4px;
+    border: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .avatar-wrapper,
+  .business-profile-logo {
+    padding: 4px;
+    border: 0;
+  }
+}
+
+
+/* Personal profile: explicitly match the business profile's KDS blue border. */
+.profile-card .avatar-wrapper {
+  padding: 4px;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .profile-card .avatar-wrapper {
+    padding: 4px;
+    border: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .profile-card .avatar-wrapper {
+    padding: 4px;
+    border: 0;
+  }
+}
