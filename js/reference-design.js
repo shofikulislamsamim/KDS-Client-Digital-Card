@@ -103,6 +103,7 @@
           <div class="card-header">
             <div class="avatar-wrapper">
               <img id="personalAvatar" src="${esc(c.photo || "")}" alt="${esc(c.name)}" class="avatar-img">
+              <div class="status-badge" title="Available for business inquiries"></div>
             </div>
             <h1 class="founder-name" id="personalName">${esc(c.name)}</h1>
             <div class="founder-title" id="personalDesignation">${esc(c.designation || "")}</div>
@@ -129,7 +130,7 @@
           ${footerMotto()}
         </div>
 
-        ${qrBlock("cardQr", "Scan to Connect", "Scan with your smartphone camera to instantly view this digital visiting card.", getCardFullUrl(c, "personal"), slugify(c.name))}
+        ${qrBlock("cardQr", "Scan to Connect", "Scan with your smartphone camera to instantly view or share this digital visiting card.", getCardFullUrl(c, "personal"), slugify(c.name))}
         <footer class="page-footer"><div>&copy; 2026 Khan Digital Solution. All rights reserved.</div></footer>
       </div>
     `;
@@ -196,9 +197,9 @@
 
           <div class="actions-grid" style="max-width:480px;margin:0 auto 24px;padding:0;">
             ${actions.join("")}
-            <a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-action action-vcard" title="Personal Visiting Card">
+            ${c.template === "personal_business" ? `<a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-action action-vcard" title="Personal Visiting Card">
               ${SVG_ICONS.user}<span>Personal</span>
-            </a>
+            </a>` : ""}
           </div>
 
           <div style="margin-top:8px;">
