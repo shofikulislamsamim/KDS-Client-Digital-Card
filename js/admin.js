@@ -549,37 +549,10 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
         }
       }
 
-      // 2. Client-side canvas compression fallback (creates compact optimized data URL)
+      // Do not fall back to data URLs. Public cards must reference a real
+      // Supabase Storage asset so images remain persistent and cacheable.
       if (!uploadedUrl) {
-        uploadedUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const img = new Image();
-            img.onload = () => {
-              const maxDim = 800;
-              let { width, height } = img;
-              if (width > maxDim || height > maxDim) {
-                if (width > height) {
-                  height = Math.round((height * maxDim) / width);
-                  width = maxDim;
-                } else {
-                  width = Math.round((width * maxDim) / height);
-                  height = maxDim;
-                }
-              }
-              const canvas = document.createElement("canvas");
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0, width, height);
-              resolve(canvas.toDataURL("image/jpeg", 0.85));
-            };
-            img.onerror = reject;
-            img.src = reader.result;
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
+        throw new Error("Image upload failed. Please check your admin session and Storage permissions, then try again.");
       }
 
       textInput.value = uploadedUrl;
