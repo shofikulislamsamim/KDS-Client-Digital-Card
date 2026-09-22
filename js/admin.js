@@ -505,7 +505,7 @@ window.deleteClient = async function (id) {
   }
 };
 
-// Handle Image File Uploads with Supabase Storage + Canvas WebP/JPEG Compression Fallback
+// Handle persistent image uploads through Supabase Storage
 function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
   const fileInput = qs(fileInputId);
   const textInput = qs(textInputId);
@@ -545,7 +545,7 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
             }
           }
         } catch (storageErr) {
-          console.warn("Storage upload not available, falling back to local client compression:", storageErr);
+          console.warn("Storage upload failed:", storageErr);
         }
       }
 
