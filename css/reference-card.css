@@ -2432,3 +2432,59 @@ body {
     height: calc(min(340px, 90vw) - 20px) !important;
   }
 }
+
+
+/* QR FINAL FIX — one visible QR only, compact frame. QRCode.js may create both
+   canvas and img; keep the canvas and hide the duplicate image. */
+.qr-card .qr-frame {
+  width: 236px !important;
+  height: 236px !important;
+  padding: 8px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.qr-card .qr-frame .qr-generated {
+  width: 220px !important;
+  height: 220px !important;
+  flex: 0 0 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.qr-card .qr-frame .qr-generated canvas {
+  display: block !important;
+  width: 220px !important;
+  height: 220px !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+
+.qr-card .qr-frame .qr-generated img {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .qr-card .qr-frame {
+    width: min(226px, 78vw) !important;
+    height: min(226px, 78vw) !important;
+    padding: 7px !important;
+  }
+
+  .qr-card .qr-frame .qr-generated {
+    width: calc(min(226px, 78vw) - 14px) !important;
+    height: calc(min(226px, 78vw) - 14px) !important;
+    flex-basis: calc(min(226px, 78vw) - 14px) !important;
+  }
+
+  .qr-card .qr-frame .qr-generated canvas {
+    width: calc(min(226px, 78vw) - 14px) !important;
+    height: calc(min(226px, 78vw) - 14px) !important;
+  }
+}
