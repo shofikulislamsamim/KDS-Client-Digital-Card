@@ -262,18 +262,27 @@
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.M
       });
-      // Keep exactly one QR rendering. Some QRCode.js builds can append
-      // both canvas and image nodes; the canvas is the canonical output.
-      const qrCanvas = qrContainer.querySelector("canvas");
-      if (qrCanvas) {
-        qrContainer.querySelectorAll("img").forEach((img) => img.remove());
-      } else {
-        const qrImage = qrContainer.querySelector("img");
-        if (qrImage) {
-          qrContainer.innerHTML = "";
-          qrContainer.appendChild(qrImage);
+      // QRCode.js may create more than one render node (canvas/image).
+      // Keep exactly ONE node so two QR codes can never appear side-by-side.
+      const keepSingleQrNode = () => {
+        const canvas = qrContainer.querySelector("canvas");
+        const image = qrContainer.querySelector("img");
+        const keep = canvas || image;
+        Array.from(qrContainer.children).forEach((node) => {
+          if (node !== keep) node.remove();
+        });
+        if (keep) {
+          keep.style.display = "block";
+          keep.style.width = "200px";
+          keep.style.height = "200px";
+          keep.style.maxWidth = "200px";
+          keep.style.maxHeight = "200px";
+          keep.style.flex = "0 0 200px";
         }
-      }
+      };
+      keepSingleQrNode();
+      requestAnimationFrame(keepSingleQrNode);
+      setTimeout(keepSingleQrNode, 50);
     }
 
     const saveBtn = qs("#saveContactMain");
