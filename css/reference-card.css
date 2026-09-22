@@ -2634,3 +2634,27 @@ body {
   font-weight: 700;
   letter-spacing: .08em;
 }
+
+
+/* BUSINESS CONTACT ACTIONS — exactly 4 primary buttons per row */
+.business-container .actions-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 640px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+.business-container .actions-grid .btn-action {
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+@media (max-width: 600px) {
+  .business-container .actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+}
