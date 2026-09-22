@@ -140,9 +140,9 @@
     const wa = normalizeWhatsAppNumber(c.businessWhatsapp);
     const email = c.businessEmail || "";
     const website = sanitizeUrl(c.businessWebsite);
-    const mapUrl = c.businessAddress
-      ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c.businessAddress)
-      : "";
+    // Admin stores the Google Maps share URL in businessAddress.
+    // Do not convert an address into a search URL anymore.
+    const mapUrl = sanitizeUrl(c.businessAddress);
 
     const actions = [];
     if (phone) actions.push(`
