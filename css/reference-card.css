@@ -3143,3 +3143,31 @@ body {
     min-height: 0 !important;
   }
 }
+
+
+/* STEP 6 — Business QR/Profile sharing spacing only */
+#cardBusinessQr {
+  margin-top: 0 !important;
+  text-align: center !important;
+}
+#cardBusinessQr .qr-title {
+  margin-top: 16px !important;
+  margin-bottom: 6px !important;
+  text-align: center !important;
+}
+#cardBusinessQr .qr-desc {
+  max-width: 440px !important;
+  margin: 0 auto 14px !important;
+  text-align: center !important;
+}
+#cardBusinessQr .qr-btn-group {
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 auto !important;
+}
+@media (max-width: 600px) {
+  #cardBusinessQr .qr-title { margin-top: 14px !important; }
+  #cardBusinessQr .qr-desc { margin-bottom: 12px !important; }
+  #cardBusinessQr .qr-btn-group { gap: 8px !important; }
+}
