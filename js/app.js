@@ -160,7 +160,10 @@ function dbToClient(c) {
     businessEmail: c.business_email || "",
     businessAddress: c.business_address || "",
     businessWebsite: c.business_website || c.website || "",
-    businessServices: Array.isArray(c.business_services) ? c.business_services.join(", ") : (c.business_services || ""),
+    // business_services is jsonb: preserve the structured [{name, description}] data.
+    businessServices: Array.isArray(c.business_services)
+      ? JSON.stringify(c.business_services)
+      : (c.business_services || ""),
     businessFacebook: c.business_social_links?.facebook || "",
     businessInstagram: c.business_social_links?.instagram || "",
     businessLinkedin: c.business_social_links?.linkedin || "",
@@ -211,8 +214,21 @@ function clientToDb(c) {
     business_email: c.businessEmail || null,
     business_address: c.businessAddress || null,
     business_website: c.businessWebsite || null,
-    business_services: String(c.businessServices || "")
-      .split(",").map((x) => x.trim()).filter(Boolean),
+    // business_services is jsonb. Never split structured service data by commas.
+    business_services: (() => {
+      const raw = String(c.businessServices || "").trim();
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        // Legacy comma-separated values are converted safely for old cards.
+        return raw.split(",")
+          .map((name) => name.trim())
+          .filter(Boolean)
+          .map((name) => ({ name, description: "Professional service" }));
+      }
+    })(),
     business_social_links: {
       facebook: c.businessFacebook || "",
       instagram: c.businessInstagram || "",
