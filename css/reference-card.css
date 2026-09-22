@@ -2788,13 +2788,14 @@ body {
 }
 
 @media (max-width: 560px) {
+  /* Keep each service readable on phones; desktop/tablet layout remains unchanged. */
   .services-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 
   .service-card {
-    min-height: 165px;
+    min-height: 0;
     padding: 14px;
     border-radius: 16px;
   }
