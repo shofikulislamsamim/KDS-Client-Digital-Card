@@ -231,11 +231,12 @@
                   <span class="form-label">Business Website</span>
                   <input id="businessWebsite" class="form-input" type="url" placeholder="https://example.com">
                 </label>
-                <label class="wide">
-                  <span class="form-label">Services</span>
-                  <textarea id="businessServices" class="form-textarea" rows="2" placeholder="Digital Marketing, Web Development, Graphic Design, IT Solutions"></textarea>
-                  <small class="form-help">কমা দিয়ে একাধিক service লিখুন।</small>
-                </label>
+                <div class="wide services-editor-section">
+                  <div class="form-label">Services</div>
+                  <div id="servicesEditor" class="services-editor" aria-live="polite"></div>
+                  <button type="button" id="addServiceBtn" class="btn-add-service" onclick="addServiceRow()">+ Add Service</button>
+                  <small class="form-help">প্রতিটি service-এর নাম এবং তার নিচে/পাশে সেই service-এর description আলাদাভাবে দিন।</small>
+                </div>
               </div>
 
               <div class="subsection-label">Business Social Media</div>
