@@ -3033,3 +3033,31 @@ body {
     font-size: 8px !important;
   }
 }
+
+
+/* STEP 2 — Business cover + logo positioning only */
+.business-hero {
+  padding-top: 0 !important;
+}
+.business-profile-cover {
+  margin-left: -24px !important;
+  margin-right: -24px !important;
+  width: calc(100% + 48px) !important;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+}
+.business-profile-logo {
+  position: relative !important;
+  z-index: 3 !important;
+  margin: -73px auto 18px !important;
+}
+@media (max-width: 600px) {
+  .business-profile-cover {
+    margin-left: -24px !important;
+    margin-right: -24px !important;
+    width: calc(100% + 48px) !important;
+  }
+  .business-profile-logo { margin: -60px auto 14px !important; }
+}
+@media (max-width: 360px) {
+  .business-profile-logo { margin: -54px auto 12px !important; }
+}
