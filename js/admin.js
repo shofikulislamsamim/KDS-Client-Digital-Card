@@ -197,6 +197,7 @@ function updateImagePreviews() {
   const previewMap = [
     ["#photo", "#photoThumb", "#photoPreviewWrap"],
     ["#cover", "#coverThumb", "#coverPreviewWrap"],
+    ["#businessCover", "#businessCoverThumb", "#businessCoverPreviewWrap"],
     ["#companyLogo", "#companyLogoThumb", "#companyLogoPreviewWrap"]
   ];
 
@@ -248,6 +249,7 @@ function fillForm(c) {
     "companyLogo",
     "photo",
     "cover",
+    "businessCover",
     "facebook",
     "instagram",
     "linkedin",
@@ -270,6 +272,7 @@ function fillForm(c) {
     if (!el) return;
     if (k === "clientId") el.value = c.id;
     else if (k === "businessWebsite") el.value = c.businessWebsite || c.website || "";
+    else if (k === "businessCover") el.value = c.businessCover || c.cover || "";
     else el.value = c[k] || "";
   });
   setTemplate(c.template || "personal");
@@ -752,6 +755,12 @@ if (form) {
     // Service Name + Service Description instead of a generic label.
     data.businessServices = serializeServices();
 
+    // Business cover is stored separately so the Business Profile has its own
+    // upload control, while the renderer remains backward-compatible.
+    if (selectedTemplate !== "personal" && data.businessCover) {
+      data.cover = data.businessCover;
+    }
+
     if (selectedTemplate === "business_only") {
       data.name = data.company || data.name || "Business";
     }
@@ -916,7 +925,23 @@ if (searchInput) {
 // Setup image upload handlers
 setupImageUpload("#photoFile", "#photo", "#photoThumb", "#photoPreviewWrap");
 setupImageUpload("#coverFile", "#cover", "#coverThumb", "#coverPreviewWrap");
+setupImageUpload("#businessCoverFile", "#businessCover", "#businessCoverThumb", "#businessCoverPreviewWrap");
 setupImageUpload("#companyLogoFile", "#companyLogo", "#companyLogoThumb", "#companyLogoPreviewWrap");
+
+const businessCoverInput = qs("#businessCover");
+const personalCoverInput = qs("#cover");
+if (businessCoverInput) {
+  businessCoverInput.addEventListener("input", () => {
+    if (personalCoverInput) personalCoverInput.value = businessCoverInput.value;
+    updateImagePreviews();
+  });
+}
+if (personalCoverInput) {
+  personalCoverInput.addEventListener("input", () => {
+    if (businessCoverInput) businessCoverInput.value = personalCoverInput.value;
+    updateImagePreviews();
+  });
+}
 
 // Start Admin
 initAdmin();
