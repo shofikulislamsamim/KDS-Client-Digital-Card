@@ -177,26 +177,31 @@
     const mapUrl = sanitizeUrl(c.businessAddress);
 
     const actions = [];
-    if (phone) actions.push(`
-      <a class="btn-action action-call" href="tel:${esc(phone)}">
-        ${SVG_ICONS.call}<span>Call Us</span>
-      </a>`);
-    if (wa) actions.push(`
-      <a class="btn-action action-whatsapp" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener noreferrer">
-        ${SVG_ICONS.whatsapp}<span>WhatsApp</span>
-      </a>`);
-    if (email) actions.push(`
-      <a class="btn-action action-email" href="mailto:${esc(email)}">
-        ${SVG_ICONS.email}<span>Inquiries</span>
-      </a>`);
-    if (website) actions.push(`
-      <a class="btn-action action-vcard" href="${esc(website)}" target="_blank" rel="noopener noreferrer">
-        ${SVG_ICONS.website}<span>Website</span>
-      </a>`);
-    if (mapUrl) actions.push(`
-      <a class="btn-action action-vcard" href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer">
-        ${SVG_ICONS.location}<span>Location</span>
-      </a>`);
+    // Always render all 5 business actions in the same order/row.
+    // If a client has not provided a value yet, keep the action visible but inactive.
+    const businessAction = (available, className, icon, label, href, external = false) => {
+      if (available && href) {
+        return external
+          ? `
+            <a class="btn-action ${className}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
+              ${icon}<span>${label}</span>
+            </a>`
+          : `
+            <a class="btn-action ${className}" href="${esc(href)}">
+              ${icon}<span>${label}</span>
+            </a>`;
+      }
+      return `
+        <button class="btn-action ${className} kds-action-disabled" type="button" disabled aria-disabled="true">
+          ${icon}<span>${label}</span>
+        </button>`;
+    };
+
+    actions.push(businessAction(Boolean(phone), "action-call", SVG_ICONS.call, "Call Us", phone ? `tel:${phone}` : ""));
+    actions.push(businessAction(Boolean(wa), "action-whatsapp", SVG_ICONS.whatsapp, "WhatsApp", wa ? `https://wa.me/${wa}` : "", true));
+    actions.push(businessAction(Boolean(email), "action-email", SVG_ICONS.email, "Inquiries", email ? `mailto:${email}` : ""));
+    actions.push(businessAction(Boolean(website), "action-vcard", SVG_ICONS.website, "Website", website || "", true));
+    actions.push(businessAction(Boolean(mapUrl), "action-vcard", SVG_ICONS.location, "Location", mapUrl || "", true));
 
     const socials = socialLinks([
       ["facebook", c.businessFacebook, "Facebook"],
