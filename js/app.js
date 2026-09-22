@@ -4,7 +4,7 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 const DEMO_CLIENT = {
   id: "demo",
   slug: "demo-kds-digital-card",
-  template: "business",
+  template: "personal_business",
   name: "Shofikul Islam Samim",
   designation: "Digital Marketer | Graphic Designer",
   phone: "+880 1744 188460",
@@ -202,7 +202,9 @@ function clientToDb(c) {
     subscription_active: !!c.subscriptionActive,
     subscription_start: c.subscriptionStart || null,
     subscription_end: c.subscriptionEnd || null,
-    business_slug: c.businessSlug || (c.template === "business" ? slugify(c.company || c.name) + "-business" : null),
+    business_slug: c.businessSlug || (["personal_business", "business_only"].includes(c.template)
+      ? slugify(c.company || c.name) + "-business"
+      : null),
     business_bio: c.businessBio || null,
     business_phone: c.businessPhone || null,
     business_whatsapp: c.businessWhatsapp || null,
