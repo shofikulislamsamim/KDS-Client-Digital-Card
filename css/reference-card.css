@@ -2658,3 +2658,27 @@ body {
     gap: 8px !important;
   }
 }
+
+
+/* BUSINESS CONTACT ACTIONS — all 5 actions on one row */
+.business-container .actions-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 760px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+.business-container .actions-grid .btn-action,
+.business-container .actions-grid .kds-action-box {
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+@media (max-width: 600px) {
+  .business-container .actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
