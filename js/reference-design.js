@@ -26,10 +26,8 @@
         })).filter((item) => item.name);
       }
     } catch (_) {}
-    return raw.split(",")
-      .map((name) => name.trim())
-      .filter(Boolean)
-      .map((name) => ({ name, description: "Professional service" }));
+    return raw.split(",").map(x => x.trim()).filter(Boolean)
+      .map(name => ({ name, description: "Professional service" }));
   }
 
   function serviceCard(name, description) {
