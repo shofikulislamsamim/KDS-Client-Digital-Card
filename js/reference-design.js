@@ -219,7 +219,7 @@
       <div class="page-container business-container" id="businessPageContainer">
         <div class="business-hero" id="businessHero">
           <div class="business-profile-cover profile-cover" id="businessProfileCover" aria-hidden="true">
-            ${c.cover ? `<img class="profile-cover-image" src="${esc(c.cover)}" alt="">` : '<div class="profile-cover-placeholder"></div>'}
+            ${c.businessCover ? `<img class="profile-cover-image" src="${esc(c.businessCover)}" alt="">` : '<div class="profile-cover-placeholder"></div>'}
           </div>
 
           <div class="kds-logo-wrapper business-profile-logo">
