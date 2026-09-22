@@ -2821,3 +2821,18 @@ body {
     line-height: 1.48;
   }
 }
+
+
+/* BUSINESS LOGO PLACEHOLDER — clean fallback when no logo is uploaded */
+.kds-logo-placeholder {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #7dd3fc;
+  background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(2,132,199,.08));
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
