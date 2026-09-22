@@ -2348,3 +2348,40 @@ body {
     border: 0;
   }
 }
+
+
+/* Final card fixes: make the QR fill its reserved frame. */
+.qr-frame {
+  width: 236px;
+  height: 236px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.qr-frame canvas,
+.qr-frame img,
+.qr-frame .qr-generated-image {
+  display: block;
+  width: 220px !important;
+  height: 220px !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+@media (max-width: 600px) {
+  .qr-frame {
+    width: min(250px, 82vw);
+    height: min(250px, 82vw);
+    padding: 8px;
+  }
+
+  .qr-frame canvas,
+  .qr-frame img,
+  .qr-frame .qr-generated-image {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
