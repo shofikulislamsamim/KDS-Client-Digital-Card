@@ -2387,39 +2387,48 @@ body {
 }
 
 
-/* QR frame: use the full reserved area without leaving a small QR in one corner. */
+/* Final QR layout: large, centered, with a small safe margin. */
 .qr-frame {
-  width: 320px;
-  height: 320px;
-  padding: 10px;
+  width: 340px;
+  height: 340px;
+  padding: 12px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
-
-.qr-frame .qr-generated,
+.qr-frame .qr-generated {
+  width: 316px !important;
+  height: 316px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 316px !important;
+}
 .qr-frame .qr-generated canvas,
 .qr-frame .qr-generated img {
-  width: 300px !important;
-  height: 300px !important;
+  width: 316px !important;
+  height: 316px !important;
   max-width: none !important;
   max-height: none !important;
   display: block !important;
+  object-fit: contain !important;
 }
-
 @media (max-width: 600px) {
   .qr-frame {
-    width: min(320px, 86vw);
-    height: min(320px, 86vw);
-    padding: 8px;
+    width: min(340px, 90vw);
+    height: min(340px, 90vw);
+    padding: 10px;
   }
-
-  .qr-frame .qr-generated,
+  .qr-frame .qr-generated {
+    width: calc(min(340px, 90vw) - 20px) !important;
+    height: calc(min(340px, 90vw) - 20px) !important;
+    flex-basis: calc(min(340px, 90vw) - 20px) !important;
+  }
   .qr-frame .qr-generated canvas,
   .qr-frame .qr-generated img {
-    width: calc(min(320px, 86vw) - 16px) !important;
-    height: calc(min(320px, 86vw) - 16px) !important;
+    width: calc(min(340px, 90vw) - 20px) !important;
+    height: calc(min(340px, 90vw) - 20px) !important;
   }
 }
