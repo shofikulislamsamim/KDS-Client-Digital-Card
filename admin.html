@@ -206,6 +206,22 @@
                     <span class="upload-status-text">Logo ready</span>
                   </div>
                 </div>
+                <div class="upload-wrap wide business-cover-field">
+                  <span class="form-label">Business Cover Photo</span>
+                  <div class="upload-row">
+                    <input id="businessCover" class="form-input" type="url" placeholder="Upload business cover or paste image URL">
+                    <label class="btn-file-picker" title="Upload business cover photo">
+                      <input type="file" id="businessCoverFile" accept="image/*" class="hidden">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>Upload</span>
+                    </label>
+                  </div>
+                  <div id="businessCoverPreviewWrap" class="upload-preview-bar hidden">
+                    <img id="businessCoverThumb" class="upload-thumb" src="" alt="Business Cover">
+                    <span class="upload-status-text">Business cover ready</span>
+                  </div>
+                  <small class="form-help">Business Profile-এর কভার ছবির জন্য ব্যবহার হবে।</small>
+                </div>
                 <label class="wide">
                   <span class="form-label">Business Bio</span>
                   <textarea id="businessBio" class="form-textarea" rows="3" placeholder="সংক্ষেপে ব্যবসা / প্রতিষ্ঠানের পরিচিতি"></textarea>
