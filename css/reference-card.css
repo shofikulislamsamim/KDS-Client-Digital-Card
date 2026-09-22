@@ -2679,6 +2679,24 @@ body {
 }
 @media (max-width: 600px) {
   .business-container .actions-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    max-width: 100% !important;
+  }
+  .business-container .actions-grid .btn-action,
+  .business-container .actions-grid .kds-action-box {
+    min-width: 0 !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+  .business-container .actions-grid .action-box-label,
+  .business-container .actions-grid .btn-action span {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+  .business-container .actions-grid .action-box-icon,
+  .business-container .actions-grid .btn-action svg {
+    width: 22px !important;
+    height: 22px !important;
   }
 }
