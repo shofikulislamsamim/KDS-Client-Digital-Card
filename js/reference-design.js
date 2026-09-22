@@ -251,7 +251,7 @@
 
         ${qrBlock("cardBusinessQr", "Share Business Profile", "Scan to share or bookmark this business profile and services.", getCardFullUrl(c, "business"), slugify(c.company || c.name) + "-business")}
 
-        ${c.template === "personal_business" ? `<div style="text-align:center;margin-top:10px;"><a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-save-contact" style="margin:0 auto;max-width:360px;">${SVG_ICONS.user} Personal Profile</a></div>` : ""}
+        ${c.template === "personal_business" ? `<div class="kds-business-profile-link-wrap"><a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-save-contact">${SVG_ICONS.user} Personal Profile</a></div>` : ""}
         <div class="kds-card-bottom-motto"><div class="motto-text">CONNECT &nbsp; | &nbsp; COLLABORATE &nbsp; | &nbsp; GROW</div></div>
         <footer class="page-footer"><div>&copy; 2026 Khan Digital Solution. All rights reserved.</div></footer>
       </div>
