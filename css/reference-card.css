@@ -3115,3 +3115,31 @@ body {
   .business-social-section .section-title { margin-bottom: 12px !important; }
   .business-social-section .social-icons-list { gap: 9px !important; }
 }
+
+
+/* STEP 5 — Business services spacing only */
+.business-container .services-section {
+  margin-top: 2px !important;
+  padding-top: 0 !important;
+}
+.business-container .services-section > .section-title {
+  margin-bottom: 12px !important;
+  justify-content: center !important;
+}
+.business-container .services-grid {
+  gap: 14px !important;
+}
+.business-container .service-card {
+  min-height: 178px !important;
+}
+@media (max-width: 560px) {
+  .business-container .services-section > .section-title {
+    margin-bottom: 10px !important;
+  }
+  .business-container .services-grid {
+    gap: 10px !important;
+  }
+  .business-container .service-card {
+    min-height: 0 !important;
+  }
+}
