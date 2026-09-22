@@ -14,16 +14,6 @@
       .join("");
   }
 
-  function serviceCard(name) {
-    return `
-      <div class="service-card">
-        <div class="service-icon-box">${getServiceIcon(name)}</div>
-        <div class="service-title">${esc(name)}</div>
-        <div class="service-desc">Professional service</div>
-      </div>
-    `;
-  }
-
   function parseBusinessServices(value) {
     if (Array.isArray(value)) {
       return value.map((item) => ({
