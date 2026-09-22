@@ -44,7 +44,7 @@
     const description = String(service?.description || "").trim();
     return `
       <article class="service-card">
-        <div class="service-card-top">
+        <div class="kds-service-card-top">
           <div class="service-icon-box">${getServiceIcon(name)}</div>
           <span class="service-number">${String(index + 1).padStart(2, "0")}</span>
         </div>
