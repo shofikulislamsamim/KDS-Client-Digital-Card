@@ -14,12 +14,30 @@
       .join("");
   }
 
-  function serviceCard(name) {
+  function parseBusinessServices(value) {
+    const raw = String(value || "").trim();
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => ({
+          name: String(item?.name || item?.title || "").trim(),
+          description: String(item?.description || item?.desc || "").trim()
+        })).filter((item) => item.name);
+      }
+    } catch (_) {}
+    return raw.split(",")
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .map((name) => ({ name, description: "Professional service" }));
+  }
+
+  function serviceCard(name, description) {
     return `
       <div class="service-card">
         <div class="service-icon-box">${getServiceIcon(name)}</div>
         <div class="service-title">${esc(name)}</div>
-        <div class="service-desc">Professional service</div>
+        <div class="service-desc">${esc(description || "Professional service")}</div>
       </div>
     `;
   }
@@ -174,8 +192,7 @@
       ["tiktok", c.businessTiktok, "TikTok"]
     ]);
 
-    const services = String(c.businessServices || "")
-      .split(",").map(x => x.trim()).filter(Boolean);
+    const services = parseBusinessServices(c.businessServices);
 
     return `
       <div class="page-container business-container" id="businessPageContainer">
@@ -207,7 +224,7 @@
         ${services.length ? `<div class="services-section">
           <div class="section-title">Our Premium Services</div>
           <div class="services-grid">
-            ${services.map(serviceCard).join("")}
+            ${services.map((service) => serviceCard(service.name, service.description)).join("")}
           </div>
         </div>` : ""}
 
