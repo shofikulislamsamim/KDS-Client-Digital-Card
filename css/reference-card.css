@@ -2558,3 +2558,79 @@ body {
   flex: 0 0 200px !important;
   object-fit: contain !important;
 }
+
+
+/* ==========================================================================
+   PERSONAL + BUSINESS — FINAL CONNECTED PROFILE POLISH
+   ========================================================================== */
+
+/* Business QR: same medium, single-profile presentation as Personal QR. */
+#cardBusinessQr .qr-frame {
+  width: 216px !important;
+  height: 216px !important;
+  padding: 8px !important;
+  margin: 0 auto !important;
+  border-radius: 16px !important;
+}
+#cardBusinessQr .qr-frame .qr-generated {
+  width: 200px !important;
+  height: 200px !important;
+  flex: 0 0 200px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+#cardBusinessQr .qr-frame .qr-generated > * {
+  display: none !important;
+}
+#cardBusinessQr .qr-frame .qr-generated > canvas:first-child,
+#cardBusinessQr .qr-frame .qr-generated > img:first-child {
+  display: block !important;
+  width: 200px !important;
+  height: 200px !important;
+  max-width: 200px !important;
+  max-height: 200px !important;
+  flex: 0 0 200px !important;
+  object-fit: contain !important;
+}
+
+/* Connected Business Profile navigation: one clear back action only. */
+.business-container .kds-business-profile-link-wrap {
+  margin-top: 4px !important;
+}
+.business-container .kds-business-profile-link-wrap .btn-save-contact {
+  max-width: 360px;
+}
+
+/* Keep the connected business card clean on narrow screens. */
+@media (max-width: 600px) {
+  #cardBusinessQr .qr-frame {
+    width: min(216px, 72vw) !important;
+    height: min(216px, 72vw) !important;
+    padding: 7px !important;
+  }
+  #cardBusinessQr .qr-frame .qr-generated {
+    width: calc(min(216px, 72vw) - 14px) !important;
+    height: calc(min(216px, 72vw) - 14px) !important;
+    flex-basis: calc(min(216px, 72vw) - 14px) !important;
+  }
+  #cardBusinessQr .qr-frame .qr-generated > canvas:first-child,
+  #cardBusinessQr .qr-frame .qr-generated > img:first-child {
+    width: calc(min(216px, 72vw) - 14px) !important;
+    height: calc(min(216px, 72vw) - 14px) !important;
+    max-width: calc(min(216px, 72vw) - 14px) !important;
+    max-height: calc(min(216px, 72vw) - 14px) !important;
+    flex-basis: calc(min(216px, 72vw) - 14px) !important;
+  }
+}
+
+/* Connected profile footer branding. */
+.business-container .kds-card-bottom-motto {
+  text-align: center;
+  padding: 16px 12px 4px;
+}
+.business-container .kds-card-bottom-motto .motto-text {
+  font-weight: 700;
+  letter-spacing: .08em;
+}
