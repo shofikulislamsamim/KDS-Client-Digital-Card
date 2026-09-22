@@ -85,13 +85,12 @@ function setTemplate(t) {
   const bf = qs("#businessFields");
   if (bf) bf.classList.toggle("hidden", selectedTemplate === "personal");
 
-  const personalSectionLabel = Array.from(document.querySelectorAll(".form-section-label"))
-    .find((el) => el.textContent.trim() === "2. Personal Information");
-  if (personalSectionLabel) {
-    personalSectionLabel.textContent = selectedTemplate === "business_only"
-      ? "2. Business Owner / Internal Information"
-      : "2. Personal Information";
-  }
+  const pf = qs("#personalFields");
+  if (pf) pf.classList.toggle("hidden", selectedTemplate === "business_only");
+
+  document.querySelectorAll(".personal-media-field, .personal-social-fields").forEach((el) => {
+    el.classList.toggle("hidden", selectedTemplate === "business_only");
+  });
 }
 
 function updateImagePreviews() {
@@ -142,14 +141,10 @@ function fillForm(c) {
     "phone",
     "whatsapp",
     "email",
-    "location",
     "bio",
     "company",
     "tagline",
-    "companyRole",
     "companyLogo",
-    "website",
-    "services",
     "photo",
     "cover",
     "facebook",
@@ -172,7 +167,10 @@ function fillForm(c) {
   ];
   fields.forEach((k) => {
     const el = qs("#" + k);
-    if (el) el.value = k === "clientId" ? c.id : c[k] || "";
+    if (!el) return;
+    if (k === "clientId") el.value = c.id;
+    else if (k === "businessWebsite") el.value = c.businessWebsite || c.website || "";
+    else el.value = c[k] || "";
   });
   setTemplate(c.template || "personal");
   if (qs("#formTitle")) qs("#formTitle").textContent = "Edit: " + (c.name || "Client");
@@ -621,14 +619,10 @@ if (form) {
       "phone",
       "whatsapp",
       "email",
-      "location",
       "bio",
       "company",
       "tagline",
-      "companyRole",
       "companyLogo",
-      "website",
-      "services",
       "photo",
       "cover",
       "facebook",
@@ -653,6 +647,10 @@ if (form) {
       const el = qs("#" + k);
       if (el) data[k] = el.value.trim();
     });
+
+    if (selectedTemplate === "business_only") {
+      data.name = data.company || data.name || "Business";
+    }
 
     try {
       editingClient = await saveClient(data);
