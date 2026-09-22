@@ -236,9 +236,9 @@
             ${actions.join("")}
           </div>
 
-          ${socials ? `<div style="margin-top:8px;">
-            <div class="section-title" style="justify-content:center;">Connect on Social Media</div>
-            <div class="social-icons-list" style="justify-content:center;">${socials}</div>
+          ${socials ? `<div class="business-social-section">
+            <div class="section-title">Connect on Social Media</div>
+            <div class="social-icons-list">${socials}</div>
           </div>` : ""}
         </div>
 
