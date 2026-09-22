@@ -151,10 +151,12 @@
             </button>
           </div>
 
+          ${socials ? `
           <div class="socials-section">
             <div class="section-title">Connect on Social Media</div>
             <div class="social-icons-list">${socials}</div>
           </div>
+          ` : ""}
 
           ${businessLink}
         </div>
