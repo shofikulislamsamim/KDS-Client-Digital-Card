@@ -35,7 +35,7 @@
   function qrBlock(id, title, desc, profileUrl, downloadName) {
     return `
       <div class="qr-card" id="${id}">
-        <div class="qr-frame"><div id="clientQrCanvas"></div></div>
+        <div class="qr-frame"><div id="clientQrCanvas" class="qr-generated"></div></div>
         <h3 class="qr-title">${esc(title)}</h3>
         <p class="qr-desc">${esc(desc)}</p>
         <div class="qr-btn-group">
@@ -256,8 +256,8 @@
       qrContainer.innerHTML = "";
       new QRCode(qrContainer, {
         text: profileUrl,
-        width: 220,
-        height: 220,
+        width: 320,
+        height: 320,
         colorDark: "#050b18",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.M
