@@ -740,6 +740,7 @@ if (form) {
       "businessEmail",
       "businessAddress",
       "businessWebsite",
+      "businessCover",
       "businessFacebook",
       "businessInstagram",
       "businessLinkedin",
