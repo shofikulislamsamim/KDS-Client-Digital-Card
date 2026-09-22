@@ -98,6 +98,101 @@ function setTemplate(t) {
   if (companyInput) companyInput.required = selectedTemplate !== "personal";
 }
 
+function parseServices(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => ({
+      name: String(item?.name || item?.title || "").trim(),
+      description: String(item?.description || item?.desc || "").trim()
+    })).filter((item) => item.name);
+  }
+
+  const raw = String(value || "").trim();
+  if (!raw) return [];
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parseServices(parsed);
+  } catch (_) {
+    // Backward-compatible fallback for old comma-separated service data.
+  }
+
+  return raw.split(",")
+    .map((name) => name.trim())
+    .filter(Boolean)
+    .map((name) => ({ name, description: "Professional service" }));
+}
+
+function serviceEditorRows(value) {
+  const list = parseServices(value);
+  return list.length ? list : [{ name: "", description: "" }];
+}
+
+function renderServiceEditor(value = "") {
+  const editor = qs("#servicesEditor");
+  if (!editor) return;
+
+  editor.innerHTML = serviceEditorRows(value).map((service, index) => `
+    <div class="service-editor-row" data-service-row>
+      <div class="service-editor-fields">
+        <label>
+          <span class="form-label">Service Name</span>
+          <input class="form-input service-name-input" type="text" value="${esc(service.name)}" placeholder="Digital Marketing">
+        </label>
+        <label>
+          <span class="form-label">Service Description</span>
+          <textarea class="form-textarea service-description-input" rows="2" placeholder="Facebook Ads, social media management and online growth solutions.">${esc(service.description)}</textarea>
+        </label>
+      </div>
+      <button type="button" class="btn-remove-service" onclick="removeServiceRow(this)" aria-label="Remove service">Remove</button>
+    </div>
+  `).join("");
+}
+
+function addServiceRow() {
+  const editor = qs("#servicesEditor");
+  if (!editor) return;
+
+  const row = document.createElement("div");
+  row.className = "service-editor-row";
+  row.setAttribute("data-service-row", "");
+  row.innerHTML = `
+    <div class="service-editor-fields">
+      <label>
+        <span class="form-label">Service Name</span>
+        <input class="form-input service-name-input" type="text" placeholder="Digital Marketing">
+      </label>
+      <label>
+        <span class="form-label">Service Description</span>
+        <textarea class="form-textarea service-description-input" rows="2" placeholder="Describe this service briefly."></textarea>
+      </label>
+    </div>
+    <button type="button" class="btn-remove-service" onclick="removeServiceRow(this)" aria-label="Remove service">Remove</button>
+  `;
+  editor.appendChild(row);
+  row.querySelector(".service-name-input")?.focus();
+}
+
+function removeServiceRow(button) {
+  const editor = qs("#servicesEditor");
+  const row = button?.closest("[data-service-row]");
+  if (!editor || !row) return;
+  row.remove();
+  if (!editor.querySelector("[data-service-row]")) addServiceRow();
+}
+
+function collectServices() {
+  return Array.from(document.querySelectorAll("#servicesEditor [data-service-row]"))
+    .map((row) => ({
+      name: row.querySelector(".service-name-input")?.value.trim() || "",
+      description: row.querySelector(".service-description-input")?.value.trim() || ""
+    }))
+    .filter((item) => item.name);
+}
+
+function serializeServices() {
+  return JSON.stringify(collectServices());
+}
+
 function updateImagePreviews() {
   const previewMap = [
     ["#photo", "#photoThumb", "#photoPreviewWrap"],
@@ -134,6 +229,7 @@ function clearForm() {
   if (qs("#customDays")) qs("#customDays").value = "";
   if (qs("#customDaysWrap")) qs("#customDaysWrap").classList.add("hidden");
   updateImagePreviews();
+  renderServiceEditor("");
   renderSubscriptionFields({ subscriptionActive: true, subscriptionStart: null, subscriptionEnd: null });
 }
 
@@ -163,7 +259,6 @@ function fillForm(c) {
     "businessEmail",
     "businessAddress",
     "businessWebsite",
-    "businessServices",
     "businessFacebook",
     "businessInstagram",
     "businessLinkedin",
@@ -178,6 +273,7 @@ function fillForm(c) {
     else el.value = c[k] || "";
   });
   setTemplate(c.template || "personal");
+  renderServiceEditor(c.businessServices || "");
   if (qs("#formTitle")) qs("#formTitle").textContent = "Edit: " + (c.name || "Client");
   if (qs("#formSubtitle")) qs("#formSubtitle").textContent = "Update client data and manage subscription";
   updateImagePreviews();
@@ -641,7 +737,6 @@ if (form) {
       "businessEmail",
       "businessAddress",
       "businessWebsite",
-      "businessServices",
       "businessFacebook",
       "businessInstagram",
       "businessLinkedin",
@@ -652,6 +747,10 @@ if (form) {
       const el = qs("#" + k);
       if (el) data[k] = el.value.trim();
     });
+
+    // Services are stored as structured JSON so every card can show
+    // Service Name + Service Description instead of a generic label.
+    data.businessServices = serializeServices();
 
     if (selectedTemplate === "business_only") {
       data.name = data.company || data.name || "Business";
