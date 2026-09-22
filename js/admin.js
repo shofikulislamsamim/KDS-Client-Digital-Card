@@ -91,6 +91,7 @@ function setTemplate(t) {
     personalSectionLabel.textContent = selectedTemplate === "business_only"
       ? "2. Business Owner / Internal Information"
       : "2. Personal Information";
+  }
 }
 
 function updateImagePreviews() {
