@@ -84,6 +84,13 @@ function setTemplate(t) {
   });
   const bf = qs("#businessFields");
   if (bf) bf.classList.toggle("hidden", selectedTemplate === "personal");
+
+  const personalSectionLabel = Array.from(document.querySelectorAll(".form-section-label"))
+    .find((el) => el.textContent.trim() === "2. Personal Information");
+  if (personalSectionLabel) {
+    personalSectionLabel.textContent = selectedTemplate === "business_only"
+      ? "2. Business Owner / Internal Information"
+      : "2. Personal Information";
 }
 
 function updateImagePreviews() {
@@ -291,7 +298,7 @@ function renderListItems(list) {
             <div class="client-item-meta">
               <div class="client-item-name-row">
                 <strong class="client-item-name">${esc(c.name)}</strong>
-                <span class="client-template-pill ${isBiz ? "business" : "personal"}">${isBiz ? "Business" : "Personal"}</span>
+                <span class="client-template-pill ${isBiz ? "business" : "personal"}">${c.template === "personal_business" ? "Personal + Business" : c.template === "business_only" ? "Business" : "Personal"}</span>
               </div>
               <div class="client-item-sub">
                 ${c.designation ? `<span>${esc(c.designation)}</span>` : ""}
@@ -304,9 +311,18 @@ function renderListItems(list) {
             </div>
           </div>
           <div class="client-actions">
-            <a class="mini-btn view" href="${cardUrl(c)}" target="_blank" title="Open Card in New Tab">
-              ${ADMIN_ICONS.external}<span>View</span>
-            </a>
+            ${c.template === "personal_business" ? `
+              <a class="mini-btn view" href="${cardUrl(c)}" target="_blank" title="Open Personal Profile">
+                ${ADMIN_ICONS.external}<span>Personal</span>
+              </a>
+              <a class="mini-btn view" href="${getCardFullUrl(c, "business")}" target="_blank" title="Open Business Profile">
+                ${ADMIN_ICONS.external}<span>Business</span>
+              </a>
+            ` : `
+              <a class="mini-btn view" href="${c.template === "business_only" ? getCardFullUrl(c, "business") : cardUrl(c)}" target="_blank" title="Open Card in New Tab">
+                ${ADMIN_ICONS.external}<span>View</span>
+              </a>
+            `}
             <button class="mini-btn copy" onclick="copyCardLink('${esc(fullUrl)}')" type="button" title="Copy Card Link">
               ${ADMIN_ICONS.copy}<span>Copy</span>
             </button>
