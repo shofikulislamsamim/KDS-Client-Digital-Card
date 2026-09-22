@@ -2385,3 +2385,41 @@ body {
     height: 100% !important;
   }
 }
+
+
+/* QR frame: use the full reserved area without leaving a small QR in one corner. */
+.qr-frame {
+  width: 320px;
+  height: 320px;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.qr-frame .qr-generated,
+.qr-frame .qr-generated canvas,
+.qr-frame .qr-generated img {
+  width: 300px !important;
+  height: 300px !important;
+  max-width: none !important;
+  max-height: none !important;
+  display: block !important;
+}
+
+@media (max-width: 600px) {
+  .qr-frame {
+    width: min(320px, 86vw);
+    height: min(320px, 86vw);
+    padding: 8px;
+  }
+
+  .qr-frame .qr-generated,
+  .qr-frame .qr-generated canvas,
+  .qr-frame .qr-generated img {
+    width: calc(min(320px, 86vw) - 16px) !important;
+    height: calc(min(320px, 86vw) - 16px) !important;
+  }
+}
