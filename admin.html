@@ -148,65 +148,56 @@
               </button>
             </div>
 
-            <div class="form-section-label">2. Personal Information</div>
-            <div class="grid">
-              <label>
-                <span class="form-label">Client Name <span class="required">*</span></span>
-                <input id="name" class="form-input" required placeholder="e.g. Rahim Ahmed">
-              </label>
-              <label>
-                <span class="form-label">Designation / Title</span>
-                <input id="designation" class="form-input" placeholder="e.g. Managing Director">
-              </label>
-              <label>
-                <span class="form-label">Phone Number</span>
-                <input id="phone" class="form-input" type="tel" placeholder="e.g. 01700000000">
-              </label>
-              <label>
-                <span class="form-label">WhatsApp Number</span>
-                <input id="whatsapp" class="form-input" type="tel" placeholder="e.g. 01700000000">
-              </label>
-              <label>
-                <span class="form-label">Email Address</span>
-                <input id="email" class="form-input" type="email" placeholder="client@example.com">
-              </label>
-              <label>
-                <span class="form-label">City / Location</span>
-                <input id="location" class="form-input" placeholder="e.g. Dhaka, Bangladesh">
-              </label>
-              <label class="wide">
-                <span class="form-label">Short Professional Bio</span>
-                <textarea id="bio" class="form-textarea" rows="3" placeholder="Brief 1-2 sentence professional introduction..."></textarea>
-              </label>
-              <label class="wide">
-                <span class="form-label">Personal Services / Skills (comma separated)</span>
-                <textarea id="services" class="form-textarea" rows="2" placeholder="Digital Marketing, Graphic Design, Video Editing, Web Development"></textarea>
-              </label>
-            </div>
-
-            <!-- Business Fields (Visible when Business template selected) -->
-            <div id="businessFields" class="hidden">
-              <div class="form-section-label">3. Business Details</div>
+            <div id="personalFields">
+              <div class="form-section-label">2. Personal Profile</div>
+              <div class="section-helper">শুধু Personal Card-এ যে তথ্যগুলো সরাসরি দেখানো হয় সেগুলো দিন।</div>
               <div class="grid">
                 <label>
-                  <span class="form-label">Company / Business Name</span>
+                  <span class="form-label">Full Name <span class="required">*</span></span>
+                  <input id="name" class="form-input" required placeholder="e.g. Rahim Ahmed">
+                </label>
+                <label>
+                  <span class="form-label">Designation / Title</span>
+                  <input id="designation" class="form-input" placeholder="e.g. Managing Director">
+                </label>
+                <label>
+                  <span class="form-label">Phone Number</span>
+                  <input id="phone" class="form-input" type="tel" placeholder="01700000000">
+                </label>
+                <label>
+                  <span class="form-label">WhatsApp Number</span>
+                  <input id="whatsapp" class="form-input" type="tel" placeholder="01700000000">
+                </label>
+                <label>
+                  <span class="form-label">Email Address</span>
+                  <input id="email" class="form-input" type="email" placeholder="client@example.com">
+                </label>
+                <label class="wide">
+                  <span class="form-label">Professional Bio</span>
+                  <textarea id="bio" class="form-textarea" rows="3" placeholder="১–২ লাইনে সংক্ষিপ্ত professional introduction"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div id="businessFields" class="hidden">
+              <div class="form-section-label">3. Business Profile</div>
+              <div class="section-helper">Business Card বা Personal + Business হলে এখানকার তথ্যগুলো Business Profile-এ ব্যবহার হবে।</div>
+              <div class="grid">
+                <label>
+                  <span class="form-label">Business / Company Name <span class="required">*</span></span>
                   <input id="company" class="form-input" placeholder="e.g. Khan Digital Solution">
                 </label>
                 <label>
                   <span class="form-label">Business Tagline</span>
-                  <input id="tagline" class="form-input" placeholder="e.g. Empowering Digital Excellence">
-                </label>
-                <label>
-                  <span class="form-label">Role in Company</span>
-                  <input id="companyRole" class="form-input" placeholder="e.g. Founder & CEO">
+                  <input id="tagline" class="form-input" placeholder="e.g. Your Growth, Our Mission">
                 </label>
                 <div class="upload-wrap">
                   <span class="form-label">Company Logo</span>
                   <div class="upload-row">
-                    <input id="companyLogo" class="form-input" type="url" placeholder="https://... or upload">
+                    <input id="companyLogo" class="form-input" type="url" placeholder="Upload logo or paste image URL">
                     <label class="btn-file-picker" title="Upload company logo">
                       <input type="file" id="companyLogoFile" accept="image/*" class="hidden">
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="7" y2="8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                       <span>Upload</span>
                     </label>
                   </div>
@@ -216,20 +207,16 @@
                   </div>
                 </div>
                 <label class="wide">
-                  <span class="form-label">Website URL</span>
-                  <input id="website" class="form-input" type="url" placeholder="https://example.com">
-                </label>
-                <label class="wide">
                   <span class="form-label">Business Bio</span>
-                  <textarea id="businessBio" class="form-textarea" rows="3" placeholder="Short description about the company / organization..."></textarea>
+                  <textarea id="businessBio" class="form-textarea" rows="3" placeholder="সংক্ষেপে ব্যবসা / প্রতিষ্ঠানের পরিচিতি"></textarea>
                 </label>
                 <label>
                   <span class="form-label">Business Phone</span>
-                  <input id="businessPhone" class="form-input" type="tel" placeholder="e.g. 01700000000">
+                  <input id="businessPhone" class="form-input" type="tel" placeholder="01700000000">
                 </label>
                 <label>
                   <span class="form-label">Business WhatsApp</span>
-                  <input id="businessWhatsapp" class="form-input" type="tel" placeholder="e.g. 01700000000">
+                  <input id="businessWhatsapp" class="form-input" type="tel" placeholder="01700000000">
                 </label>
                 <label>
                   <span class="form-label">Business Email</span>
@@ -237,18 +224,22 @@
                 </label>
                 <label>
                   <span class="form-label">Google Maps Live Location Link</span>
-                  <input id="businessAddress" class="form-input" type="url" placeholder="https://maps.google.com/...">
-                  <small class="form-help">Google Maps-এর Live Location / Share Location link দিন। কোনো ঠিকানা লিখবেন না।</small>
+                  <input id="businessAddress" class="form-input" type="url" placeholder="Paste Google Maps live/share link">
+                  <small class="form-help">শুধু Google Maps-এর Live/Share link দিন। কোনো ঠিকানা লিখবেন না।</small>
                 </label>
                 <label class="wide">
                   <span class="form-label">Business Website</span>
                   <input id="businessWebsite" class="form-input" type="url" placeholder="https://example.com">
                 </label>
                 <label class="wide">
-                  <span class="form-label">Business Services (comma separated)</span>
+                  <span class="form-label">Services</span>
                   <textarea id="businessServices" class="form-textarea" rows="2" placeholder="Digital Marketing, Web Development, Graphic Design, IT Solutions"></textarea>
+                  <small class="form-help">কমা দিয়ে একাধিক service লিখুন।</small>
                 </label>
-                <div class="form-section-label wide">Business Social Media</div>
+              </div>
+
+              <div class="subsection-label">Business Social Media</div>
+              <div class="grid">
                 <label><span class="form-label">Facebook</span><input id="businessFacebook" class="form-input" type="url" placeholder="https://facebook.com/..."></label>
                 <label><span class="form-label">Instagram</span><input id="businessInstagram" class="form-input" type="url" placeholder="https://instagram.com/..."></label>
                 <label><span class="form-label">LinkedIn</span><input id="businessLinkedin" class="form-input" type="url" placeholder="https://linkedin.com/in/..."></label>
@@ -257,12 +248,13 @@
               </div>
             </div>
 
-            <div class="form-section-label">4. Profile Media & Social Links</div>
+            <div class="form-section-label">4. Images & Social Media</div>
+            <div class="section-helper">কার্ডে যে ছবি ও Personal social icons দেখা যাবে সেগুলো এখানে দিন।</div>
             <div class="grid">
-              <div class="upload-wrap">
+              <div class="upload-wrap personal-media-field">
                 <span class="form-label">Profile Photo</span>
                 <div class="upload-row">
-                  <input id="photo" class="form-input" type="url" placeholder="https://... or upload photo">
+                  <input id="photo" class="form-input" type="url" placeholder="Upload photo or paste image URL">
                   <label class="btn-file-picker" title="Upload profile photo">
                     <input type="file" id="photoFile" accept="image/*" class="hidden">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -278,7 +270,7 @@
               <div class="upload-wrap">
                 <span class="form-label">Cover Photo</span>
                 <div class="upload-row">
-                  <input id="cover" class="form-input" type="url" placeholder="https://... or upload cover">
+                  <input id="cover" class="form-input" type="url" placeholder="Upload cover or paste image URL">
                   <label class="btn-file-picker" title="Upload cover image">
                     <input type="file" id="coverFile" accept="image/*" class="hidden">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -291,30 +283,15 @@
                 </div>
               </div>
 
-              <label>
-                <span class="form-label">Facebook URL</span>
-                <input id="facebook" class="form-input" type="url" placeholder="https://facebook.com/...">
-              </label>
-              <label>
-                <span class="form-label">Instagram URL</span>
-                <input id="instagram" class="form-input" type="url" placeholder="https://instagram.com/...">
-              </label>
-              <label>
-                <span class="form-label">LinkedIn URL</span>
-                <input id="linkedin" class="form-input" type="url" placeholder="https://linkedin.com/in/...">
-              </label>
-              <label>
-                <span class="form-label">YouTube URL</span>
-                <input id="youtube" class="form-input" type="url" placeholder="https://youtube.com/@...">
-              </label>
-            
-          <div class="form-group">
-            <label class="form-label" for="tiktok">TikTok</label>
-            <input id="tiktok" name="tiktok" type="url" class="form-input" placeholder="https://www.tiktok.com/@username" autocomplete="url" />
-          </div>
-</div>
+              <div class="subsection-label wide personal-social-fields">Personal Social Media</div>
+              <label class="personal-social-fields"><span class="form-label">Facebook</span><input id="facebook" class="form-input" type="url" placeholder="https://facebook.com/..."></label>
+              <label class="personal-social-fields"><span class="form-label">Instagram</span><input id="instagram" class="form-input" type="url" placeholder="https://instagram.com/..."></label>
+              <label class="personal-social-fields"><span class="form-label">LinkedIn</span><input id="linkedin" class="form-input" type="url" placeholder="https://linkedin.com/in/..."></label>
+              <label class="personal-social-fields"><span class="form-label">YouTube</span><input id="youtube" class="form-input" type="url" placeholder="https://youtube.com/@..."></label>
+              <label class="personal-social-fields"><span class="form-label">TikTok</span><input id="tiktok" class="form-input" type="url" placeholder="https://www.tiktok.com/@username"></label>
+            </div>
 
-            <!-- Subscription Management Box -->
+                        <!-- Subscription Management Box -->
             <section class="subscription-editor">
               <div class="subscription-head">
                 <div>
