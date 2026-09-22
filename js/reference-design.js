@@ -107,7 +107,7 @@
       </a>`);
     actions.push(`
       <button class="btn-action action-vcard" id="quickShareBtn" type="button">
-        ${SVG_ICONS.vcard}<span>Save</span>
+        ${SVG_ICONS.share}<span>Share</span>
       </button>`);
 
     const businessLink = isConnected ? `
