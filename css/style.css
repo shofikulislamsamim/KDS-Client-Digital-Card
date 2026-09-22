@@ -3302,3 +3302,90 @@ label.wide {
     font-size: .74rem;
   }
 }
+
+
+/* ==========================================================================
+   KDS CLIENT CARD — STRUCTURED SERVICE EDITOR
+   ========================================================================== */
+.services-editor-section {
+  grid-column: 1 / -1;
+}
+
+.services-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.service-editor-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.service-editor-fields {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: 10px;
+}
+
+.service-editor-row .form-textarea {
+  min-height: 72px;
+}
+
+.btn-add-service,
+.btn-remove-service {
+  min-height: 42px;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .18s ease;
+  white-space: nowrap;
+}
+
+.btn-add-service {
+  margin-top: 10px;
+  color: var(--accent-cyan);
+  background: rgba(56,189,248,.08);
+  border: 1px solid var(--border-highlight);
+}
+
+.btn-add-service:hover {
+  background: rgba(56,189,248,.15);
+  border-color: var(--accent-cyan);
+}
+
+.btn-remove-service {
+  color: #fca5a5;
+  background: rgba(239,68,68,.07);
+  border: 1px solid rgba(239,68,68,.2);
+}
+
+.btn-remove-service:hover {
+  color: #fff;
+  background: rgba(239,68,68,.16);
+  border-color: rgba(239,68,68,.45);
+}
+
+@media (max-width: 700px) {
+  .service-editor-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .service-editor-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-remove-service {
+    width: 100%;
+  }
+}
