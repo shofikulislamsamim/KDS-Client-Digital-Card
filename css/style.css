@@ -3215,3 +3215,90 @@ label.wide {
     padding-bottom: 42px;
   }
 }
+
+
+/* ==========================================================================
+   KDS ADMIN — STREAMLINED CLIENT CARD FORM
+   ========================================================================== */
+.client-form-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.client-form-panel .form-section-label {
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+.client-form-panel .section-helper {
+  color: var(--text-muted);
+  font-size: .78rem;
+  line-height: 1.5;
+  margin: -2px 0 14px;
+}
+.client-form-panel .subsection-label {
+  grid-column: 1 / -1;
+  margin: 8px 0 2px;
+  padding-top: 8px;
+  color: #cbd5e1;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.client-form-panel .grid {
+  gap: 14px;
+}
+.client-form-panel .form-input,
+.client-form-panel .form-textarea,
+.client-form-panel .form-select {
+  min-height: 44px;
+}
+.client-form-panel .form-textarea {
+  min-height: 88px;
+}
+.client-form-panel .form-help {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-subtle);
+  font-size: .7rem;
+  line-height: 1.45;
+}
+.client-form-panel #businessFields {
+  margin-top: 4px;
+  padding: 18px 18px 20px;
+  border: 1px solid rgba(56, 189, 248, .14);
+  border-radius: 16px;
+  background: rgba(8, 15, 29, .42);
+}
+.client-form-panel #businessFields .form-section-label {
+  margin-top: 0;
+}
+.client-form-panel #businessFields .grid {
+  gap: 14px;
+}
+.client-form-panel .upload-wrap {
+  min-width: 0;
+}
+.client-form-panel .upload-row {
+  min-width: 0;
+}
+.client-form-panel .upload-row .form-input {
+  min-width: 0;
+}
+.client-form-panel .template-pick {
+  margin-bottom: 4px;
+}
+.client-form-panel .template-pick button {
+  min-height: 76px;
+}
+.client-form-panel .subscription-editor {
+  margin-top: 26px;
+}
+@media (max-width: 700px) {
+  .client-form-panel #businessFields {
+    padding: 14px 12px 16px;
+    border-radius: 14px;
+  }
+  .client-form-panel .section-helper {
+    font-size: .74rem;
+  }
+}
