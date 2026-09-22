@@ -161,7 +161,7 @@
       <a class="btn-action action-vcard" href="${esc(website)}" target="_blank" rel="noopener noreferrer">
         ${SVG_ICONS.website}<span>Website</span>
       </a>`);
-    else if (mapUrl) actions.push(`
+    if (mapUrl) actions.push(`
       <a class="btn-action action-vcard" href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer">
         ${SVG_ICONS.location}<span>Location</span>
       </a>`);
@@ -196,9 +196,6 @@
 
           <div class="actions-grid" style="max-width:480px;margin:0 auto 24px;padding:0;">
             ${actions.join("")}
-            ${c.template === "personal_business" ? `<a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-action action-vcard" title="Personal Visiting Card">
-              ${SVG_ICONS.user}<span>Personal</span>
-            </a>` : ""}
           </div>
 
           <div style="margin-top:8px;">
@@ -216,7 +213,8 @@
 
         ${qrBlock("cardBusinessQr", "Share Business Profile", "Scan to share or bookmark this business profile and services.", getCardFullUrl(c, "business"), slugify(c.company || c.name) + "-business")}
 
-        ${c.template === "personal_business" ? `<div style="text-align:center;margin-top:10px;"><a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-save-contact" style="margin:0 auto;max-width:360px;">${SVG_ICONS.user} Back to Personal Visiting Card</a></div>` : ""}
+        ${c.template === "personal_business" ? `<div style="text-align:center;margin-top:10px;"><a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-save-contact" style="margin:0 auto;max-width:360px;">${SVG_ICONS.user} Personal Profile</a></div>` : ""}
+        <div class="kds-card-bottom-motto"><div class="motto-text">CONNECT &nbsp; | &nbsp; COLLABORATE &nbsp; | &nbsp; GROW</div></div>
         <footer class="page-footer"><div>&copy; 2026 Khan Digital Solution. All rights reserved.</div></footer>
       </div>
     `;
