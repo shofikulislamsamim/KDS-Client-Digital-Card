@@ -3092,3 +3092,26 @@ body {
     margin-bottom: 16px !important;
   }
 }
+
+
+/* STEP 4 — Business social media spacing/alignment only */
+.business-social-section {
+  margin-top: 4px !important;
+  padding-top: 2px !important;
+}
+.business-social-section .section-title {
+  justify-content: center !important;
+  width: 100% !important;
+  margin-bottom: 14px !important;
+}
+.business-social-section .social-icons-list {
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 auto !important;
+}
+@media (max-width: 600px) {
+  .business-social-section { margin-top: 2px !important; }
+  .business-social-section .section-title { margin-bottom: 12px !important; }
+  .business-social-section .social-icons-list { gap: 9px !important; }
+}
