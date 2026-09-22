@@ -2539,3 +2539,22 @@ body {
     height: calc(min(216px, 72vw) - 14px) !important;
   }
 }
+
+
+/* FINAL QR DEDUPLICATION — never allow multiple QR render nodes */
+#cardQr .qr-frame .qr-generated {
+  overflow: hidden !important;
+}
+#cardQr .qr-frame .qr-generated > * {
+  display: none !important;
+}
+#cardQr .qr-frame .qr-generated > canvas:first-child,
+#cardQr .qr-frame .qr-generated > img:first-child {
+  display: block !important;
+  width: 200px !important;
+  height: 200px !important;
+  max-width: 200px !important;
+  max-height: 200px !important;
+  flex: 0 0 200px !important;
+  object-fit: contain !important;
+}
