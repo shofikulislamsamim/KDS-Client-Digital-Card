@@ -24,6 +24,46 @@
     `;
   }
 
+  function parseBusinessServices(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => ({
+        name: String(item?.name || item?.title || "").trim(),
+        description: String(item?.description || item?.desc || "").trim()
+      })).filter((item) => item.name);
+    }
+
+    const raw = String(value || "").trim();
+    if (!raw) return [];
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parseBusinessServices(parsed);
+    } catch (_) {
+      // Legacy comma-separated service data.
+    }
+
+    return raw
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .map((name) => ({ name, description: "Professional service" }));
+  }
+
+  function serviceCard(service, index) {
+    const name = String(service?.name || "").trim();
+    const description = String(service?.description || "").trim();
+    return `
+      <article class="service-card">
+        <div class="service-card-top">
+          <div class="service-icon-box">${getServiceIcon(name)}</div>
+          <span class="service-number">${String(index + 1).padStart(2, "0")}</span>
+        </div>
+        <div class="service-title">${esc(name)}</div>
+        ${description ? `<div class="service-desc">${esc(description)}</div>` : ""}
+      </article>
+    `;
+  }
+
   function footerMotto() {
     return `
       <div class="kds-card-bottom-motto" style="text-align:center;padding:16px 12px 4px;">
@@ -174,8 +214,9 @@
       ["tiktok", c.businessTiktok, "TikTok"]
     ]);
 
-    const services = String(c.businessServices || "")
-      .split(",").map(x => x.trim()).filter(Boolean);
+    // Services are stored as JSON: [{ name, description }].
+    // Keep backward compatibility with the old comma-separated format.
+    const services = parseBusinessServices(c.businessServices);
 
     return `
       <div class="page-container business-container" id="businessPageContainer">
@@ -207,7 +248,7 @@
         ${services.length ? `<div class="services-section">
           <div class="section-title">Our Premium Services</div>
           <div class="services-grid">
-            ${services.map(serviceCard).join("")}
+            ${services.map((service, index) => serviceCard(service, index)).join("")}
           </div>
         </div>` : ""}
 
