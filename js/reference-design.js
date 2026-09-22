@@ -19,7 +19,7 @@
       <div class="service-card">
         <div class="service-icon-box">${getServiceIcon(name)}</div>
         <div class="service-title">${esc(name)}</div>
-        <div class="service-desc">Professional ${esc(name)} services tailored to your goals.</div>
+        <div class="service-desc">Professional service</div>
       </div>
     `;
   }
@@ -198,18 +198,18 @@
             ${actions.join("")}
           </div>
 
-          <div style="margin-top:8px;">
+          ${socials ? `<div style="margin-top:8px;">
             <div class="section-title" style="justify-content:center;">Connect on Social Media</div>
             <div class="social-icons-list" style="justify-content:center;">${socials}</div>
-          </div>
+          </div>` : ""}
         </div>
 
-        <div class="services-section">
+        ${services.length ? `<div class="services-section">
           <div class="section-title">Our Premium Services</div>
           <div class="services-grid">
             ${services.map(serviceCard).join("")}
           </div>
-        </div>
+        </div>` : ""}
 
         ${qrBlock("cardBusinessQr", "Share Business Profile", "Scan to share or bookmark this business profile and services.", getCardFullUrl(c, "business"), slugify(c.company || c.name) + "-business")}
 
