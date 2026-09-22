@@ -2836,3 +2836,87 @@ body {
   letter-spacing: .04em;
   text-transform: uppercase;
 }
+
+
+/* KDS UI REFINEMENT — profile sizing, social heading, and business action breathing room */
+.avatar-wrapper {
+  width: 160px;
+  height: 160px;
+  margin-top: -80px;
+  margin-bottom: 18px;
+}
+
+.socials-section .section-title {
+  justify-content: center;
+  text-align: center;
+}
+
+.socials-section .section-title::before,
+.socials-section .section-title::after {
+  flex: 1;
+}
+
+.business-hero .section-title {
+  justify-content: center !important;
+  text-align: center;
+}
+
+.business-profile-logo {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  padding: 6px;
+}
+
+.business-profile-logo .kds-logo-img {
+  border-radius: 50%;
+}
+
+.business-container .actions-grid {
+  gap: 8px !important;
+}
+
+.business-container .actions-grid .btn-action {
+  min-height: 76px;
+  padding: 12px 5px !important;
+  gap: 8px;
+  border-radius: 14px;
+}
+
+.business-container .actions-grid .btn-action svg {
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 600px) {
+  .avatar-wrapper {
+    width: 154px;
+    height: 154px;
+    margin-top: -77px;
+  }
+
+  .business-profile-logo {
+    width: 106px;
+    height: 106px;
+  }
+
+  .business-container .actions-grid {
+    gap: 5px !important;
+  }
+
+  .business-container .actions-grid .btn-action {
+    min-height: 70px;
+    padding: 10px 2px !important;
+    gap: 6px;
+    border-radius: 12px;
+  }
+
+  .business-container .actions-grid .btn-action span {
+    font-size: 9.5px !important;
+  }
+
+  .business-container .actions-grid .btn-action svg {
+    width: 23px;
+    height: 23px;
+  }
+}
