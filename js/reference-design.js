@@ -225,7 +225,7 @@
           <div class="kds-logo-wrapper business-profile-logo">
             ${c.companyLogo
               ? `<img id="businessLogo" src="${esc(c.companyLogo)}" alt="${esc(c.company || "Business")}" class="kds-logo-img">`
-              : '<div class="kds-logo-img" style="display:flex;align-items:center;justify-content:center;color:#38bdf8;font-weight:800;font-size:1.3rem;">KDS</div>'}
+              : `<div class="kds-logo-img kds-logo-placeholder" aria-hidden="true">${esc(String(c.company || "Business").trim().split(/\\s+/).filter(Boolean).slice(0, 2).map(word => word.charAt(0)).join("").toUpperCase() || "B")}</div>`}
           </div>
 
           <h1 class="business-name" id="businessName">${esc(c.company || "Business Profile")}</h1>
