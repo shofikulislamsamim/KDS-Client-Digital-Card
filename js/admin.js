@@ -91,6 +91,11 @@ function setTemplate(t) {
   document.querySelectorAll(".personal-media-field, .personal-social-fields").forEach((el) => {
     el.classList.toggle("hidden", selectedTemplate === "business_only");
   });
+
+  const nameInput = qs("#name");
+  const companyInput = qs("#company");
+  if (nameInput) nameInput.required = selectedTemplate !== "business_only";
+  if (companyInput) companyInput.required = selectedTemplate !== "personal";
 }
 
 function updateImagePreviews() {
