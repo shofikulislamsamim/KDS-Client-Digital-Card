@@ -51,7 +51,7 @@
   }
 
   function renderPersonal(c, isConnected) {
-    const phone = String(c.phone || "").replace(/[^\\d+]/g, "");
+    const phone = String(c.phone || c.whatsapp || "").replace(/[^\\d+]/g, "");
     const wa = normalizeWhatsAppNumber(c.whatsapp || c.phone);
     const website = sanitizeUrl(c.website);
     const socials = socialLinks([
@@ -256,8 +256,8 @@
       qrContainer.innerHTML = "";
       new QRCode(qrContainer, {
         text: profileUrl,
-        width: 180,
-        height: 180,
+        width: 220,
+        height: 220,
         colorDark: "#050b18",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.M
