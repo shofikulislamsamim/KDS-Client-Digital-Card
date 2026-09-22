@@ -256,12 +256,24 @@
       qrContainer.innerHTML = "";
       new QRCode(qrContainer, {
         text: profileUrl,
-        width: 320,
-        height: 320,
+        width: 200,
+        height: 200,
         colorDark: "#050b18",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.M
       });
+      // Keep exactly one QR rendering. Some QRCode.js builds can append
+      // both canvas and image nodes; the canvas is the canonical output.
+      const qrCanvas = qrContainer.querySelector("canvas");
+      if (qrCanvas) {
+        qrContainer.querySelectorAll("img").forEach((img) => img.remove());
+      } else {
+        const qrImage = qrContainer.querySelector("img");
+        if (qrImage) {
+          qrContainer.innerHTML = "";
+          qrContainer.appendChild(qrImage);
+        }
+      }
     }
 
     const saveBtn = qs("#saveContactMain");
