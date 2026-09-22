@@ -1676,12 +1676,12 @@ img, svg {
 /* Template Picker */
 .template-pick {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 760px) {
   .template-pick {
     grid-template-columns: 1fr;
   }
