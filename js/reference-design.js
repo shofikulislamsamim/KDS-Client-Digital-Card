@@ -51,7 +51,7 @@
   }
 
   function renderPersonal(c, isConnected) {
-    const phone = String(c.phone || c.whatsapp || "").replace(/[^\\d+]/g, "");
+    const phone = String(c.phone || c.whatsapp || "").replace(/[^\d+]/g, "");
     const wa = normalizeWhatsAppNumber(c.whatsapp || c.phone);
     const website = sanitizeUrl(c.website);
     const socials = socialLinks([
@@ -136,7 +136,7 @@
   }
 
   function renderBusiness(c) {
-    const phone = String(c.businessPhone || "").replace(/[^\\d+]/g, "");
+    const phone = String(c.businessPhone || "").replace(/[^\d+]/g, "");
     const wa = normalizeWhatsAppNumber(c.businessWhatsapp);
     const email = c.businessEmail || "";
     const website = sanitizeUrl(c.businessWebsite);
