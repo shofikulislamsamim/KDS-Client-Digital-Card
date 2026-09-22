@@ -3061,3 +3061,34 @@ body {
 @media (max-width: 360px) {
   .business-profile-logo { margin: -54px auto 12px !important; }
 }
+
+/* STEP 3 — Business text-to-actions spacing only */
+.business-profile-logo + .business-name {
+  margin-top: 0 !important;
+  margin-bottom: 5px !important;
+}
+.business-name + .business-tagline {
+  margin-bottom: 12px !important;
+}
+.business-tagline + .business-about {
+  margin-top: 0 !important;
+  margin-bottom: 18px !important;
+}
+.business-container .actions-grid {
+  margin-top: 0 !important;
+  margin-bottom: 20px !important;
+}
+@media (max-width: 600px) {
+  .business-profile-logo + .business-name {
+    margin-bottom: 4px !important;
+  }
+  .business-name + .business-tagline {
+    margin-bottom: 10px !important;
+  }
+  .business-tagline + .business-about {
+    margin-bottom: 14px !important;
+  }
+  .business-container .actions-grid {
+    margin-bottom: 16px !important;
+  }
+}
