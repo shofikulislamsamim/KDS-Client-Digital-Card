@@ -14,36 +14,12 @@
       .join("");
   }
 
-  function parseBusinessServices(value) {
-    if (Array.isArray(value)) {
-      return value.map((item) => ({
-        name: String(item?.name || item?.title || "").trim(),
-        description: String(item?.description || item?.desc || "").trim()
-      })).filter((item) => item.name);
-    }
-
-    const raw = String(value || "").trim();
-    if (!raw) return [];
-
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parseBusinessServices(parsed);
-    } catch (_) {
-      // Backward-compatible fallback for older comma-separated service data.
-    }
-
-    return raw.split(",")
-      .map((name) => name.trim())
-      .filter(Boolean)
-      .map((name) => ({ name, description: "Professional service" }));
-  }
-
-  function serviceCard(name, description) {
+  function serviceCard(name) {
     return `
       <div class="service-card">
         <div class="service-icon-box">${getServiceIcon(name)}</div>
         <div class="service-title">${esc(name)}</div>
-        ${description ? `<div class="service-desc">${esc(description)}</div>` : ""}
+        <div class="service-desc">Professional service</div>
       </div>
     `;
   }
@@ -198,7 +174,7 @@
       ["tiktok", c.businessTiktok, "TikTok"]
     ]);
 
-    const services = parseBusinessServices(c.businessServices);
+    const services = String(c.businessServices || "")
       .split(",").map(x => x.trim()).filter(Boolean);
 
     return `
@@ -231,7 +207,7 @@
         ${services.length ? `<div class="services-section">
           <div class="section-title">Our Premium Services</div>
           <div class="services-grid">
-            ${services.map((service) => serviceCard(service.name, service.description)).join("")}
+            ${services.map(serviceCard).join("")}
           </div>
         </div>` : ""}
 
