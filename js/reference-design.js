@@ -43,7 +43,7 @@
             ${SVG_ICONS.download}<span>Download QR</span>
           </button>
           <button type="button" id="shareCard" class="btn-secondary">
-            ${SVG_ICONS.share}<span>Share Profile</span>
+            ${SVG_ICONS.share}<span>Share Card</span>
           </button>
         </div>
       </div>
@@ -83,7 +83,7 @@
     const businessLink = isConnected ? `
       <a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}&profile=business" class="card-nav-switch">
         <div class="switch-content">
-          <img src="${esc(c.companyLogo || "")}" alt="Company Logo" class="switch-logo" onerror="this.style.display='none';" />
+          <img src="${esc(c.companyLogo || "")}" alt="Company Logo" class="switch-logo" onerror="this.src=''; this.style.visibility='hidden';" />
           <div class="switch-texts">
             <span class="switch-title">${esc(c.company || "Business Profile")}</span>
             <span class="switch-subtitle">View Corporate Profile &rarr;</span>
@@ -136,10 +136,10 @@
   }
 
   function renderBusiness(c) {
-    const phone = String(c.businessPhone || c.phone || "").replace(/[^\\d+]/g, "");
-    const wa = normalizeWhatsAppNumber(c.businessWhatsapp || c.whatsapp || c.phone);
-    const email = c.businessEmail || c.email || "";
-    const website = sanitizeUrl(c.businessWebsite || c.website);
+    const phone = String(c.businessPhone || "").replace(/[^\\d+]/g, "");
+    const wa = normalizeWhatsAppNumber(c.businessWhatsapp);
+    const email = c.businessEmail || "";
+    const website = sanitizeUrl(c.businessWebsite);
     const mapUrl = c.businessAddress
       ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(c.businessAddress)
       : "";
@@ -174,7 +174,7 @@
       ["tiktok", c.businessTiktok, "TikTok"]
     ]);
 
-    const services = String(c.businessServices || c.services || "")
+    const services = String(c.businessServices || "")
       .split(",").map(x => x.trim()).filter(Boolean);
 
     return `
