@@ -3449,3 +3449,85 @@ body {
     width: calc(100% - 16px) !important;
   }
 }
+
+/* STEP 16 — Business address: stable address row + dedicated Maps action */
+.business-container .business-address-section {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 4px 0 18px !important;
+  padding: 14px 16px !important;
+  border: 1px solid rgba(56,189,248,.18) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(14,165,233,.07), rgba(255,255,255,.025)) !important;
+  box-sizing: border-box !important;
+}
+.business-container .business-address-content {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  box-sizing: border-box !important;
+}
+.business-container .business-address-main {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  text-align: left !important;
+}
+.business-container .business-address-icon {
+  flex: 0 0 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #38bdf8 !important;
+}
+.business-container .business-address-icon svg { width: 22px !important; height: 22px !important; }
+.business-container .business-address-text {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  margin: 0 !important;
+  color: var(--text-main) !important;
+  font-size: .92rem !important;
+  line-height: 1.5 !important;
+  overflow-wrap: anywhere !important;
+  text-align: left !important;
+}
+.business-container .business-map-link {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 40px !important;
+  padding: 8px 11px !important;
+  border: 1px solid rgba(56,189,248,.22) !important;
+  border-radius: 11px !important;
+  background: rgba(14,165,233,.08) !important;
+  color: #7dd3fc !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+.business-container .business-map-link svg { width: 19px !important; height: 19px !important; }
+.business-container .business-map-link:hover {
+  background: rgba(14,165,233,.14) !important;
+  border-color: rgba(56,189,248,.4) !important;
+}
+@media (max-width: 600px) {
+  .business-container .business-address-section { margin: 4px 0 14px !important; padding: 12px !important; }
+  .business-container .business-address-content { gap: 10px !important; }
+  .business-container .business-address-main { gap: 8px !important; }
+  .business-container .business-address-icon,
+  .business-container .business-address-icon svg { width: 20px !important; height: 20px !important; flex-basis: 20px !important; }
+  .business-container .business-address-text { font-size: .84rem !important; }
+  .business-container .business-map-link {
+    min-width: 42px !important; width: 42px !important; height: 42px !important;
+    padding: 0 !important; border-radius: 11px !important;
+  }
+  .business-container .business-map-link span { display: none !important; }
+}
