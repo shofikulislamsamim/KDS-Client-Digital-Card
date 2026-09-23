@@ -3416,3 +3416,36 @@ body {
     gap: 6px !important;
   }
 }
+
+
+/* STEP 15 — Correct the actual outer alignment: center the Business action wrapper */
+.business-container .business-actions-wrap {
+  width: calc(100% - 48px) !important;
+  max-width: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+.business-container .business-actions-wrap .actions-grid {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+  .business-container .business-actions-wrap {
+    width: calc(100% - 24px) !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .business-container .business-actions-wrap {
+    width: calc(100% - 16px) !important;
+  }
+}
