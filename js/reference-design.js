@@ -251,13 +251,19 @@
           </div>
         </div>` : ""}
 
-        ${businessAddressText || mapUrl ? `<div class="business-address-section">
+        \${businessAddressText || mapUrl ? \`<section class="business-address-section" aria-label="Business address">
           <div class="business-address-content">
-            ${businessAddressText ? `<div class="business-address-text">${esc(businessAddressText)}</div>` : ""}
-            ${mapUrl ? `<a class="business-map-link" href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer">${SVG_ICONS.location}<span>View on Google Maps</span></a>` : ""}
+            <div class="business-address-main">
+              <span class="business-address-icon" aria-hidden="true">\${SVG_ICONS.location}</span>
+              <div class="business-address-text">
+                \${businessAddressText ? esc(businessAddressText) : "Business location"}
+              </div>
+            </div>
+            \${mapUrl ? \`<a class="business-map-link" href="\${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open business location in Google Maps">
+              \${SVG_ICONS.location}<span>Google Maps</span>
+            </a>\` : ""}
           </div>
-        </div>` : ""}
-
+        </section>\` : ""}
         ${qrBlock("cardBusinessQr", "Share Business Profile", "Scan to share or bookmark this business profile and services.", getCardFullUrl(c, "business"), slugify(c.company || c.name) + "-business")}
 
         ${c.template === "personal_business" ? `<div class="kds-business-profile-link-wrap"><a href="./card.html?slug=${encodeURIComponent(c.slug || c.id)}" class="btn-save-contact">${SVG_ICONS.user} Personal Profile</a></div>` : ""}
