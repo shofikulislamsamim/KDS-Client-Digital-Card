@@ -4057,3 +4057,105 @@ body {
     letter-spacing: .06em;
   }
 }
+
+
+/* DESIGN POLISH v5 — QR share area refinement
+   Scope: display styling only. No QR generation, sharing, or data logic changes. */
+
+/* Make QR sections feel like the deliberate final sharing step. */
+#cardQr,
+#cardBusinessQr {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(56,189,248,.14);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(56,189,248,.08), transparent 42%),
+    var(--bg-card);
+  box-shadow:
+    0 18px 38px -24px rgba(0,0,0,.65),
+    0 0 0 1px rgba(255,255,255,.025);
+}
+
+#cardQr::before,
+#cardBusinessQr::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,.55), transparent);
+  opacity: .75;
+}
+
+#cardQr .qr-frame,
+#cardBusinessQr .qr-frame {
+  margin-top: 2px;
+  padding: 10px;
+  border: 1px solid rgba(2,132,199,.10);
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.28),
+    0 0 0 4px rgba(255,255,255,.025);
+}
+
+#cardQr .qr-title,
+#cardBusinessQr .qr-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+#cardQr .qr-desc,
+#cardBusinessQr .qr-desc {
+  max-width: 430px;
+  line-height: 1.55;
+}
+
+#cardQr .qr-btn-group,
+#cardBusinessQr .qr-btn-group {
+  max-width: 340px;
+}
+
+#cardQr .qr-btn-group .btn-secondary,
+#cardBusinessQr .qr-btn-group .btn-secondary {
+  min-height: 46px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.035);
+}
+
+#cardQr .qr-btn-group .btn-secondary:first-child,
+#cardBusinessQr .qr-btn-group .btn-secondary:first-child {
+  border-color: rgba(56,189,248,.18);
+}
+
+#cardQr .qr-btn-group .btn-secondary:hover,
+#cardBusinessQr .qr-btn-group .btn-secondary:hover {
+  background: rgba(56,189,248,.07);
+}
+
+@media (max-width: 600px) {
+  #cardQr,
+  #cardBusinessQr {
+    border-radius: 18px;
+  }
+  #cardQr .qr-frame,
+  #cardBusinessQr .qr-frame {
+    padding: 9px;
+  }
+  #cardQr .qr-btn-group,
+  #cardBusinessQr .qr-btn-group {
+    max-width: 100%;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  #cardQr .qr-btn-group .btn-secondary,
+  #cardBusinessQr .qr-btn-group .btn-secondary {
+    min-height: 43px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
