@@ -3349,3 +3349,30 @@ body {
     max-width: 100% !important;
   }
 }
+
+
+/* STEP 13 — Final symmetric Business action row alignment */
+.business-container .actions-grid {
+  width: calc(100% - 48px) !important;
+  max-width: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+  .business-container .actions-grid {
+    width: calc(100% - 24px) !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .business-container .actions-grid {
+    width: calc(100% - 16px) !important;
+  }
+}
