@@ -3376,3 +3376,43 @@ body {
     width: calc(100% - 16px) !important;
   }
 }
+
+
+/* STEP 14 — Isolate Business action row from legacy spacing rules */
+.business-container .business-actions-wrap {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  margin: 0 0 20px !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.business-container .business-actions-wrap .actions-grid {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.business-container .business-actions-wrap .btn-action {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+  .business-container .business-actions-wrap {
+    margin-bottom: 16px !important;
+  }
+
+  .business-container .business-actions-wrap .actions-grid {
+    width: 100% !important;
+    gap: 6px !important;
+  }
+}
