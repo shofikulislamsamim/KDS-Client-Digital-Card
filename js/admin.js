@@ -94,8 +94,10 @@ function setTemplate(t) {
 
   const nameInput = qs("#name");
   const companyInput = qs("#company");
+  const personalCompanyInput = qs("#personalCompany");
   if (nameInput) nameInput.required = selectedTemplate !== "business_only";
   if (companyInput) companyInput.required = selectedTemplate !== "personal";
+  if (personalCompanyInput) personalCompanyInput.required = false;
 }
 
 function parseServices(value) {
@@ -240,6 +242,7 @@ function fillForm(c) {
     "clientId",
     "name",
     "designation",
+    "personalCompany",
     "phone",
     "whatsapp",
     "email",
@@ -276,6 +279,8 @@ function fillForm(c) {
     else if (k === "businessCover") el.value = c.businessCover || c.cover || "";
     else el.value = c[k] || "";
   });
+  const personalCompany = qs("#personalCompany");
+  if (personalCompany) personalCompany.value = c.company || "";
   setTemplate(c.template || "personal");
   renderServiceEditor(c.businessServices || "");
   if (qs("#formTitle")) qs("#formTitle").textContent = "Edit: " + (c.name || "Client");
@@ -721,6 +726,7 @@ if (form) {
     const keys = [
       "name",
       "designation",
+      "personalCompany",
       "phone",
       "whatsapp",
       "email",
@@ -753,6 +759,21 @@ if (form) {
       const el = qs("#" + k);
       if (el) data[k] = el.value.trim();
     });
+
+    // Personal Profile uses the dedicated Company Name field.
+    // The same database company_name field is shared with the Business Profile
+    // so existing cards and the Personal + Business connection remain compatible.
+    const personalCompanyValue = String(qs("#personalCompany")?.value || "").trim();
+    if (selectedTemplate === "personal" && personalCompanyValue) {
+      data.company = personalCompanyValue;
+    } else if (selectedTemplate === "personal" && !personalCompanyValue) {
+      data.company = "";
+    }
+
+    // Keep the two admin fields synchronized for Personal + Business cards.
+    if (selectedTemplate === "personal_business" && personalCompanyValue && !String(data.company || "").trim()) {
+      data.company = personalCompanyValue;
+    }
 
     // Services are stored as structured JSON so every card can show
     // Service Name + Service Description instead of a generic label.
@@ -923,6 +944,25 @@ if (resetBtn) resetBtn.addEventListener("click", clearForm);
 const searchInput = qs("#clientSearch");
 if (searchInput) {
   searchInput.addEventListener("input", filterClients);
+}
+
+
+// Personal/Business Company Name synchronization.
+// This uses the existing single company field in the data model, so no
+// database migration is required and existing cards remain compatible.
+const personalCompanyInput = qs("#personalCompany");
+const businessCompanyInput = qs("#company");
+if (personalCompanyInput && businessCompanyInput) {
+  personalCompanyInput.addEventListener("input", () => {
+    if (selectedTemplate === "personal_business") {
+      businessCompanyInput.value = personalCompanyInput.value;
+    }
+  });
+  businessCompanyInput.addEventListener("input", () => {
+    if (selectedTemplate === "personal_business") {
+      personalCompanyInput.value = businessCompanyInput.value;
+    }
+  });
 }
 
 // Setup image upload handlers
