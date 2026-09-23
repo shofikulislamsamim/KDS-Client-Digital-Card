@@ -175,6 +175,7 @@
     // Admin stores the Google Maps share URL in businessAddress.
     // Do not convert an address into a search URL anymore.
     const mapUrl = sanitizeUrl(c.businessAddress);
+    const businessAddressText = String(c.businessAddressText || "").trim();
 
     const actions = [];
     // Always render all 5 business actions in the same order/row.
@@ -201,7 +202,6 @@
     actions.push(businessAction(Boolean(wa), "action-whatsapp", SVG_ICONS.whatsapp, "WhatsApp", wa ? `https://wa.me/${wa}` : "", true));
     actions.push(businessAction(Boolean(email), "action-email", SVG_ICONS.email, "Inquiries", email ? `mailto:${email}` : ""));
     actions.push(businessAction(Boolean(website), "action-vcard", SVG_ICONS.website, "Website", website || "", true));
-    actions.push(businessAction(Boolean(mapUrl), "action-vcard", SVG_ICONS.location, "Location", mapUrl || "", true));
 
     const socials = socialLinks([
       ["facebook", c.businessFacebook, "Facebook"],
@@ -246,6 +246,13 @@
           <div class="section-title">Our Premium Services</div>
           <div class="services-grid">
             ${services.map((service, index) => serviceCard(service, index)).join("")}
+          </div>
+        </div>` : ""}
+
+        ${businessAddressText || mapUrl ? `<div class="business-address-section">
+          <div class="business-address-content">
+            ${businessAddressText ? `<div class="business-address-text">${esc(businessAddressText)}</div>` : ""}
+            ${mapUrl ? `<a class="business-map-link" href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer">${SVG_ICONS.location}<span>View on Google Maps</span></a>` : ""}
           </div>
         </div>` : ""}
 
