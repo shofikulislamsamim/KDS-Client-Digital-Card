@@ -3329,3 +3329,23 @@ body {
     width: calc(100% - 24px) !important;
   }
 }
+
+
+/* STEP 12 — Make Business action row fill the symmetric hero content width */
+.business-container .actions-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  align-self: stretch !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+  .business-container .actions-grid {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
