@@ -3934,3 +3934,126 @@ body {
     border-radius: 20px;
   }
 }
+
+
+/* DESIGN POLISH v4 — section rhythm and premium content grouping
+   Scope: client-card presentation only. No data, routing, template, or interaction changes. */
+
+/* Personal card: create a deliberate visual rhythm between major content groups. */
+#cardPersonal .card-header {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+#cardPersonal .save-tools {
+  position: relative;
+}
+#cardPersonal .save-tools::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-color) 18%,
+    var(--border-color) 82%,
+    transparent
+  );
+  opacity: .72;
+}
+
+/* Business hero: separate brand identity from the next content zone cleanly. */
+.business-container .business-hero {
+  padding-bottom: 26px;
+}
+.business-container .business-social-section {
+  padding-top: 18px;
+}
+.business-container .business-social-section + .services-section {
+  margin-top: 2px;
+}
+
+/* Services heading gets a little more authority without adding visual clutter. */
+.business-container .services-section > .section-title {
+  margin-bottom: 14px;
+  color: var(--text-muted);
+}
+.business-container .services-section > .section-title::after {
+  opacity: .72;
+}
+
+/* Keep service cards visually balanced when descriptions have different lengths. */
+.business-container .service-card {
+  min-height: 178px;
+}
+.business-container .service-card .service-icon-box {
+  flex: 0 0 44px;
+}
+.business-container .service-card .service-number {
+  color: var(--text-subtle);
+  font-family: 'Outfit', sans-serif;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+/* Make the address zone read as business information, not another action row. */
+.business-container .business-address-section {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+.business-container .business-address-text {
+  font-weight: 500;
+}
+.business-container .business-map-link {
+  font-weight: 700;
+}
+
+/* Final motto stays subtle and does not compete with the card content. */
+.business-container .kds-card-bottom-motto,
+#cardPersonal .kds-card-bottom-motto {
+  opacity: .82;
+}
+.business-container .motto-text,
+#cardPersonal .motto-text {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: .08em;
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  #cardPersonal .card-header {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  #cardPersonal .save-tools::before {
+    left: 16px;
+    right: 16px;
+  }
+  .business-container .business-hero {
+    padding-bottom: 22px;
+  }
+  .business-container .business-social-section {
+    padding-top: 16px;
+  }
+  .business-container .service-card {
+    min-height: 164px;
+  }
+}
+
+@media (max-width: 380px) {
+  #cardPersonal .card-header {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .business-container .service-card {
+    min-height: 154px;
+  }
+  .business-container .motto-text,
+  #cardPersonal .motto-text {
+    font-size: .66rem;
+    letter-spacing: .06em;
+  }
+}
