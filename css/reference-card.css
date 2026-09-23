@@ -4234,3 +4234,20 @@ body {
     height: calc(min(216px, 72vw) - 14px) !important;
   }
 }
+
+
+/* PERSONAL QR CONTAINER SHAPE ALIGNMENT
+   Keep the Personal QR section outer container visually identical
+   to the Personal Profile card shape. QR generation/content is untouched. */
+#cardQr.qr-card {
+  width: 100% !important;
+  max-width: none !important;
+  border-radius: 22px !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+  #cardQr.qr-card {
+    border-radius: 20px !important;
+  }
+}
