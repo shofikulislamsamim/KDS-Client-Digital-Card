@@ -174,8 +174,12 @@
     const website = sanitizeUrl(c.businessWebsite);
     // Admin stores the Google Maps share URL in businessAddress.
     // Do not convert an address into a search URL anymore.
-    const mapUrl = sanitizeUrl(c.businessAddress);
     const businessAddressText = String(c.businessAddressText || "").trim();
+    const rawBusinessMapUrl = String(c.businessAddress || "").trim();
+    const mapUrl = rawBusinessMapUrl ? sanitizeUrl(rawBusinessMapUrl) : "";
+    const hasBusinessAddress = Boolean(businessAddressText);
+    const hasBusinessMap = Boolean(mapUrl);
+    const hasBusinessLocation = hasBusinessAddress || hasBusinessMap;
 
     const actions = [];
     // Always render all 5 business actions in the same order/row.
@@ -251,15 +255,13 @@
           </div>
         </div>` : ""}
 
-        ${businessAddressText || mapUrl ? `<section class="business-address-section" aria-label="Business address">
-          <div class="business-address-content">
-            <div class="business-address-main">
+        ${hasBusinessLocation ? `<section class="business-address-section" aria-label="Business address">
+          <div class="business-address-content${!hasBusinessAddress ? " business-address-map-only" : ""}">
+            ${hasBusinessAddress ? `<div class="business-address-main">
               <span class="business-address-icon" aria-hidden="true">${SVG_ICONS.location}</span>
-              <div class="business-address-text">
-                ${businessAddressText ? esc(businessAddressText) : "Business location"}
-              </div>
-            </div>
-            ${mapUrl ? `<a class="business-map-link" href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open business location in Google Maps">
+              <div class="business-address-text">${esc(businessAddressText)}</div>
+            </div>` : ""}
+            ${hasBusinessMap ? `<a class="business-map-link" href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open business location in Google Maps">
               ${SVG_ICONS.location}<span>Google Maps</span>
             </a>` : ""}
           </div>
