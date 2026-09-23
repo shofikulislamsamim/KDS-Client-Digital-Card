@@ -4159,3 +4159,78 @@ body {
     padding-right: 8px;
   }
 }
+
+
+/* FIX — Personal QR alignment
+   Keep the QR frame and generated code mathematically centered inside the
+   Personal QR card. This is display-only and does not change QR generation. */
+#cardQr {
+  width: calc(100% - 32px) !important;
+  max-width: none !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+}
+
+#cardQr .qr-frame {
+  width: 216px !important;
+  height: 216px !important;
+  padding: 8px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  left: 0 !important;
+}
+
+#cardQr .qr-frame .qr-generated {
+  width: 200px !important;
+  height: 200px !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#cardQr .qr-frame .qr-generated > canvas:first-child,
+#cardQr .qr-frame .qr-generated > img:first-child {
+  display: block !important;
+  width: 200px !important;
+  height: 200px !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  left: 0 !important;
+  transform: none !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 600px) {
+  #cardQr {
+    width: calc(100% - 24px) !important;
+  }
+
+  #cardQr .qr-frame {
+    width: min(216px, 72vw) !important;
+    height: min(216px, 72vw) !important;
+    padding: 7px !important;
+  }
+
+  #cardQr .qr-frame .qr-generated {
+    width: calc(min(216px, 72vw) - 14px) !important;
+    height: calc(min(216px, 72vw) - 14px) !important;
+    flex-basis: calc(min(216px, 72vw) - 14px) !important;
+  }
+
+  #cardQr .qr-frame .qr-generated > canvas:first-child,
+  #cardQr .qr-frame .qr-generated > img:first-child {
+    width: calc(min(216px, 72vw) - 14px) !important;
+    height: calc(min(216px, 72vw) - 14px) !important;
+  }
+}
