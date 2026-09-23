@@ -3531,3 +3531,8 @@ body {
   }
   .business-container .business-map-link span { display: none !important; }
 }
+
+/* STEP 17 — Conditional Business address/location visibility */
+.business-container .business-address-map-only {
+  justify-content: flex-end !important;
+}
