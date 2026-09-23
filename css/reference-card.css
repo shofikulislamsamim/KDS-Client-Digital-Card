@@ -3302,3 +3302,30 @@ body {
     width: calc(100% - 16px) !important;
   }
 }
+
+
+/* STEP 11 — Balance Business action row outer spacing */
+.business-container .actions-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  width: calc(100% - 48px) !important;
+  max-width: 620px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 600px) {
+  .business-container .actions-grid {
+    width: calc(100% - 32px) !important;
+    max-width: 620px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .business-container .actions-grid {
+    width: calc(100% - 24px) !important;
+  }
+}
