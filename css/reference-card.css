@@ -3767,3 +3767,93 @@ body {
     padding-right: 12px;
   }
 }
+
+
+/* DESIGN POLISH v2 — responsive rhythm and section hierarchy
+   Scope: display styling only. No data, routing, or interaction logic changes. */
+
+/* Shared section-title rhythm */
+#cardPersonal .section-title,
+.business-container .section-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Personal QR: calm final section with clear separation */
+#cardQr {
+  border-top: 1px solid var(--border-color);
+  margin-left: 16px;
+  margin-right: 16px;
+  padding: 22px 4px 0;
+}
+#cardQr .qr-frame,
+#cardBusinessQr .qr-frame {
+  box-shadow: 0 12px 28px rgba(0,0,0,.22), 0 0 0 1px rgba(255,255,255,.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Keep long names/taglines from disturbing the card rhythm */
+#cardPersonal .founder-name,
+.business-container .business-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+#cardPersonal .founder-title,
+.business-container .business-tagline {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Business service cards: consistent internal hierarchy */
+.business-container .service-card .service-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.business-container .service-card .service-desc {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Prevent action labels from colliding on narrow screens */
+#cardPersonal > .actions-grid .btn-action,
+.business-container .business-actions-wrap .btn-action {
+  min-width: 0;
+  overflow: hidden;
+}
+#cardPersonal > .actions-grid .btn-action span,
+.business-container .business-actions-wrap .btn-action span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  #cardQr {
+    margin-left: 12px;
+    margin-right: 12px;
+    padding-top: 18px;
+  }
+  #cardQr .qr-btn-group,
+  #cardBusinessQr .qr-btn-group {
+    flex-wrap: wrap;
+  }
+  #cardQr .qr-btn-group .btn-secondary,
+  #cardBusinessQr .qr-btn-group .btn-secondary {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 380px) {
+  #cardPersonal > .actions-grid .btn-action span,
+  .business-container .business-actions-wrap .btn-action span {
+    font-size: .68rem;
+  }
+  #cardPersonal > .actions-grid .btn-action,
+  .business-container .business-actions-wrap .btn-action {
+    border-radius: 12px;
+  }
+}
