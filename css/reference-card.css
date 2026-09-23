@@ -3171,3 +3171,21 @@ body {
   #cardBusinessQr .qr-desc { margin-bottom: 12px !important; }
   #cardBusinessQr .qr-btn-group { gap: 8px !important; }
 }
+
+
+/* STEP 7 — Connected Personal Profile navigation spacing only */
+.profile-card .card-nav-switch {
+  width: calc(100% - 28px) !important;
+  max-width: 520px !important;
+  margin: 2px auto 16px !important;
+  box-sizing: border-box !important;
+}
+.profile-card .card-nav-switch .switch-content {
+  min-width: 0 !important;
+}
+@media (max-width: 600px) {
+  .profile-card .card-nav-switch {
+    width: calc(100% - 24px) !important;
+    margin: 2px auto 14px !important;
+  }
+}
