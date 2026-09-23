@@ -232,8 +232,10 @@
           ${c.tagline ? `<div class="business-tagline" id="businessTagline">${esc(c.tagline)}</div>` : ""}
           ${c.businessBio ? `<p class="business-about" id="businessAbout">${esc(c.businessBio)}</p>` : ""}
 
-          <div class="actions-grid" style="max-width:480px;margin:0 auto 24px;padding:0;">
-            ${actions.join("")}
+          <div class="business-actions-wrap">
+            <div class="actions-grid">
+              ${actions.join("")}
+            </div>
           </div>
 
           ${socials ? `<div class="business-social-section">
