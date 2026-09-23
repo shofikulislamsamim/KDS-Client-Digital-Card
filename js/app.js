@@ -159,6 +159,7 @@ function dbToClient(c) {
     businessPhone: c.business_phone || "",
     businessWhatsapp: c.business_whatsapp || "",
     businessEmail: c.business_email || "",
+    businessAddressText: c.business_address_text || "",
     businessAddress: c.business_address || "",
     businessWebsite: c.business_website || c.website || "",
     // business_services is jsonb: preserve the structured [{name, description}] data.
@@ -214,6 +215,7 @@ function clientToDb(c) {
     business_phone: c.businessPhone || null,
     business_whatsapp: c.businessWhatsapp || null,
     business_email: c.businessEmail || null,
+    business_address_text: c.businessAddressText || null,
     business_address: c.businessAddress || null,
     business_website: c.businessWebsite || null,
     // business_services is jsonb. Never split structured service data by commas.
