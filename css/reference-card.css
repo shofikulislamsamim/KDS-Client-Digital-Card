@@ -3536,3 +3536,234 @@ body {
 .business-container .business-address-map-only {
   justify-content: flex-end !important;
 }
+
+
+/* DESIGN POLISH v1 — visual-only premium refinement
+   Scope: client card display only. No data, routing, template, or admin behavior changes. */
+
+/* Personal profile hierarchy */
+#cardPersonal .card-header {
+  padding-bottom: 22px;
+}
+#cardPersonal .founder-name {
+  font-size: clamp(1.62rem, 4.8vw, 1.9rem);
+  letter-spacing: -0.028em;
+  line-height: 1.18;
+}
+#cardPersonal .founder-title {
+  margin-top: 3px;
+  margin-bottom: 5px;
+}
+#cardPersonal .company-badge {
+  margin-top: 5px;
+}
+#cardPersonal .founder-bio {
+  margin-top: 12px;
+  max-width: 430px;
+}
+
+/* Personal actions: same four-column structure, subtle Call/WhatsApp emphasis */
+#cardPersonal > .actions-grid {
+  gap: 10px;
+  padding-bottom: 18px;
+}
+#cardPersonal > .actions-grid .btn-action {
+  min-height: 78px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+#cardPersonal > .actions-grid .btn-action.action-call,
+#cardPersonal > .actions-grid .btn-action.action-whatsapp {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 6px 18px rgba(2,132,199,.08);
+}
+#cardPersonal > .actions-grid .btn-action.action-call svg,
+#cardPersonal > .actions-grid .btn-action.action-whatsapp svg {
+  width: 24px;
+  height: 24px;
+}
+#cardPersonal > .actions-grid .btn-action.action-email,
+#cardPersonal > .actions-grid .btn-action.action-vcard {
+  opacity: .94;
+}
+#cardPersonal > .actions-grid .btn-action:active {
+  transform: translateY(0) scale(.985);
+}
+
+/* Personal Save Contact becomes the clear next step without changing behavior */
+#cardPersonal .save-tools {
+  padding: 0 20px 22px;
+}
+#cardPersonal .save-tools .btn-save-contact {
+  min-height: 50px;
+  margin-bottom: 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(2,132,199,.24), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+/* Personal social section: cleaner separation and breathing room */
+#cardPersonal .socials-section {
+  margin: 0 20px;
+  padding: 18px 0 20px;
+  border-top: 1px solid var(--border-color);
+}
+#cardPersonal .socials-section .section-title {
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 13px;
+}
+#cardPersonal .social-icons-list {
+  justify-content: center;
+  gap: 11px;
+}
+
+/* Connected profile switch reads as a deliberate profile transition */
+#cardPersonal .card-nav-switch {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(56,189,248,.20);
+  background: linear-gradient(135deg, rgba(56,189,248,.07), rgba(255,255,255,.025));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+#cardPersonal .card-nav-switch .switch-subtitle {
+  color: var(--accent-cyan);
+}
+
+/* QR sharing section: make it feel like the final conversion/share area */
+#cardQr {
+  margin-top: 0;
+  padding-top: 22px;
+  text-align: center;
+}
+#cardQr .qr-title {
+  margin-top: 15px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+#cardQr .qr-desc {
+  max-width: 420px;
+  margin: 0 auto 14px;
+  text-align: center;
+}
+#cardQr .qr-btn-group {
+  justify-content: center;
+  gap: 9px;
+}
+
+/* Business profile: stronger three-zone hierarchy without changing structure */
+.business-container .business-hero {
+  position: relative;
+}
+.business-container .business-name {
+  letter-spacing: -0.022em;
+  line-height: 1.16;
+}
+.business-container .business-about {
+  max-width: 560px;
+}
+.business-container .business-actions-wrap {
+  margin-top: 2px !important;
+}
+.business-container .business-actions-wrap .btn-action {
+  min-height: 76px !important;
+  padding: 11px 6px !important;
+  border-radius: 14px !important;
+}
+.business-container .business-actions-wrap .btn-action svg {
+  width: 23px !important;
+  height: 23px !important;
+}
+.business-container .business-actions-wrap .btn-action.action-call,
+.business-container .business-actions-wrap .btn-action.action-whatsapp {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 6px 18px rgba(2,132,199,.07);
+}
+.business-container .business-actions-wrap .kds-action-disabled {
+  opacity: .46;
+  cursor: default;
+  transform: none !important;
+}
+
+/* Business social / services / address become visually distinct sections */
+.business-container .business-social-section {
+  margin-left: 24px;
+  margin-right: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+.business-container .services-section {
+  padding: 2px 24px 0;
+}
+.business-container .service-card {
+  border-color: rgba(56,189,248,.12);
+  background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.018));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+  border-radius: 16px;
+}
+.business-container .service-card:hover {
+  border-color: rgba(56,189,248,.28);
+  transform: translateY(-2px);
+}
+.business-container .business-address-section {
+  margin-top: 18px !important;
+}
+
+/* Business QR stays the final share destination */
+#cardBusinessQr {
+  margin-top: 2px !important;
+  padding-top: 22px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  #cardPersonal > .actions-grid .btn-action {
+    min-height: 72px;
+    padding: 10px 4px;
+  }
+  #cardPersonal > .actions-grid .btn-action.action-call svg,
+  #cardPersonal > .actions-grid .btn-action.action-whatsapp svg {
+    width: 23px;
+    height: 23px;
+  }
+  #cardPersonal .socials-section {
+    margin: 0 16px;
+    padding-top: 16px;
+    padding-bottom: 18px;
+  }
+  #cardPersonal .card-nav-switch {
+    width: calc(100% - 24px) !important;
+  }
+  .business-container .business-social-section {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  .business-container .services-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .business-container .business-actions-wrap .btn-action {
+    min-height: 70px !important;
+    padding: 9px 3px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  #cardPersonal > .actions-grid {
+    gap: 6px;
+  }
+  #cardPersonal > .actions-grid .btn-action {
+    min-height: 68px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+  #cardPersonal > .actions-grid .btn-action span {
+    font-size: .72rem;
+  }
+  .business-container .business-social-section {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+  .business-container .services-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
