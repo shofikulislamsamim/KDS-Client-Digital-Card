@@ -291,8 +291,23 @@ async function getClient(identifier) {
 
 async function saveClient(c) {
   const payload = clientToDb(c);
+  const isNewCard = !c.id;
   const targetId = c.id || (crypto.randomUUID ? crypto.randomUUID() : "c_" + Date.now());
   payload.id = targetId;
+
+  // A card's URL identity must never depend on client-entered data.
+  // Name, phone, email, address, company name, etc. may be identical across cards.
+  // Only the database ID / generated slug identifies a card.
+  if (isNewCard) {
+    const uniqueToken = String(targetId).replace(/[^a-zA-Z0-9]/g, "").slice(-12).toLowerCase() || String(Date.now());
+    const baseSlug = slugify(c.name || c.company || "client");
+    payload.slug = `${baseSlug}-${uniqueToken}`;
+
+    if (payload.business_slug) {
+      const businessBase = slugify(c.company || c.name || "business");
+      payload.business_slug = `${businessBase}-${uniqueToken}-business`;
+    }
+  }
 
   let savedRecord = null;
 
