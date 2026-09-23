@@ -3244,3 +3244,61 @@ body {
     height: 22px !important;
   }
 }
+
+
+/* STEP 10 — Center Business actions, social heading, and Personal Profile link */
+.business-container .actions-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  width: calc(100% - 28px) !important;
+  max-width: 620px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.business-social-section .section-title {
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.business-social-section .section-title::before,
+.business-social-section .section-title::after {
+  content: '' !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  height: 1px !important;
+  background: var(--border-color) !important;
+}
+
+.business-container .kds-business-profile-link-wrap {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.business-container .kds-business-profile-link-wrap .btn-save-contact {
+  width: calc(100% - 28px) !important;
+  max-width: 360px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+@media (max-width: 600px) {
+  .business-container .actions-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: calc(100% - 24px) !important;
+    max-width: 620px !important;
+  }
+
+  .business-container .kds-business-profile-link-wrap .btn-save-contact {
+    width: calc(100% - 24px) !important;
+    max-width: 360px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .business-container .actions-grid {
+    width: calc(100% - 16px) !important;
+  }
+}
