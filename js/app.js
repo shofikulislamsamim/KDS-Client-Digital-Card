@@ -367,7 +367,7 @@ async function removeClient(id) {
 
     const { data: client, error: fetchError } = await supabaseClient
       .from("client_cards")
-      .select("profile_image_url,cover_image_url,company_logo_url")
+      .select("profile_image_url,cover_image_url,business_cover_image_url,company_logo_url")
       .eq("id", id)
       .maybeSingle();
     if (fetchError) throw fetchError;
