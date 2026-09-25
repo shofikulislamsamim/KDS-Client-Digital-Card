@@ -630,6 +630,37 @@ window.deleteClient = async function (id) {
   }
 };
 
+// KDS IMAGE OPTIMIZATION — upload-time resize/compression
+async function optimizeImageForStorage(file) {
+  if (file.type === "image/gif") return { blob: file, ext: "gif", contentType: file.type };
+
+  const MAX_DIMENSION = 1600;
+  const QUALITY = 0.84;
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  if (!ctx) {
+    bitmap.close();
+    return { blob: file, ext: (file.name.split(".").pop() || "jpg").toLowerCase(), contentType: file.type };
+  }
+
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", QUALITY));
+  if (!blob) {
+    return { blob: file, ext: (file.name.split(".").pop() || "jpg").toLowerCase(), contentType: file.type };
+  }
+
+  return { blob, ext: "webp", contentType: "image/webp" };
+}
+
 // Handle persistent image uploads through Supabase Storage
 function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
   const fileInput = qs(fileInputId);
@@ -668,15 +699,20 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
     showToast("Processing image...", "info");
 
     try {
+      const optimized = await optimizeImageForStorage(file);
+
       // 1. First attempt: Upload to Supabase Storage if available
       let uploadedUrl = null;
       if (window.supabaseClient) {
         try {
-          const ext = file.name.split(".").pop() || "jpg";
-          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+          const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${optimized.ext}`;
           const { data, error } = await supabaseClient.storage
             .from("card-assets")
-            .upload(`uploads/${fileName}`, file, { cacheControl: "3600", upsert: true });
+            .upload(`uploads/${fileName}`, optimized.blob, {
+              cacheControl: "31536000",
+              upsert: false,
+              contentType: optimized.contentType
+            });
 
           if (!error && data) {
             const { data: pubData } = supabaseClient.storage
