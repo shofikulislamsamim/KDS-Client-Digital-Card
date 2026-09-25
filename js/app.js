@@ -129,7 +129,7 @@ function dbToClient(c) {
   return {
     id: c.id,
     slug: c.slug || slugify(c.full_name || c.name),
-    template: c.template === "business" || c.template === "personal_business" || c.template === "business_only" ? c.template : "personal",
+    template: c.template === "business" ? "personal_business" : (["personal", "personal_business", "business_only"].includes(c.template) ? c.template : "personal"),
     name: c.full_name || c.name || "",
     designation: c.designation || "",
     phone: c.phone || "",
