@@ -656,6 +656,10 @@ async function renderCard() {
 
     const coverUrl =
       sanitizeUrl(isBusinessProfile ? c.businessCover : c.cover) ||
+      // Legacy compatibility: older cards may not have a separate Business
+      // Cover field yet. Use the old Personal Cover only as a read-only visual
+      // fallback; never write it into businessCover.
+      (isBusinessProfile ? sanitizeUrl(c.cover) : "") ||
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
 
     const waClean = normalizeWhatsAppNumber(isBusinessProfile ? (c.businessWhatsapp || c.businessPhone) : (c.whatsapp || c.phone));
