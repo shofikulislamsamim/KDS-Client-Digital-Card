@@ -4251,3 +4251,64 @@ body {
     border-radius: 20px !important;
   }
 }
+
+/* KDS PROFESSIONAL LOOK — controlled visual polish */
+:root{--pro-border:rgba(148,163,184,.14);--pro-border-accent:rgba(56,189,248,.34)}
+.kds-ref-wrapper{max-width:520px;padding:18px 12px 46px;gap:16px}
+.kds-card{max-width:500px;border-radius:24px;background:radial-gradient(circle at 50% -10%,rgba(14,165,233,.13),transparent 34%),linear-gradient(180deg,#081321 0%,#060d18 100%);border:1px solid var(--pro-border);box-shadow:0 28px 70px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.018)}
+.kds-card:hover{border-color:var(--pro-border-accent);box-shadow:0 30px 78px rgba(0,0,0,.55),0 0 34px rgba(14,165,233,.10)}
+.kds-personal-card-layout .kds-fluid-waves{height:182px;opacity:.78}
+.kds-personal-card-layout .kds-top-bar{padding:20px 22px 4px}
+.kds-personal-card-layout .vibes-script{font-size:1.55rem;opacity:.92}
+.kds-personal-card-layout .kds-avatar-area{margin-top:8px;margin-bottom:14px}
+.kds-personal-card-layout .kds-avatar-halo{width:126px;height:126px;padding:3px;background:linear-gradient(145deg,#7dd3fc,#0ea5e9 48%,#0369a1);box-shadow:0 0 0 6px rgba(14,165,233,.055),0 12px 32px rgba(14,165,233,.24)}
+.kds-personal-card-layout .kds-profile-header{padding:0 22px}
+.kds-personal-card-layout .kds-name-title{font-size:clamp(1.55rem,6vw,1.9rem);letter-spacing:-.025em}
+.kds-personal-card-layout .kds-designation-title{margin-bottom:6px;color:#7dd3fc}
+.kds-company-name-under-designation{display:inline-flex;align-items:center;max-width:100%;margin:2px auto 12px;padding:5px 11px;border:1px solid rgba(56,189,248,.20);border-radius:999px;background:rgba(56,189,248,.065);color:#c8d7e8;font-size:.78rem;font-weight:650}
+.kds-personal-card-layout .kds-bio-text{max-width:400px;color:#9fb0c6;font-size:.88rem;line-height:1.62}
+.kds-services-grid{width:calc(100% - 44px);margin:16px auto 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kds-service-chip{min-width:0;border:1px solid rgba(148,163,184,.13);background:linear-gradient(180deg,rgba(20,35,58,.78),rgba(10,21,38,.78));border-radius:14px;padding:10px 11px;color:#dce7f2;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.kds-service-chip .service-chip-text{overflow-wrap:anywhere}
+.kds-service-chip .service-chip-icon{color:#7dd3fc;opacity:.9}
+.kds-service-chip-description{margin-top:4px;color:#8fa5bb;font-size:.70rem;line-height:1.42}
+.kds-action-grid{padding:18px 22px 0;gap:8px}
+.kds-action-box{min-width:0;min-height:82px;padding:12px 5px;border-radius:15px;background:rgba(16,31,53,.72);border-color:rgba(148,163,184,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.kds-action-box:hover{transform:translateY(-2px);background:rgba(14,165,233,.10);border-color:rgba(56,189,248,.38);box-shadow:0 12px 28px rgba(2,132,199,.12)}
+.action-box-icon{width:36px;height:36px;border-radius:10px;background:rgba(56,189,248,.08);color:#7dd3fc}
+.action-box-label{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.kds-cta-container{padding:16px 22px 0}
+.kds-glowing-cta-btn{min-height:58px;border-radius:15px;box-shadow:0 12px 28px rgba(2,132,199,.22),inset 0 1px 1px rgba(255,255,255,.20)}
+.kds-qr-connect-box{margin:16px 22px 0;padding:14px;gap:14px;border-radius:18px;background:rgba(10,22,39,.76);border-color:rgba(148,163,184,.13)}
+.kds-qr-square-frame{width:116px;height:116px;padding:7px;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.kds-qr-meta{min-width:0}.kds-qr-heading{font-size:1rem}.kds-qr-description{color:#93a6bc;line-height:1.45}
+.kds-qr-actions-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.kds-glass-pill-btn{min-height:34px;padding:7px 10px;border-radius:10px;border:1px solid rgba(148,163,184,.14);background:rgba(255,255,255,.045)}
+.kds-social-row{gap:10px;margin:18px 22px 0;flex-wrap:wrap}
+.kds-social-circle{width:42px;height:42px;box-shadow:0 7px 18px rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.10)}
+.kds-card-bottom-motto{margin-top:18px;min-height:48px;border-top:1px solid rgba(148,163,184,.08)}
+.motto-text{font-size:.67rem;letter-spacing:.16em;color:#7890a8}
+.kds-business-card-layout{background:radial-gradient(circle at 50% 0%,rgba(14,165,233,.10),transparent 32%),linear-gradient(180deg,#081321 0%,#060d18 100%)}
+.kds-biz-top-header{padding:18px 20px;gap:12px;border-bottom:1px solid rgba(148,163,184,.08);background:rgba(7,15,28,.56)}
+.kds-biz-brand-flex{min-width:0}.kds-biz-top-logo{width:46px;height:46px;border-radius:12px;object-fit:contain;padding:5px;background:#fff;border:1px solid rgba(255,255,255,.14)}
+.biz-company-name,.biz-panel-title{overflow-wrap:anywhere}.biz-company-name{font-size:1rem;font-weight:750}.biz-company-motto{margin-top:2px;color:#8fa5bb;font-size:.74rem}
+.kds-pill-type-badge{padding:6px 10px;font-size:.70rem;border-color:rgba(56,189,248,.26);background:rgba(56,189,248,.07)}
+.kds-biz-hero-card{min-height:255px;border-radius:0 0 20px 20px;overflow:hidden}.biz-hero-bg-photo{filter:saturate(.82) contrast(1.04)}
+.biz-hero-gradient-overlay{background:linear-gradient(180deg,rgba(4,10,20,.12) 0%,rgba(4,10,20,.44) 45%,rgba(4,10,20,.96) 100%)}
+.company-profile-hero-inner{padding:22px}.biz-hero-avatar-wrap{margin-bottom:12px}
+.kds-business-card-layout .kds-avatar-halo.small{width:92px;height:92px;padding:3px}
+.biz-hero-founder-name{font-size:clamp(1.5rem,6vw,2rem);line-height:1.08;overflow-wrap:anywhere}.biz-hero-slogan{color:#7dd3fc;font-size:.86rem;font-weight:650}.company-profile-bio{color:#c1cedc;font-size:.84rem;line-height:1.55}
+.kds-business-card-layout .kds-business-services-section,.kds-business-card-layout .kds-biz-details-container{padding-left:22px;padding-right:22px}
+.kds-business-card-layout .kds-business-services-section{margin-top:18px}
+.kds-section-label,.kds-business-services-section .kds-section-label{margin-bottom:9px;color:#7f96ad;font-size:.68rem;font-weight:750;text-transform:uppercase;letter-spacing:.14em}
+.kds-services-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.kds-services-chips .kds-service-chip{font-size:.78rem}
+.biz-contact-row{border-color:rgba(148,163,184,.12);background:rgba(15,28,47,.64);border-radius:14px}
+.kds-trust-banner{width:100%;max-width:500px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:10px;border:1px solid rgba(148,163,184,.10);border-radius:16px;background:rgba(8,17,31,.72)}
+.trust-item{min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 5px;color:#8297ad;font-size:.63rem;font-weight:650;text-align:center}.trust-item svg{color:#55c7f7}
+@media(max-width:600px){
+.kds-ref-wrapper{padding:10px 8px calc(34px + env(safe-area-inset-bottom))}.kds-card{border-radius:20px}
+.kds-personal-card-layout .kds-top-bar{padding-left:16px;padding-right:16px}.kds-personal-card-layout .kds-avatar-halo{width:112px;height:112px}.kds-personal-card-layout .kds-profile-header{padding-left:16px;padding-right:16px}
+.kds-services-grid{width:calc(100% - 32px);grid-template-columns:1fr}.kds-action-grid{padding-left:16px;padding-right:16px;gap:6px}.kds-action-box{min-height:72px;border-radius:13px}.kds-cta-container{padding-left:16px;padding-right:16px}.kds-qr-connect-box{margin-left:16px;margin-right:16px}.kds-qr-square-frame{width:104px;height:104px}.kds-social-row{margin-left:16px;margin-right:16px}
+.kds-biz-top-header{padding:14px 16px}.company-profile-hero-inner{padding:18px 16px}.kds-business-card-layout .kds-business-services-section,.kds-business-card-layout .kds-biz-details-container{padding-left:16px;padding-right:16px}.kds-services-chips{grid-template-columns:1fr}.kds-trust-banner{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:360px){.kds-action-grid.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.kds-qr-connect-box{flex-direction:column;align-items:center;text-align:center}.kds-qr-meta{width:100%}.kds-qr-actions-row{justify-content:center}.kds-trust-banner{grid-template-columns:1fr}}
