@@ -3,6 +3,61 @@ let selectedTemplate = "personal";
 let editingClient = null;
 let allClients = [];
 
+// Tracks Storage assets uploaded in the current unsaved form session.
+// Each entry is keyed by the corresponding URL/text input selector.
+const pendingImageUploads = new Map();
+
+function storagePathFromPublicUrl(url) {
+  if (!url) return null;
+  try {
+    const marker = "/storage/v1/object/public/card-assets/";
+    const raw = String(url);
+    const index = raw.indexOf(marker);
+    if (index < 0) return null;
+    const path = decodeURIComponent(raw.slice(index + marker.length));
+    return path && !path.includes("..") ? path : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function removeCardAsset(url) {
+  const path = storagePathFromPublicUrl(url);
+  if (!path || !window.supabaseClient) return;
+  try {
+    const { error } = await supabaseClient.storage.from("card-assets").remove([path]);
+    if (error) console.warn("Storage cleanup failed:", error);
+  } catch (e) {
+    console.warn("Storage cleanup failed:", e);
+  }
+}
+
+function imageValuesFromClient(c) {
+  return [
+    c?.photo,
+    c?.cover,
+    c?.businessCover,
+    c?.companyLogo
+  ].filter(Boolean);
+}
+
+async function cleanupPendingUploads({ keepUrls = [], cleanupOldUrls = [] } = {}) {
+  const keep = new Set(keepUrls.filter(Boolean));
+  const old = new Set(cleanupOldUrls.filter(Boolean));
+
+  for (const entry of pendingImageUploads.values()) {
+    if (entry?.newUrl && !keep.has(entry.newUrl)) {
+      await removeCardAsset(entry.newUrl);
+    }
+  }
+
+  for (const url of old) {
+    if (!keep.has(url)) await removeCardAsset(url);
+  }
+
+  pendingImageUploads.clear();
+}
+
 const ADMIN_ICONS = {
   copy: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
   external: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
@@ -231,6 +286,8 @@ function clearForm() {
   if (qs("#duration")) qs("#duration").value = "30";
   if (qs("#customDays")) qs("#customDays").value = "";
   if (qs("#customDaysWrap")) qs("#customDaysWrap").classList.add("hidden");
+  // A reset/cancel must not leave newly uploaded unsaved assets in Storage.
+  cleanupPendingUploads();
   updateImagePreviews();
   renderServiceEditor("");
   renderSubscriptionFields({ subscriptionActive: true, subscriptionStart: null, subscriptionEnd: null });
@@ -699,6 +756,9 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
     showToast("Processing image...", "info");
 
     try {
+      const previousUrl = textInput.value.trim();
+      const previousPending = pendingImageUploads.get(textInputId);
+
       const optimized = await optimizeImageForStorage(file);
 
       // 1. First attempt: Upload to Supabase Storage if available
@@ -736,6 +796,17 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
       if (!uploadedUrl) {
         throw new Error("Image upload failed. Please check your admin session and Storage permissions, then try again.");
       }
+
+      // If this field already had a newly uploaded unsaved asset, remove that
+      // asset before replacing it so repeated selections do not create orphans.
+      if (previousPending?.newUrl && previousPending.newUrl !== uploadedUrl) {
+        await removeCardAsset(previousPending.newUrl);
+      }
+
+      pendingImageUploads.set(textInputId, {
+        newUrl: uploadedUrl,
+        oldUrl: previousPending?.oldUrl || previousUrl || ""
+      });
 
       textInput.value = uploadedUrl;
       if (thumb) thumb.src = uploadedUrl;
@@ -844,11 +915,28 @@ if (form) {
     }
 
     try {
-      editingClient = await saveClient(data);
+      const previousImageValues = imageValuesFromClient(editingClient);
+      const savedClient = await saveClient(data);
+
+      // DB save succeeded. Only now remove replaced old Storage assets.
+      const savedImageValues = imageValuesFromClient(savedClient);
+      const oldUrlsToRemove = [];
+      pendingImageUploads.forEach((entry) => {
+        if (entry?.oldUrl && entry.oldUrl !== entry.newUrl && previousImageValues.includes(entry.oldUrl)) {
+          oldUrlsToRemove.push(entry.oldUrl);
+        }
+      });
+
+      const keepUrls = savedImageValues;
+      await cleanupPendingUploads({ keepUrls, cleanupOldUrls: oldUrlsToRemove });
+
+      editingClient = savedClient;
       fillForm(editingClient);
       await loadAndRenderList();
       showToast(isNew ? "Client created and activated successfully!" : "Client updated successfully!", "success");
     } catch (e) {
+      // If DB save fails, remove any assets uploaded during this unsaved session.
+      await cleanupPendingUploads();
       showError(e);
     } finally {
       if (saveSubmitBtn) {
