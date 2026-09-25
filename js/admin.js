@@ -999,6 +999,7 @@ if (form) {
       "whatsapp",
       "email",
       "bio",
+      "location",
       "company",
       "tagline",
       "companyLogo",
@@ -1062,7 +1063,22 @@ if (form) {
     // Never overwrite the Personal cover with the Business cover.
 
     if (selectedTemplate === "business_only") {
-      data.name = data.company || data.name || "Business";
+      // Business-only cards do not use a personal name. Keep the required
+      // database field empty instead of copying the company name into it.
+      data.name = "";
+      data.designation = "";
+      data.phone = "";
+      data.whatsapp = "";
+      data.email = "";
+      data.location = "";
+      data.bio = "";
+      data.photo = "";
+      data.cover = "";
+      data.facebook = "";
+      data.instagram = "";
+      data.linkedin = "";
+      data.youtube = "";
+      data.tiktok = "";
     }
 
     try {
