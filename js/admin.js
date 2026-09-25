@@ -1063,22 +1063,10 @@ if (form) {
     // Never overwrite the Personal cover with the Business cover.
 
     if (selectedTemplate === "business_only") {
-      // Business-only cards do not use a personal name. Keep the required
-      // database field empty instead of copying the company name into it.
-      data.name = "";
-      data.designation = "";
-      data.phone = "";
-      data.whatsapp = "";
-      data.email = "";
-      data.location = "";
-      data.bio = "";
-      data.photo = "";
-      data.cover = "";
-      data.facebook = "";
-      data.instagram = "";
-      data.linkedin = "";
-      data.youtube = "";
-      data.tiktok = "";
+      // client_cards.full_name is required by the database and is not rendered
+      // on Business-only cards, so keep the company name as the compatibility
+      // value while the public renderer continues to expose only business data.
+      data.name = data.company || data.name || "Business";
     }
 
     try {
