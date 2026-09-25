@@ -643,8 +643,25 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      showToast("Please select a valid image file.", "warn");
+    // Keep uploads predictable and safe for Storage and mobile loading.
+    // 5 MB is the existing project limit; reject oversized files before upload.
+    const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+    const ALLOWED_IMAGE_TYPES = new Set([
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif"
+    ]);
+
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      showToast("Please select a JPG, PNG, WebP, or GIF image.", "warn");
+      fileInput.value = "";
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_BYTES) {
+      showToast("Image is too large. Maximum allowed size is 5 MB.", "warn");
+      fileInput.value = "";
       return;
     }
 
@@ -674,7 +691,11 @@ function setupImageUpload(fileInputId, textInputId, thumbId, wrapId) {
         }
       }
 
-      // Do not fall back to data URLs. Public cards must reference a real
+      // Clear the file input after a successful upload so selecting the same
+    // file again will still fire the change event.
+    fileInput.value = "";
+
+    // Do not fall back to data URLs. Public cards must reference a real
       // Supabase Storage asset so images remain persistent and cacheable.
       if (!uploadedUrl) {
         throw new Error("Image upload failed. Please check your admin session and Storage permissions, then try again.");
