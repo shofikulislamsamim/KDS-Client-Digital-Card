@@ -361,6 +361,146 @@ function renderSubscriptionFields(c) {
   if (actBtn) actBtn.textContent = s.status === "active" ? "Extend / Renew" : "Activate";
 }
 
+const VALIDATION_LIMITS = Object.freeze({
+  name: 100,
+  designation: 120,
+  company: 120,
+  tagline: 180,
+  bio: 1000,
+  address: 300,
+  phone: 25,
+  email: 254,
+  url: 500,
+  serviceCount: 12,
+  serviceName: 80,
+  serviceDescription: 240
+});
+
+function normalizePhoneForValidation(value) {
+  return String(value || "").trim().replace(/[\s().-]/g, "");
+}
+
+function isValidPhone(value) {
+  const v = normalizePhoneForValidation(value);
+  if (!v) return true;
+  return /^\+?[0-9]{7,15}$/.test(v);
+}
+
+function isValidEmail(value) {
+  const v = String(value || "").trim();
+  if (!v) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) && v.length <= VALIDATION_LIMITS.email;
+}
+
+function isValidPublicUrl(value) {
+  const v = String(value || "").trim();
+  if (!v) return true;
+  const safe = sanitizeUrl(v);
+  if (!safe) return false;
+  try {
+    const parsed = new URL(safe);
+    return (parsed.protocol === "https:" || parsed.protocol === "http:") &&
+      parsed.username === "" && parsed.password === "" &&
+      parsed.hostname.length <= 253;
+  } catch (_) {
+    return false;
+  }
+}
+
+function validateTextLength(value, max, label) {
+  const v = String(value || "").trim();
+  if (v.length > max) return label + " সর্বোচ্চ " + max + " অক্ষরের মধ্যে রাখুন।";
+  return "";
+}
+
+function validateClientForm(data) {
+  const errors = [];
+  const requiredName = selectedTemplate !== "business_only";
+  const requiredCompany = selectedTemplate !== "personal";
+
+  if (requiredName && !data.name) errors.push("Name দিন।");
+  if (requiredCompany && !data.company) errors.push("Company Name দিন।");
+
+  const textFields = [
+    ["name", VALIDATION_LIMITS.name, "Name"],
+    ["designation", VALIDATION_LIMITS.designation, "Designation"],
+    ["company", VALIDATION_LIMITS.company, "Company Name"],
+    ["tagline", VALIDATION_LIMITS.tagline, "Tagline"],
+    ["bio", VALIDATION_LIMITS.bio, "Bio"],
+    ["location", VALIDATION_LIMITS.address, "Address"],
+    ["businessBio", VALIDATION_LIMITS.bio, "Business Bio"],
+    ["businessAddressText", VALIDATION_LIMITS.address, "Business Address"]
+  ];
+  textFields.forEach(([key, max, label]) => {
+    const err = validateTextLength(data[key], max, label);
+    if (err) errors.push(err);
+  });
+
+  [
+    ["phone", "Phone"],
+    ["whatsapp", "WhatsApp"],
+    ["businessPhone", "Business Phone"],
+    ["businessWhatsapp", "Business WhatsApp"]
+  ].forEach(([key, label]) => {
+    if (!isValidPhone(data[key])) errors.push(label + " number সঠিক নয়।");
+    if (String(data[key] || "").length > VALIDATION_LIMITS.phone) {
+      errors.push(label + " সর্বোচ্চ " + VALIDATION_LIMITS.phone + " অক্ষরের মধ্যে রাখুন।");
+    }
+  });
+
+  [
+    ["email", "Email"],
+    ["businessEmail", "Business Email"]
+  ].forEach(([key, label]) => {
+    if (!isValidEmail(data[key])) errors.push(label + " address সঠিক নয়।");
+  });
+
+  const urlFields = [
+    ["website", "Website"],
+    ["businessWebsite", "Business Website"],
+    ["facebook", "Facebook"],
+    ["instagram", "Instagram"],
+    ["linkedin", "LinkedIn"],
+    ["youtube", "YouTube"],
+    ["tiktok", "TikTok"],
+    ["businessFacebook", "Business Facebook"],
+    ["businessInstagram", "Business Instagram"],
+    ["businessLinkedin", "Business LinkedIn"],
+    ["businessYoutube", "Business YouTube"],
+    ["businessTiktok", "Business TikTok"]
+  ];
+  urlFields.forEach(([key, label]) => {
+    if (String(data[key] || "").length > VALIDATION_LIMITS.url) {
+      errors.push(label + " URL অনেক বড়।");
+    } else if (!isValidPublicUrl(data[key])) {
+      errors.push(label + " URL সঠিক নয়।");
+    }
+  });
+
+  const services = collectServices();
+  if (services.length > VALIDATION_LIMITS.serviceCount) {
+    errors.push("সর্বোচ্চ " + VALIDATION_LIMITS.serviceCount + "টি service রাখা যাবে।");
+  }
+  const seen = new Set();
+  services.forEach((service) => {
+    const name = service.name.trim();
+    const key = name.toLowerCase();
+    if (seen.has(key)) errors.push("একই Service Name একাধিকবার দেওয়া হয়েছে: " + name);
+    seen.add(key);
+    if (name.length > VALIDATION_LIMITS.serviceName) {
+      errors.push("Service Name সর্বোচ্চ " + VALIDATION_LIMITS.serviceName + " অক্ষরের মধ্যে রাখুন।");
+    }
+    if (service.description.length > VALIDATION_LIMITS.serviceDescription) {
+      errors.push("Service Description সর্বোচ্চ " + VALIDATION_LIMITS.serviceDescription + " অক্ষরের মধ্যে রাখুন।");
+    }
+  });
+
+  if (errors.length) {
+    return { ok: false, message: errors.slice(0, 5).join("\n") };
+  }
+  return { ok: true, message: "" };
+}
+
 function selectedDuration() {
   const v = qs("#duration") ? qs("#duration").value : "30";
   if (v === "custom") {
@@ -887,6 +1027,17 @@ if (form) {
       const el = qs("#" + k);
       if (el) data[k] = el.value.trim();
     });
+
+    const validation = validateClientForm(data);
+    if (!validation.ok) {
+      await cleanupPendingUploads();
+      showToast(validation.message, "error");
+      if (saveSubmitBtn) {
+        saveSubmitBtn.disabled = false;
+        saveSubmitBtn.innerHTML = `<span>Save Client Card</span>`;
+      }
+      return;
+    }
 
     // Personal Profile uses the dedicated Company Name field.
     // The same database company_name field is shared with the Business Profile
