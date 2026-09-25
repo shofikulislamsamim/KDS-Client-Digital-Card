@@ -403,16 +403,20 @@ async function removeClient(id) {
   setLocalCache(cached);
 }
 
+const SUBSCRIPTION_TIME_ZONE = "Asia/Dhaka";
+
 function subscriptionState(c) {
   if (c.subscriptionActive === false) {
     return { status: "inactive", label: "Inactive" };
   }
+
   if (c.subscriptionEnd) {
     const end = new Date(c.subscriptionEnd);
-    if (!isNaN(end.getTime()) && end.getTime() <= Date.now()) {
+    if (Number.isNaN(end.getTime()) || end.getTime() <= Date.now()) {
       return { status: "expired", label: "Expired" };
     }
   }
+
   return { status: "active", label: "Active" };
 }
 
@@ -423,31 +427,35 @@ function isSubscriptionActive(c) {
 function formatDateTime(value) {
   if (!value) return "No expiry";
   const d = new Date(value);
-  if (isNaN(d.getTime())) return "—";
-  return d.toLocaleString("en-GB", {
+  if (Number.isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: SUBSCRIPTION_TIME_ZONE,
     day: "2-digit",
     month: "short",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
-  });
+    minute: "2-digit",
+    hour12: false
+  }).format(d);
 }
 
 function formatDate(value) {
   if (!value) return "No expiry";
   const d = new Date(value);
-  if (isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("en-GB", {
+  if (Number.isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: SUBSCRIPTION_TIME_ZONE,
     day: "2-digit",
     month: "short",
     year: "numeric"
-  });
+  }).format(d);
 }
 
 function addDuration(start, days) {
-  const d = new Date(start);
-  d.setDate(d.getDate() + Number(days || 0));
-  return d;
+  const startMs = new Date(start).getTime();
+  const numDays = Number(days || 0);
+  if (!Number.isFinite(startMs) || !Number.isFinite(numDays)) return new Date(NaN);
+  return new Date(startMs + (numDays * 24 * 60 * 60 * 1000));
 }
 
 function activateSubscription(c, days) {
@@ -461,12 +469,14 @@ function activateSubscription(c, days) {
 function extendSubscription(c, days) {
   c.subscriptionActive = true;
   const numDays = Number(days || 0);
+  const currentEnd = c.subscriptionEnd ? new Date(c.subscriptionEnd) : null;
+  const currentEndMs = currentEnd && !Number.isNaN(currentEnd.getTime()) ? currentEnd.getTime() : 0;
 
-  // If currently active with an unexpired end date, add to existing end date
-  if (c.subscriptionEnd && new Date(c.subscriptionEnd).getTime() > Date.now()) {
+  // If currently active with an unexpired end date, add time to the existing expiry.
+  if (currentEndMs > Date.now()) {
     c.subscriptionEnd = numDays > 0 ? addDuration(c.subscriptionEnd, numDays).toISOString() : null;
   } else {
-    // Starting fresh
+    // Expired, inactive, invalid, or lifetime cards start a fresh subscription window.
     c.subscriptionStart = new Date().toISOString();
     c.subscriptionEnd = numDays > 0 ? addDuration(c.subscriptionStart, numDays).toISOString() : null;
   }
