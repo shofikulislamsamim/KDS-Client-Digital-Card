@@ -276,7 +276,7 @@ function fillForm(c) {
     if (!el) return;
     if (k === "clientId") el.value = c.id;
     else if (k === "businessWebsite") el.value = c.businessWebsite || c.website || "";
-    else if (k === "businessCover") el.value = c.businessCover || c.cover || "";
+    else if (k === "businessCover") el.value = c.businessCover || "";
     else el.value = c[k] || "";
   });
   const personalCompany = qs("#personalCompany");
@@ -779,11 +779,8 @@ if (form) {
     // Service Name + Service Description instead of a generic label.
     data.businessServices = serializeServices();
 
-    // Business cover is stored separately so the Business Profile has its own
-    // upload control, while the renderer remains backward-compatible.
-    if (selectedTemplate !== "personal" && data.businessCover) {
-      data.cover = data.businessCover;
-    }
+    // Personal and Business covers are independent fields.
+    // Never overwrite the Personal cover with the Business cover.
 
     if (selectedTemplate === "business_only") {
       data.name = data.company || data.name || "Business";
@@ -971,20 +968,8 @@ setupImageUpload("#coverFile", "#cover", "#coverThumb", "#coverPreviewWrap");
 setupImageUpload("#businessCoverFile", "#businessCover", "#businessCoverThumb", "#businessCoverPreviewWrap");
 setupImageUpload("#companyLogoFile", "#companyLogo", "#companyLogoThumb", "#companyLogoPreviewWrap");
 
-const businessCoverInput = qs("#businessCover");
-const personalCoverInput = qs("#cover");
-if (businessCoverInput) {
-  businessCoverInput.addEventListener("input", () => {
-    if (personalCoverInput) personalCoverInput.value = businessCoverInput.value;
-    updateImagePreviews();
-  });
-}
-if (personalCoverInput) {
-  personalCoverInput.addEventListener("input", () => {
-    if (businessCoverInput) businessCoverInput.value = personalCoverInput.value;
-    updateImagePreviews();
-  });
-}
+// Personal Cover (#cover) and Business Cover (#businessCover) remain
+// completely independent. Each upload/input updates only its own preview.
 
 // Start Admin
 initAdmin();
