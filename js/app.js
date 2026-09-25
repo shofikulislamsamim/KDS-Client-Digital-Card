@@ -1038,10 +1038,24 @@ async function renderCard() {
         return `<a class="kds-social-icon-link" href="${esc(safe)}" target="_blank" rel="noopener noreferrer" aria-label="${label}">${SVG_ICONS[key] || SVG_ICONS.share}</a>`;
       }).join("");
 
-      const businessServices = String(c.businessServices || "")
-        .split(",")
-        .map((x) => x.trim())
-        .filter(Boolean);
+      const businessServicesRaw = String(c.businessServices || "").trim();
+      let businessServices = [];
+      try {
+        const parsed = JSON.parse(businessServicesRaw);
+        if (Array.isArray(parsed)) {
+          businessServices = parsed
+            .map((item) => typeof item === "string"
+              ? { name: item, description: "" }
+              : { name: item?.name || "", description: item?.description || "" })
+            .filter((item) => item.name);
+        }
+      } catch (_) {
+        businessServices = businessServicesRaw
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean)
+          .map((name) => ({ name, description: "" }));
+      }
 
       const businessActions = [];
       if (businessPhone) {
@@ -1146,7 +1160,7 @@ async function renderCard() {
               <div class="kds-business-services-section">
                 <div class="kds-section-label">Services</div>
                 <div class="kds-services-chips">
-                  ${businessServices.map((service) => `<span class="kds-service-chip">${esc(service)}</span>`).join("")}
+                  ${businessServices.map((service) => `<div class="kds-service-chip"><div class="service-chip-text">${esc(service.name)}</div>${service.description ? `<div class="kds-service-chip-description">${esc(service.description)}</div>` : ""}</div>`).join("")}
                 </div>
               </div>
             ` : ""}
