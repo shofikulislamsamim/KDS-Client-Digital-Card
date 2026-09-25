@@ -4251,3 +4251,250 @@ body {
     border-radius: 20px !important;
   }
 }
+
+
+/* ==============================================================================
+   KDS PREMIUM POLISH — SAME REFERENCE DESIGN
+   Visual refinement only: no layout/section redesign.
+   ============================================================================== */
+
+.profile-card,
+.business-hero,
+.qr-card,
+.service-card {
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.profile-card,
+.business-hero,
+.qr-card,
+.service-card,
+.btn-action,
+.social-icon-link,
+.btn-secondary,
+.card-nav-switch {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.profile-cover {
+  height: 160px;
+}
+
+.card-header {
+  padding-left: 22px;
+  padding-right: 22px;
+  padding-bottom: 22px;
+}
+
+.avatar-wrapper {
+  margin-bottom: 14px;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.34),
+    0 0 0 4px rgba(9, 13, 22, 0.35);
+}
+
+.founder-name,
+.business-name {
+  text-rendering: optimizeLegibility;
+}
+
+.founder-title {
+  margin-top: 1px;
+}
+
+.company-badge {
+  padding: 5px 13px;
+  margin-top: 6px;
+}
+
+.founder-bio {
+  margin-top: 12px;
+  max-width: 430px;
+}
+
+.actions-grid {
+  gap: 9px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 18px;
+}
+
+.btn-action {
+  min-height: 72px;
+  padding: 13px 5px;
+  border-color: rgba(255, 255, 255, 0.085);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+}
+
+.btn-action:focus-visible,
+.btn-save-contact:focus-visible,
+.btn-secondary:focus-visible,
+.social-icon-link:focus-visible,
+.card-nav-switch:focus-visible,
+.business-map-link:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+.btn-action:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+.btn-save-contact {
+  min-height: 50px;
+  margin-bottom: 18px;
+  letter-spacing: 0.005em;
+}
+
+.socials-section,
+.business-social-section {
+  padding-bottom: 22px;
+}
+
+.social-icons-list {
+  gap: 12px;
+}
+
+.social-icon-link {
+  width: 50px;
+  height: 50px;
+  flex-basis: 50px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.social-icon-link svg {
+  width: 30px;
+  height: 30px;
+}
+
+.social-icon-link:hover {
+  box-shadow: 0 9px 20px rgba(0, 0, 0, 0.22);
+}
+
+.card-nav-switch {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.qr-card {
+  padding: 22px 20px 20px;
+}
+
+.qr-frame {
+  padding: 11px;
+  margin-bottom: 15px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
+.qr-title {
+  margin-bottom: 5px;
+}
+
+.qr-desc {
+  max-width: 390px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.btn-secondary {
+  min-height: 42px;
+}
+
+.business-hero {
+  padding: 30px 22px 22px;
+}
+
+.business-profile-cover {
+  margin: -30px -22px 24px;
+  width: calc(100% + 44px);
+}
+
+.business-profile-logo {
+  margin-bottom: 14px;
+}
+
+.business-about {
+  margin-bottom: 22px;
+}
+
+.service-card {
+  padding: 18px;
+}
+
+.service-card:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+}
+
+.service-number {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-subtle);
+  letter-spacing: 0.08em;
+}
+
+.kds-card-bottom-motto {
+  opacity: 0.82;
+}
+
+.page-footer {
+  padding-top: 14px;
+}
+
+@media (max-width: 600px) {
+  .profile-cover {
+    height: 150px;
+  }
+
+  .card-header {
+    padding-bottom: 20px;
+  }
+
+  .actions-grid {
+    gap: 8px;
+  }
+
+  .btn-action {
+    min-height: 68px;
+  }
+
+  .social-icons-list {
+    gap: 10px;
+  }
+
+  .social-icon-link {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  .business-hero {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .business-profile-cover {
+    margin-left: -18px;
+    margin-right: -18px;
+    width: calc(100% + 36px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-card,
+  .business-hero,
+  .qr-card,
+  .service-card,
+  .btn-action,
+  .social-icon-link,
+  .btn-secondary,
+  .card-nav-switch {
+    transition: none !important;
+  }
+}
