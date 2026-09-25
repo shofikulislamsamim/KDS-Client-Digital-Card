@@ -139,7 +139,9 @@ function dbToClient(c) {
     bio: c.bio || "",
     photo: c.profile_image_url || c.photo || "",
     cover: c.cover_image_url || c.cover || "",
-    businessCover: c.business_cover_image_url || c.cover_image_url || c.cover || "",
+    // Keep the Business Cover independent. Older records without this field
+    // are handled by the render fallback without coupling saved fields.
+    businessCover: c.business_cover_image_url || "",
     company: c.company_name || c.company || "",
     companyRole: c.company_role || c.companyRole || "",
     companyLogo: c.company_logo_url || c.companyLogo || "",
@@ -188,7 +190,7 @@ function clientToDb(c) {
     bio: c.bio || null,
     profile_image_url: c.photo || null,
     cover_image_url: c.cover || null,
-    business_cover_image_url: c.businessCover || c.cover || null,
+    business_cover_image_url: c.businessCover || null,
     company_name: c.company || null,
     company_role: c.companyRole || null,
     company_logo_url: c.companyLogo || null,
@@ -370,7 +372,7 @@ async function removeClient(id) {
       .maybeSingle();
     if (fetchError) throw fetchError;
 
-    const assetUrls = [client?.profile_image_url, client?.cover_image_url, client?.company_logo_url]
+    const assetUrls = [client?.profile_image_url, client?.cover_image_url, client?.business_cover_image_url, client?.company_logo_url]
       .filter(Boolean)
       .map((url) => {
         try {
@@ -585,7 +587,9 @@ async function renderCard() {
 
     // Dynamic Social Share / OpenGraph Meta Update
     const requestedProfile = urlParams.get("profile") === "business" ? "business" : "personal";
-    const metaIsBusiness = !isPreviewDemo && c.template === "business" && requestedProfile === "business";
+    const metaIsBusiness = !isPreviewDemo &&
+      ["business", "personal_business", "business_only"].includes(c.template) &&
+      (requestedProfile === "business" || c.template === "business_only");
     const cardTitle = metaIsBusiness ? (c.company || "Business Profile") + " • Company Profile" : c.name + " • Digital Visiting Card";
     const cardDesc = metaIsBusiness ? ((c.company || "Company") + (c.tagline ? " — " + c.tagline : "") + (c.businessBio ? ". " + c.businessBio : "")) : (c.name + (c.designation ? " - " + c.designation : "") + (c.company ? " at " + c.company : "") + ". Connect and save contact information.");
     const cardPhoto = (metaIsBusiness ? sanitizeUrl(c.companyLogo) : sanitizeUrl(c.photo)) || (new URL("./css/style.css", window.location.href).href);
@@ -626,12 +630,24 @@ async function renderCard() {
     }
 
     // Active Template selection (supports ?template=personal / ?template=business for testing/preview)
-    const activeTemplate = isPreviewDemo
-    ? (urlParams.get("template") || c.template || "business")
-    : (c.template || "personal");
-    const isBusinessProfile = !isPreviewDemo && activeTemplate === "business" && requestedProfile === "business";
-    const isPersonal = !isBusinessProfile && (activeTemplate === "personal" || activeTemplate === "business");
-    const isCombinedPersonal = activeTemplate === "business" && !isBusinessProfile;
+    const rawTemplate = isPreviewDemo
+      ? (urlParams.get("template") || c.template || "personal_business")
+      : (c.template || "personal");
+
+    // Keep "business" as a legacy alias for older cards.
+    const activeTemplate = rawTemplate === "business" ? "personal_business" : rawTemplate;
+
+    const isBusinessProfile =
+      !isPreviewDemo &&
+      ["personal_business", "business_only"].includes(activeTemplate) &&
+      (requestedProfile === "business" || activeTemplate === "business_only");
+
+    const isPersonal =
+      !isBusinessProfile &&
+      ["personal", "personal_business"].includes(activeTemplate);
+
+    const isCombinedPersonal =
+      activeTemplate === "personal_business" && !isBusinessProfile;
 
     // Assets & sanitized URLs
     const photo =
@@ -639,7 +655,7 @@ async function renderCard() {
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80";
 
     const coverUrl =
-      sanitizeUrl(c.cover) ||
+      sanitizeUrl(isBusinessProfile ? c.businessCover : c.cover) ||
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80";
 
     const waClean = normalizeWhatsAppNumber(isBusinessProfile ? (c.businessWhatsapp || c.businessPhone) : (c.whatsapp || c.phone));
@@ -950,7 +966,7 @@ async function renderCard() {
           </div>
 
           <!-- Business Profile Link -->
-          ${c.template === "business" ? `<div class="kds-cta-container kds-business-profile-link-wrap"><a class="kds-glowing-cta-btn" href="${esc(businessProfileUrl)}"><div class="cta-icon-circle">${SVG_ICONS.briefcase}</div><div class="cta-text-group"><span class="cta-main-label">Business Profile</span><span class="cta-sub-label">${esc(c.company || "View Company Profile")}</span></div></a></div>` : ""}
+          ${["personal_business", "business"].includes(c.template) ? `<div class="kds-cta-container kds-business-profile-link-wrap"><a class="kds-glowing-cta-btn" href="${esc(businessProfileUrl)}"><div class="cta-icon-circle">${SVG_ICONS.briefcase}</div><div class="cta-text-group"><span class="cta-main-label">Business Profile</span><span class="cta-sub-label">${esc(c.company || "View Company Profile")}</span></div></a></div>` : ""}
 
           <!-- QR Code & Share Box -->
           <div class="kds-qr-connect-box">
