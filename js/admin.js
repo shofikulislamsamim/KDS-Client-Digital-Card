@@ -2023,10 +2023,10 @@ async function generateClientApk(e) {
 
     const runId = Number(startPayload.runId);
     const workflowUrl = startPayload.htmlUrl || "";
-    if (genBtn) genBtn.innerHTML = "<span>Building APK...</span>";
+    if (genBtn) genBtn.innerHTML = "<span>Building APK... (this may take several minutes)</span>";
 
     let finalStatus = null;
-    const deadline = Date.now() + 6 * 60 * 1000;
+    const deadline = Date.now() + 15 * 60 * 1000;
 
     while (Date.now() < deadline) {
       await new Promise((resolve) => setTimeout(resolve, 2500));
@@ -2134,7 +2134,7 @@ function downloadGeneratedApk() {
   const url = typeof URL.createObjectURL === "function" ? URL.createObjectURL(build.apkBlob) : "";
   const a = document.createElement("a");
   a.href = url || "#";
-  a.download = build.safeFileName || "kds-digital-card.apk";
+  a.download = String(build.safeFileName || "kds-digital-card").replace(/\.apk$/i, "") + ".apk";
   document.body.appendChild(a);
   if (typeof a.click === "function") a.click();
   if (typeof a.remove === "function") a.remove();
