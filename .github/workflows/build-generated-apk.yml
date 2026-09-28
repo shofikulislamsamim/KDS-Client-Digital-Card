@@ -158,22 +158,22 @@ jobs:
 
           if [[ -s "$ICON_RAW" ]]; then
             # Normalize PNG/JPEG/WebP/etc. to PNG first.
-            magick "$ICON_RAW" -auto-orient -strip /tmp/kds-icon-normalized.png
+            convert "$ICON_RAW" -auto-orient -strip /tmp/kds-icon-normalized.png
 
-            CHANNELS="$(magick identify -format '%[channels]' /tmp/kds-icon-normalized.png 2>/dev/null || true)"
+            CHANNELS="$(identify -format '%[channels]' /tmp/kds-icon-normalized.png 2>/dev/null || true)"
             if [[ "$CHANNELS" == *a* || "$CHANNELS" == *A* ]]; then
               # Remove transparent outer padding so the actual logo can fill the icon.
-              magick /tmp/kds-icon-normalized.png -trim +repage /tmp/kds-icon-trimmed.png
+              convert /tmp/kds-icon-normalized.png -trim +repage /tmp/kds-icon-trimmed.png
             else
               cp /tmp/kds-icon-normalized.png /tmp/kds-icon-trimmed.png
             fi
 
             # 78% of the adaptive-icon canvas gives a substantially larger logo while
             # keeping it inside the launcher mask/safe area in normal Android launchers.
-            magick /tmp/kds-icon-trimmed.png               -resize '78%x78%'               -gravity center               -background none               -extent 1080x1080               "$ICON_FG"
+            convert /tmp/kds-icon-trimmed.png               -resize '78%x78%'               -gravity center               -background none               -extent 1080x1080               "$ICON_FG"
 
             # Legacy launchers/API levels use the same properly fitted square icon.
-            magick "$ICON_FG" -resize 432x432 "$ICON_LEGACY"
+            convert "$ICON_FG" -resize 432x432 "$ICON_LEGACY"
 
             cat > generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
@@ -203,7 +203,7 @@ jobs:
               <path android:fillColor="#38BDF8" android:pathData="M24,30h60v12h-60zM24,48h60v12h-60zM24,66h36v12h-36z" />
           </vector>
           EOF
-            magick -size 432x432 xc:"$SPLASH_BG_COLOR" "$ICON_LEGACY"
+            convert -size 432x432 xc:"$SPLASH_BG_COLOR" "$ICON_LEGACY"
           fi
 
           cat > generated-apk/app/src/main/AndroidManifest.xml <<EOF
