@@ -73,6 +73,18 @@ jobs:
           SPLASH_TITLE: ${{ inputs.splash_title }}
           SPLASH_BG_COLOR: ${{ inputs.splash_bg_color }}
           ICON_URL: ${{ inputs.icon_url }}
+          # Decode launcher metadata from the existing splash_title input.
+          if [[ "$SPLASH_TITLE" == KDSMETA:* ]]; then
+            META="${SPLASH_TITLE#KDSMETA:}"
+            ICON_B64="${META%%:*}"
+            TITLE_B64="${META#*:}"
+            if [[ -n "$ICON_B64" ]]; then
+              ICON_URL="$(printf '%s' "$ICON_B64" | base64 --decode 2>/dev/null || true)"
+            fi
+            if [[ -n "$TITLE_B64" ]]; then
+              SPLASH_TITLE="$(printf '%s' "$TITLE_B64" | base64 --decode 2>/dev/null || true)"
+            fi
+          fi
         shell: bash
         run: |
           set -euo pipefail
