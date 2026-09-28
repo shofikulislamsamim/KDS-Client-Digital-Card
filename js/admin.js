@@ -1946,7 +1946,6 @@ async function generateClientApk(e) {
     msgEl.classList.add("hidden");
   }
 
-  // Ensure admin is authenticated before allowing APK generation
   if (window.supabaseClient) {
     const { data: sessionData } = await supabaseClient.auth.getSession();
     const session = sessionData?.session;
@@ -1984,69 +1983,118 @@ async function generateClientApk(e) {
   const genBtn = qs("#generateApkBtn");
   if (genBtn) {
     genBtn.disabled = true;
-    genBtn.innerHTML = `<span>Generating APK...</span>`;
+    genBtn.innerHTML = "<span>Starting APK build...</span>";
   }
 
   try {
-    let apkBlob = null;
-
     if (!window.supabaseClient || typeof fetch !== "function") {
-      throw new Error("Secure APK build service is unavailable in this deployment. The app must be opened from the KDS server, not GitHub Pages.");
+      throw new Error("Secure APK build service is unavailable.");
     }
 
     const { data: sessionData } = await supabaseClient.auth.getSession();
     const token = sessionData?.session?.access_token;
-    if (!token) {
-      throw new Error("Your admin session has expired. Please log in again.");
-    }
+    if (!token) throw new Error("Your admin session has expired. Please log in again.");
 
-    const response = await fetch("/api/generate-apk", {
+    const endpoint = "https://xxsoybtxdqcdfkwgmktr.supabase.co/functions/v1/generate-apk";
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: \`Bearer \${token}\`
+    };
+
+    const startResponse = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
+      headers,
       body: JSON.stringify({
+        action: "start",
         appName: config.appName,
         cardUrl: config.cardUrl,
         profile: config.profile,
         packageId: config.packageId,
         internalAppId: config.internalAppId,
         splashTitle: config.splashTitle,
-        splashBgColor: config.splashBgColor,
-        iconUrl: config.iconUrl,
-        photoUrl: config.photoUrl,
-        splashImageUrl: config.splashImageUrl,
-        iconDataUrl: config.iconUrl.startsWith("data:image/") ? config.iconUrl : "",
-        photoDataUrl: config.photoUrl.startsWith("data:image/") ? config.photoUrl : "",
-        splashDataUrl: config.splashImageUrl.startsWith("data:image/") ? config.splashImageUrl : ""
+        splashBgColor: config.splashBgColor
       })
     });
 
-    const contentType = String(response.headers.get("content-type") || "").toLowerCase();
-    if (!response.ok) {
-      let payload = null;
-      try { payload = await response.json(); } catch (_) {}
-      const detail = payload?.detail ? ` — ${payload.detail}` : "";
-      const workflow = payload?.workflowUrl ? ` Open GitHub Actions: ${payload.workflowUrl}` : "";
-      throw new Error((payload?.error || `APK generation failed (HTTP ${response.status}).`) + detail + workflow);
+    const startPayload = await startResponse.json().catch(() => ({}));
+    if (!startResponse.ok || !startPayload?.runId) {
+      throw new Error(startPayload?.error || \`Could not start APK build (HTTP \${startResponse.status}).\`);
     }
 
-    if (!contentType.includes("application/vnd.android.package-archive") &&
-        !contentType.includes("application/octet-stream")) {
-      let payload = null;
-      try { payload = await response.json(); } catch (_) {}
-      throw new Error(payload?.error || "APK service returned an unexpected response instead of an APK file.");
+    const runId = Number(startPayload.runId);
+    const workflowUrl = startPayload.htmlUrl || "";
+    if (genBtn) genBtn.innerHTML = "<span>Building APK...</span>";
+
+    let finalStatus = null;
+    const deadline = Date.now() + 6 * 60 * 1000;
+
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+
+      const statusResponse = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ action: "status", runId })
+      });
+      const statusPayload = await statusResponse.json().catch(() => ({}));
+
+      if (!statusResponse.ok) {
+        throw new Error(statusPayload?.error || \`Could not read APK build status (HTTP \${statusResponse.status}).\`);
+      }
+
+      finalStatus = statusPayload;
+
+      if (statusPayload.status === "completed") {
+        if (statusPayload.conclusion !== "success") {
+          const linkText = statusPayload.htmlUrl || workflowUrl;
+          throw new Error(
+            \`Android APK build failed (\${statusPayload.conclusion || "unknown"}).\` +
+            (linkText ? \` Open GitHub Actions: \${linkText}\` : "")
+          );
+        }
+        if (statusPayload.artifactReady) break;
+      }
+
+      if (genBtn) {
+        genBtn.innerHTML = statusPayload.status === "queued"
+          ? "<span>APK build queued...</span>"
+          : "<span>Building APK...</span>";
+      }
     }
 
-    apkBlob = await response.blob();
+    if (!finalStatus || finalStatus.status !== "completed" || finalStatus.conclusion !== "success" || !finalStatus.artifactReady) {
+      throw new Error(
+        "Android APK build is taking too long. The GitHub Actions build may still be running." +
+        ((finalStatus?.htmlUrl || workflowUrl) ? \` Open GitHub Actions: \${finalStatus?.htmlUrl || workflowUrl}\` : "")
+      );
+    }
 
+    if (genBtn) genBtn.innerHTML = "<span>Preparing APK download...</span>";
+
+    const downloadResponse = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ action: "download", runId })
+    });
+    const downloadPayload = await downloadResponse.json().catch(() => ({}));
+
+    if (!downloadResponse.ok || !downloadPayload?.downloadUrl) {
+      throw new Error(downloadPayload?.error || \`Could not prepare APK download (HTTP \${downloadResponse.status}).\`);
+    }
+
+    const apkResponse = await fetch(downloadPayload.downloadUrl, { cache: "no-store" });
+    if (!apkResponse.ok) {
+      throw new Error(\`Secure APK download failed (HTTP \${apkResponse.status}).\`);
+    }
+
+    const apkBlob = await apkResponse.blob();
     if (!apkBlob || apkBlob.size < 10000) {
-      throw new Error(`APK service returned an invalid APK file (${apkBlob?.size || 0} bytes).`);
+      throw new Error(\`APK service returned an invalid APK file (\${apkBlob?.size || 0} bytes).\`);
     }
 
     const buildRecord = {
       ...config,
+      runId,
       apkBlob,
       generatedAt: new Date().toISOString()
     };
@@ -2063,7 +2111,7 @@ async function generateClientApk(e) {
     if (resProfile) resProfile.textContent = formatProfileLabel(config.profile);
     if (resultBox) resultBox.classList.remove("hidden");
 
-    showToast(`APK generated for "${config.appName}"`, "success");
+    showToast(\`APK generated for "\${config.appName}"\`, "success");
     return buildRecord;
   } catch (err) {
     showError(err);
@@ -2071,7 +2119,7 @@ async function generateClientApk(e) {
   } finally {
     if (genBtn) {
       genBtn.disabled = false;
-      genBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Generate APK</span>`;
+      genBtn.innerHTML = \`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Generate APK</span>\`;
     }
   }
 }
@@ -2093,7 +2141,7 @@ function downloadGeneratedApk() {
   if (url && typeof URL.revokeObjectURL === "function") {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  showToast(`Downloading ${a.download}`, "success");
+  showToast(\`Downloading \${a.download}\`, "success");
   return true;
 }
 
