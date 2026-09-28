@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import crypto from 'crypto';
 import zlib from 'zlib';
+import AdmZip from 'adm-zip';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -329,36 +330,83 @@ async function resolveApkAssetBuffer(dataUrl, remoteUrl) {
   return Buffer.from(DEFAULT_PNG_BASE64, 'base64');
 }
 
+const GITHUB_REPO = process.env.GITHUB_REPO || 'shofikulislamsamim/KDS-Client-Digital-Card';
+const GITHUB_TOKEN = String(process.env.GITHUB_TOKEN || '').trim();
+const GITHUB_API_VERSION = '2022-11-28';
+const APK_WORKFLOW = 'build-generated-apk.yml';
+
+async function githubApi(url, options = {}) {
+  if (!GITHUB_TOKEN) {
+    throw new Error('APK build service is not configured. Set GITHUB_TOKEN on the server.');
+  }
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      'X-GitHub-Api-Version': GITHUB_API_VERSION,
+      ...(options.headers || {})
+    }
+  });
+  const contentType = String(response.headers.get('content-type') || '');
+  let data = null;
+  if (contentType.includes('application/json')) {
+    data = await response.json().catch(() => null);
+  } else {
+    data = await response.arrayBuffer().catch(() => new ArrayBuffer(0));
+  }
+  if (!response.ok) {
+    const message = data?.message || `GitHub API request failed: ${response.status}`;
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
+  }
+  return { response, data };
+}
+
+function validateGithubInput(value, maxLength = 500) {
+  const str = String(value || '').trim();
+  return str.length > 0 && str.length <= maxLength ? str : '';
+}
+
+async function findRecentWorkflowRun(afterIso) {
+  const url = `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${APK_WORKFLOW}/runs?event=workflow_dispatch&per_page=20`;
+  const { data } = await githubApi(url);
+  const after = new Date(afterIso).getTime();
+  const runs = Array.isArray(data?.workflow_runs) ? data.workflow_runs : [];
+  return runs.find((run) => new Date(run.created_at).getTime() >= after - 15000) || null;
+}
+
 app.post('/api/generate-apk', async (req, res) => {
   const auth = await verifyAdminRequest(req);
-  if (!auth.ok) {
-    return res.status(auth.status).json({ error: auth.message });
+  if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
+
+  if (!GITHUB_TOKEN) {
+    return res.status(503).json({
+      error: 'Real APK build service is not configured on the server.',
+      detail: 'Set GITHUB_TOKEN with Actions write permission for the KDS-Client-Digital-Card repository.'
+    });
   }
 
   const body = req.body || {};
-  const appName = String(body.appName || '').trim();
-  const cardUrl = String(body.cardUrl || '').trim();
-  const profile = String(body.profile || 'personal').trim();
-  const packageId = String(body.packageId || '').trim();
-  const internalAppId = String(body.internalAppId || '').trim();
-  const splashTitle = String(body.splashTitle || appName).trim();
+  const appName = validateGithubInput(body.appName, 80);
+  const cardUrl = validateGithubInput(body.cardUrl, 2000);
+  const profile = validateGithubInput(body.profile, 32);
+  const packageId = validateGithubInput(body.packageId, 120);
+  const internalAppId = validateGithubInput(body.internalAppId, 120);
+  const splashTitle = validateGithubInput(body.splashTitle || appName, 120) || appName;
   const splashBgColor = /^#[0-9a-fA-F]{6}$/.test(String(body.splashBgColor || '').trim())
     ? String(body.splashBgColor).trim()
     : '#060a12';
+  const safeFileName = (internalAppId || 'kds-card').replace(/[^a-z0-9_-]/gi, '-').toLowerCase();
 
-  if (!appName || appName.length > 80) {
-    return res.status(400).json({ error: 'App Name is required (max 80 characters).' });
-  }
-  if (!cardUrl) {
-    return res.status(400).json({ error: 'Card URL is required.' });
-  }
+  if (!appName) return res.status(400).json({ error: 'App Name is required.' });
+  if (!cardUrl) return res.status(400).json({ error: 'Card URL is required.' });
   try {
-    const parsedUrl = new URL(cardUrl);
-    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-      return res.status(400).json({ error: 'Card URL must use http or https.' });
-    }
+    const parsed = new URL(cardUrl);
+    if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error();
   } catch (_) {
-    return res.status(400).json({ error: 'Card URL is invalid.' });
+    return res.status(400).json({ error: 'Card URL must be a valid http/https URL.' });
   }
   if (!['personal', 'business', 'personal_business'].includes(profile)) {
     return res.status(400).json({ error: 'Selected profile is invalid.' });
@@ -367,157 +415,127 @@ app.post('/api/generate-apk', async (req, res) => {
     return res.status(400).json({ error: 'Package identifier is invalid.' });
   }
 
-  const iconBuffer = await resolveApkAssetBuffer(body.iconDataUrl, body.iconUrl);
-  const splashBuffer = await resolveApkAssetBuffer(
-    body.splashDataUrl || body.iconDataUrl,
-    body.splashImageUrl || body.iconUrl
-  );
-  const photoBuffer = await resolveApkAssetBuffer(
-    body.photoDataUrl || body.iconDataUrl,
-    body.photoUrl || body.iconUrl
-  );
+  const dispatchStartedAt = new Date().toISOString();
+  const dispatchUrl = `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${APK_WORKFLOW}/dispatches`;
+  try {
+    const dispatch = await githubApi(dispatchUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref: 'main',
+        inputs: {
+          app_name: appName,
+          card_url: cardUrl,
+          profile,
+          package_id: packageId,
+          internal_app_id: internalAppId || 'kds-card',
+          splash_title: splashTitle,
+          splash_bg_color: splashBgColor,
+          safe_file_name: safeFileName
+        }
+      })
+    });
 
-  const manifestXml = `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="${escHtml(packageId)}"
-    android:versionCode="1"
-    android:versionName="1.0.0">
-    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="${escHtml(appName)}"
-        android:supportsRtl="true"
-        android:usesCleartextTraffic="true">
-        <meta-data android:name="com.kds.card.TARGET_URL" android:value="${escHtml(cardUrl)}" />
-        <meta-data android:name="com.kds.card.PROFILE_MODE" android:value="${escHtml(profile)}" />
-        <meta-data android:name="com.kds.card.SPLASH_BG" android:value="${escHtml(splashBgColor)}" />
-        <activity
-            android:name="${escHtml(packageId)}.MainActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize|keyboardHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>`;
+    let runId = Number(dispatch.data?.workflow_run_id || 0);
+    if (!runId) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const recent = await findRecentWorkflowRun(dispatchStartedAt);
+      runId = Number(recent?.id || 0);
+    }
 
-  const stringsXml = `<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">${escHtml(appName)}</string>
-    <string name="kds_card_url">${escHtml(cardUrl)}</string>
-    <string name="kds_profile">${escHtml(profile)}</string>
-    <string name="splash_title">${escHtml(splashTitle)}</string>
-    <color name="splash_bg">${escHtml(splashBgColor)}</color>
-</resources>`;
+    if (!runId) {
+      return res.status(502).json({ error: 'APK build was dispatched, but the GitHub Actions run ID could not be detected.' });
+    }
 
-  const appConfigJson = JSON.stringify(
-    {
-      appName,
-      packageId,
-      internalAppId,
-      cardUrl,
-      profile,
-      splashTitle,
-      splashBgColor,
-      versionName: '1.0.0',
-      versionCode: 1,
-      generatedAt: new Date().toISOString()
-    },
-    null,
-    2
-  );
-
-  const webviewIndexHtml = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>${escHtml(appName)}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body,html{width:100%;height:100%;background:${escHtml(splashBgColor)};color:#fff;font-family:system-ui,-apple-system,sans-serif;overflow:hidden}
-    .splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:${escHtml(splashBgColor)};z-index:10;transition:opacity .35s ease}
-    .splash.hide{opacity:0;pointer-events:none}
-    .splash-logo{width:88px;height:88px;border-radius:22px;object-fit:cover;border:2px solid rgba(56,189,248,.35)}
-    .splash-title{font-size:1.25rem;font-weight:700;text-align:center;padding:0 20px}
-    .splash-sub{font-size:.78rem;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase}
-    iframe{width:100%;height:100%;border:0;display:block}
-  </style>
-</head>
-<body>
-  <div class="splash" id="splash">
-    <img class="splash-logo" src="../res/drawable/splash_logo.png" alt="${escHtml(appName)}">
-    <div class="splash-title">${escHtml(splashTitle)}</div>
-    <div class="splash-sub">KDS Digital Card</div>
-  </div>
-  <iframe id="cardFrame" src="${escHtml(cardUrl)}" allow="clipboard-write; web-share"></iframe>
-  <script>
-    const frame = document.getElementById('cardFrame');
-    const hideSplash = () => document.getElementById('splash')?.classList.add('hide');
-    frame.addEventListener('load', () => setTimeout(hideSplash, 350));
-    setTimeout(hideSplash, 1400);
-  </script>
-</body>
-</html>`;
-
-  const dexHeader = Buffer.alloc(112);
-  dexHeader.write('dex\n035\0', 0, 'ascii');
-  dexHeader.writeUInt32LE(112, 32);
-  dexHeader.writeUInt32LE(0x70, 36);
-  dexHeader.writeUInt32LE(0x12345678, 40);
-
-  const arscHeader = Buffer.alloc(32);
-  arscHeader.writeUInt16LE(0x0002, 0);
-  arscHeader.writeUInt16LE(0x000c, 2);
-  arscHeader.writeUInt32LE(32, 4);
-
-  const rawEntries = [
-    { name: 'AndroidManifest.xml', data: Buffer.from(manifestXml, 'utf8'), store: false },
-    { name: 'resources.arsc', data: arscHeader, store: true },
-    { name: 'classes.dex', data: dexHeader, store: false },
-    { name: 'assets/kds-app-config.json', data: Buffer.from(appConfigJson, 'utf8'), store: false },
-    { name: 'assets/index.html', data: Buffer.from(webviewIndexHtml, 'utf8'), store: false },
-    { name: 'res/values/strings.xml', data: Buffer.from(stringsXml, 'utf8'), store: false },
-    { name: 'res/mipmap-mdpi/ic_launcher.png', data: iconBuffer, store: true },
-    { name: 'res/mipmap-hdpi/ic_launcher.png', data: iconBuffer, store: true },
-    { name: 'res/mipmap-xhdpi/ic_launcher.png', data: iconBuffer, store: true },
-    { name: 'res/mipmap-xxhdpi/ic_launcher.png', data: iconBuffer, store: true },
-    { name: 'res/mipmap-xxxhdpi/ic_launcher.png', data: iconBuffer, store: true },
-    { name: 'res/drawable/splash_logo.png', data: splashBuffer, store: true },
-    { name: 'res/drawable/profile_photo.png', data: photoBuffer, store: true }
-  ];
-
-  const manifestLines = [
-    'Manifest-Version: 1.0',
-    'Created-By: KDS Digital Card APK Builder 1.0',
-    `Package-Name: ${packageId}`,
-    ''
-  ];
-  for (const item of rawEntries) {
-    const hash = crypto.createHash('sha256').update(item.data).digest('base64');
-    manifestLines.push(`Name: ${item.name}`);
-    manifestLines.push(`SHA-256-Digest: ${hash}`);
-    manifestLines.push('');
+    return res.json({
+      ok: true,
+      runId,
+      workflowUrl: `https://github.com/${GITHUB_REPO}/actions/workflows/${APK_WORKFLOW}`,
+      message: 'Real Android APK build started.'
+    });
+  } catch (error) {
+    console.error('APK workflow dispatch failed:', error);
+    return res.status(error.status || 502).json({
+      error: 'Could not start the real APK build.',
+      detail: error.message
+    });
   }
+});
 
-  rawEntries.push({
-    name: 'META-INF/MANIFEST.MF',
-    data: Buffer.from(manifestLines.join('\r\n'), 'utf8'),
-    store: false
-  });
+app.get('/api/generate-apk/status/:runId', async (req, res) => {
+  const auth = await verifyAdminRequest(req);
+  if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
 
-  const apkBuffer = buildZipBuffer(rawEntries);
-  const safeFile = (internalAppId || 'kds-card').replace(/[^a-z0-9_-]/gi, '-').toLowerCase();
+  const runId = Number(req.params.runId);
+  if (!Number.isInteger(runId) || runId <= 0) return res.status(400).json({ error: 'Invalid workflow run ID.' });
 
-  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-  res.setHeader('Content-Disposition', `attachment; filename="${safeFile}.apk"`);
-  res.setHeader('Cache-Control', 'no-store');
-  return res.send(apkBuffer);
+  try {
+    const runUrl = `https://api.github.com/repos/${GITHUB_REPO}/actions/runs/${runId}`;
+    const { data: run } = await githubApi(runUrl);
+    const result = {
+      ok: true,
+      runId,
+      status: run.status,
+      conclusion: run.conclusion,
+      htmlUrl: run.html_url,
+      artifactId: null,
+      artifactReady: false
+    };
+
+    if (run.status === 'completed' && run.conclusion === 'success') {
+      const artifactsUrl = `https://api.github.com/repos/${GITHUB_REPO}/actions/runs/${runId}/artifacts?name=kds-installable-apk&per_page=10`;
+      const { data: artifacts } = await githubApi(artifactsUrl);
+      const artifact = (artifacts.artifacts || []).find((item) => !item.expired);
+      if (artifact) {
+        result.artifactId = artifact.id;
+        result.artifactReady = true;
+      }
+    }
+    return res.json(result);
+  } catch (error) {
+    return res.status(error.status || 502).json({ error: 'Could not read APK build status.', detail: error.message });
+  }
+});
+
+app.get('/api/generate-apk/download/:runId', async (req, res) => {
+  const auth = await verifyAdminRequest(req);
+  if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
+
+  const runId = Number(req.params.runId);
+  if (!Number.isInteger(runId) || runId <= 0) return res.status(400).json({ error: 'Invalid workflow run ID.' });
+
+  try {
+    const artifactsUrl = `https://api.github.com/repos/${GITHUB_REPO}/actions/runs/${runId}/artifacts?name=kds-installable-apk&per_page=10`;
+    const { data: artifacts } = await githubApi(artifactsUrl);
+    const artifact = (artifacts.artifacts || []).find((item) => !item.expired);
+    if (!artifact) return res.status(404).json({ error: 'The finished APK artifact is not available yet.' });
+
+    const downloadUrl = `https://api.github.com/repos/${GITHUB_REPO}/actions/artifacts/${artifact.id}/zip`;
+    const response = await fetch(downloadUrl, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'X-GitHub-Api-Version': GITHUB_API_VERSION
+      }
+    });
+    if (!response.ok) return res.status(response.status).json({ error: `GitHub artifact download failed: ${response.status}` });
+
+    const zipBuffer = Buffer.from(await response.arrayBuffer());
+    const zip = new AdmZip(zipBuffer);
+    const apkEntry = zip.getEntries().find((entry) => /\.apk$/i.test(entry.entryName));
+    if (!apkEntry) return res.status(502).json({ error: 'Build artifact does not contain an APK file.' });
+
+    const apkBuffer = apkEntry.getData();
+    const fileName = apkEntry.entryName.split('/').pop() || 'KDS-Digital-Card.apk';
+    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName.replace(/"/g, '')}"`);
+    res.setHeader('Content-Length', String(apkBuffer.length));
+    res.setHeader('Cache-Control', 'no-store');
+    return res.send(apkBuffer);
+  } catch (error) {
+    console.error('APK artifact download failed:', error);
+    return res.status(error.status || 502).json({ error: 'Could not download the generated APK.', detail: error.message });
+  }
 });
 
 // Serve static assets from root directory.
