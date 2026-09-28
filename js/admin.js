@@ -1998,7 +1998,7 @@ async function generateClientApk(e) {
     const endpoint = "https://xxsoybtxdqcdfkwgmktr.supabase.co/functions/v1/generate-apk";
     const headers = {
       "Content-Type": "application/json",
-      Authorization: \`Bearer \${token}\`
+      Authorization: `Bearer ${token}`
     };
 
     const startResponse = await fetch(endpoint, {
@@ -2018,7 +2018,7 @@ async function generateClientApk(e) {
 
     const startPayload = await startResponse.json().catch(() => ({}));
     if (!startResponse.ok || !startPayload?.runId) {
-      throw new Error(startPayload?.error || \`Could not start APK build (HTTP \${startResponse.status}).\`);
+      throw new Error(startPayload?.error || `Could not start APK build (HTTP ${startResponse.status}).`);
     }
 
     const runId = Number(startPayload.runId);
@@ -2039,7 +2039,7 @@ async function generateClientApk(e) {
       const statusPayload = await statusResponse.json().catch(() => ({}));
 
       if (!statusResponse.ok) {
-        throw new Error(statusPayload?.error || \`Could not read APK build status (HTTP \${statusResponse.status}).\`);
+        throw new Error(statusPayload?.error || `Could not read APK build status (HTTP ${statusResponse.status}).`);
       }
 
       finalStatus = statusPayload;
@@ -2048,8 +2048,8 @@ async function generateClientApk(e) {
         if (statusPayload.conclusion !== "success") {
           const linkText = statusPayload.htmlUrl || workflowUrl;
           throw new Error(
-            \`Android APK build failed (\${statusPayload.conclusion || "unknown"}).\` +
-            (linkText ? \` Open GitHub Actions: \${linkText}\` : "")
+            `Android APK build failed (${statusPayload.conclusion || "unknown"}).` +
+            (linkText ? ` Open GitHub Actions: ${linkText}` : "")
           );
         }
         if (statusPayload.artifactReady) break;
@@ -2065,7 +2065,7 @@ async function generateClientApk(e) {
     if (!finalStatus || finalStatus.status !== "completed" || finalStatus.conclusion !== "success" || !finalStatus.artifactReady) {
       throw new Error(
         "Android APK build is taking too long. The GitHub Actions build may still be running." +
-        ((finalStatus?.htmlUrl || workflowUrl) ? \` Open GitHub Actions: \${finalStatus?.htmlUrl || workflowUrl}\` : "")
+        ((finalStatus?.htmlUrl || workflowUrl) ? ` Open GitHub Actions: ${finalStatus?.htmlUrl || workflowUrl}` : "")
       );
     }
 
@@ -2079,17 +2079,17 @@ async function generateClientApk(e) {
     const downloadPayload = await downloadResponse.json().catch(() => ({}));
 
     if (!downloadResponse.ok || !downloadPayload?.downloadUrl) {
-      throw new Error(downloadPayload?.error || \`Could not prepare APK download (HTTP \${downloadResponse.status}).\`);
+      throw new Error(downloadPayload?.error || `Could not prepare APK download (HTTP ${downloadResponse.status}).`);
     }
 
     const apkResponse = await fetch(downloadPayload.downloadUrl, { cache: "no-store" });
     if (!apkResponse.ok) {
-      throw new Error(\`Secure APK download failed (HTTP \${apkResponse.status}).\`);
+      throw new Error(`Secure APK download failed (HTTP ${apkResponse.status}).`);
     }
 
     const apkBlob = await apkResponse.blob();
     if (!apkBlob || apkBlob.size < 10000) {
-      throw new Error(\`APK service returned an invalid APK file (\${apkBlob?.size || 0} bytes).\`);
+      throw new Error(`APK service returned an invalid APK file (${apkBlob?.size || 0} bytes).`);
     }
 
     const buildRecord = {
@@ -2111,7 +2111,7 @@ async function generateClientApk(e) {
     if (resProfile) resProfile.textContent = formatProfileLabel(config.profile);
     if (resultBox) resultBox.classList.remove("hidden");
 
-    showToast(\`APK generated for "\${config.appName}"\`, "success");
+    showToast(`APK generated for "${config.appName}"`, "success");
     return buildRecord;
   } catch (err) {
     showError(err);
@@ -2119,7 +2119,7 @@ async function generateClientApk(e) {
   } finally {
     if (genBtn) {
       genBtn.disabled = false;
-      genBtn.innerHTML = \`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Generate APK</span>\`;
+      genBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Generate APK</span>`;
     }
   }
 }
@@ -2141,7 +2141,7 @@ function downloadGeneratedApk() {
   if (url && typeof URL.revokeObjectURL === "function") {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  showToast(\`Downloading \${a.download}\`, "success");
+  showToast(`Downloading ${a.download}`, "success");
   return true;
 }
 
