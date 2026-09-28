@@ -85,8 +85,6 @@ jobs:
               SPLASH_TITLE="$(printf '%s' "$TITLE_B64" | base64 --decode 2>/dev/null || true)"
             fi
           fi
-        shell: bash
-        run: |
           set -euo pipefail
           rm -rf generated-apk
           mkdir -p generated-apk/app/src/main/java generated-apk/app/src/main/res/values generated-apk/app/src/main/res/drawable
