@@ -2047,14 +2047,12 @@ async function generateClientApk(e) {
       }
     }
 
-    const apkBytes = buildClientApkBytes(config);
-    if (!apkBlob) {
-      apkBlob = new Blob([apkBytes], { type: "application/vnd.android.package-archive" });
+    if (!apkBlob || apkBlob.size < 10000) {
+      throw new Error("The real Android APK build did not return a valid APK.");
     }
 
     const buildRecord = {
       ...config,
-      apkBytes,
       apkBlob,
       generatedAt: new Date().toISOString()
     };
