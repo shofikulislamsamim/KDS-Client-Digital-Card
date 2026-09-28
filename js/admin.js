@@ -1990,44 +1990,59 @@ async function generateClientApk(e) {
   try {
     let apkBlob = null;
 
-    if (window.supabaseClient && typeof fetch === "function") {
-      try {
-        const { data: sessionData } = await supabaseClient.auth.getSession();
-        const token = sessionData?.session?.access_token;
-        if (token) {
-          const response = await fetch("/api/generate-apk", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              appName: config.appName,
-              cardUrl: config.cardUrl,
-              profile: config.profile,
-              packageId: config.packageId,
-              internalAppId: config.internalAppId,
-              splashTitle: config.splashTitle,
-              splashBgColor: config.splashBgColor,
-              iconUrl: config.iconUrl,
-              photoUrl: config.photoUrl,
-              splashImageUrl: config.splashImageUrl,
-              iconDataUrl: config.iconUrl.startsWith("data:image/") ? config.iconUrl : "",
-              photoDataUrl: config.photoUrl.startsWith("data:image/") ? config.photoUrl : "",
-              splashDataUrl: config.splashImageUrl.startsWith("data:image/") ? config.splashImageUrl : ""
-            })
-          });
-          if (response.ok) {
-            apkBlob = await response.blob();
-          }
-        }
-      } catch (_) {
-        // The server must return the real APK; do not create a client-side fake APK.
-      }
+    if (!window.supabaseClient || typeof fetch !== "function") {
+      throw new Error("Secure APK build service is unavailable in this deployment. The app must be opened from the KDS server, not GitHub Pages.");
     }
 
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) {
+      throw new Error("Your admin session has expired. Please log in again.");
+    }
+
+    const response = await fetch("/api/generate-apk", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        appName: config.appName,
+        cardUrl: config.cardUrl,
+        profile: config.profile,
+        packageId: config.packageId,
+        internalAppId: config.internalAppId,
+        splashTitle: config.splashTitle,
+        splashBgColor: config.splashBgColor,
+        iconUrl: config.iconUrl,
+        photoUrl: config.photoUrl,
+        splashImageUrl: config.splashImageUrl,
+        iconDataUrl: config.iconUrl.startsWith("data:image/") ? config.iconUrl : "",
+        photoDataUrl: config.photoUrl.startsWith("data:image/") ? config.photoUrl : "",
+        splashDataUrl: config.splashImageUrl.startsWith("data:image/") ? config.splashImageUrl : ""
+      })
+    });
+
+    const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+    if (!response.ok) {
+      let payload = null;
+      try { payload = await response.json(); } catch (_) {}
+      const detail = payload?.detail ? ` — ${payload.detail}` : "";
+      const workflow = payload?.workflowUrl ? ` Open GitHub Actions: ${payload.workflowUrl}` : "";
+      throw new Error((payload?.error || `APK generation failed (HTTP ${response.status}).`) + detail + workflow);
+    }
+
+    if (!contentType.includes("application/vnd.android.package-archive") &&
+        !contentType.includes("application/octet-stream")) {
+      let payload = null;
+      try { payload = await response.json(); } catch (_) {}
+      throw new Error(payload?.error || "APK service returned an unexpected response instead of an APK file.");
+    }
+
+    apkBlob = await response.blob();
+
     if (!apkBlob || apkBlob.size < 10000) {
-      throw new Error("The real Android APK build did not return a valid APK.");
+      throw new Error(`APK service returned an invalid APK file (${apkBlob?.size || 0} bytes).`);
     }
 
     const buildRecord = {
