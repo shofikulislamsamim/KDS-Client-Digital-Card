@@ -1,0 +1,288 @@
+name: Build KDS Digital Card APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: "Android app name"
+        required: true
+        type: string
+      card_url:
+        description: "Card URL"
+        required: true
+        type: string
+      profile:
+        description: "Profile mode"
+        required: true
+        type: choice
+        options: [personal, business, personal_business]
+      package_id:
+        description: "Android package ID"
+        required: true
+        type: string
+      internal_app_id:
+        description: "Internal app ID"
+        required: true
+        type: string
+      splash_title:
+        description: "Splash title"
+        required: true
+        type: string
+      splash_bg_color:
+        description: "Splash background hex color"
+        required: true
+        type: string
+      safe_file_name:
+        description: "APK file base name"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Create Android project
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          CARD_URL: ${{ inputs.card_url }}
+          PROFILE: ${{ inputs.profile }}
+          PACKAGE_ID: ${{ inputs.package_id }}
+          INTERNAL_APP_ID: ${{ inputs.internal_app_id }}
+          SPLASH_TITLE: ${{ inputs.splash_title }}
+          SPLASH_BG_COLOR: ${{ inputs.splash_bg_color }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf generated-apk
+          mkdir -p generated-apk/app/src/main/java generated-apk/app/src/main/res/values generated-apk/app/src/main/res/drawable
+          PACKAGE_PATH="${PACKAGE_ID//./\/}"
+          mkdir -p "generated-apk/app/src/main/java/$PACKAGE_PATH"
+
+          cat > generated-apk/settings.gradle <<'EOF'
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "KDSGeneratedCard"
+          include(":app")
+          EOF
+
+          cat > generated-apk/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.9.2' apply false
+          }
+          EOF
+
+          cat > generated-apk/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+
+          cat > generated-apk/app/build.gradle <<EOF
+          plugins { id 'com.android.application' }
+          android {
+              namespace '$PACKAGE_ID'
+              compileSdk 35
+              defaultConfig {
+                  applicationId '$PACKAGE_ID'
+                  minSdk 24
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0.0'
+              }
+              buildTypes {
+                  release { minifyEnabled false; shrinkResources false }
+              }
+          }
+          EOF
+
+          cat > generated-apk/app/src/main/AndroidManifest.xml <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+              <application
+                  android:allowBackup="true"
+                  android:usesCleartextTraffic="true"
+                  android:label="$APP_NAME"
+                  android:theme="@style/AppTheme"
+                  android:icon="@drawable/ic_launcher">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:screenOrientation="portrait">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > generated-apk/app/src/main/res/values/colors.xml <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources><color name="splash_bg">$SPLASH_BG_COLOR</color></resources>
+          EOF
+
+          cat > generated-apk/app/src/main/res/values/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:windowLightStatusBar">false</item>
+                  <item name="android:statusBarColor">@color/splash_bg</item>
+                  <item name="android:navigationBarColor">@color/splash_bg</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > generated-apk/app/src/main/res/drawable/ic_launcher.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp" android:height="108dp"
+              android:viewportWidth="108" android:viewportHeight="108">
+              <path android:fillColor="#0B1220" android:pathData="M0,0h108v108h-108z" />
+              <path android:fillColor="#38BDF8" android:pathData="M24,30h60v12h-60zM24,48h60v12h-60zM24,66h36v12h-36z" />
+          </vector>
+          EOF
+
+          cat > "generated-apk/app/src/main/java/$PACKAGE_PATH/MainActivity.java" <<EOF
+          package $PACKAGE_ID;
+
+          import android.app.Activity;
+          import android.graphics.Color;
+          import android.os.Bundle;
+          import android.view.Gravity;
+          import android.view.View;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.FrameLayout;
+          import android.widget.TextView;
+
+          public class MainActivity extends Activity {
+              private WebView webView;
+              private FrameLayout root;
+              private View splash;
+              private static final String CARD_URL = "$CARD_URL";
+              private static final String SPLASH_TITLE = "$SPLASH_TITLE";
+              private static final int SPLASH_COLOR = Color.parseColor("$SPLASH_BG_COLOR");
+
+              @Override protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  root = new FrameLayout(this);
+                  root.setBackgroundColor(SPLASH_COLOR);
+                  webView = new WebView(this);
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setDatabaseEnabled(true);
+                  settings.setBuiltInZoomControls(false);
+                  settings.setDisplayZoomControls(false);
+                  settings.setSupportZoom(false);
+                  webView.setWebViewClient(new WebViewClient() {
+                      @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) { return false; }
+                      @Override public void onPageFinished(WebView view, String url) { hideSplash(); }
+                  });
+                  webView.setWebChromeClient(new WebChromeClient());
+                  root.addView(webView, new FrameLayout.LayoutParams(-1, -1));
+                  splash = createSplash();
+                  root.addView(splash, new FrameLayout.LayoutParams(-1, -1));
+                  setContentView(root);
+                  webView.loadUrl(CARD_URL);
+                  splash.postDelayed(this::hideSplash, 5000);
+              }
+
+              private View createSplash() {
+                  FrameLayout box = new FrameLayout(this);
+                  box.setBackgroundColor(SPLASH_COLOR);
+                  TextView title = new TextView(this);
+                  title.setText(SPLASH_TITLE);
+                  title.setTextColor(Color.WHITE);
+                  title.setTextSize(22);
+                  title.setGravity(Gravity.CENTER);
+                  title.setTypeface(null, android.graphics.Typeface.BOLD);
+                  FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(-1, -2);
+                  p.gravity = Gravity.CENTER;
+                  p.leftMargin = 24; p.rightMargin = 24;
+                  box.addView(title, p);
+                  return box;
+              }
+
+              private void hideSplash() {
+                  if (splash != null) {
+                      View old = splash;
+                      splash = null;
+                      old.animate().alpha(0f).setDuration(250).withEndAction(() -> root.removeView(old)).start();
+                  }
+              }
+
+              @Override public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) webView.goBack(); else super.onBackPressed();
+              }
+
+              @Override protected void onDestroy() {
+                  if (webView != null) {
+                      webView.loadUrl("about:blank");
+                      webView.stopLoading();
+                      webView.setWebChromeClient(null);
+                      webView.setWebViewClient(null);
+                      webView.destroy();
+                  }
+                  super.onDestroy();
+              }
+          }
+          EOF
+
+      - name: Build real APK
+        working-directory: generated-apk
+        run: gradle --no-daemon --stacktrace assembleDebug
+
+      - name: Verify installable APK
+        working-directory: generated-apk
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -40
+
+      - name: Rename APK
+        env:
+          SAFE_FILE_NAME: ${{ inputs.safe_file_name }}
+        working-directory: generated-apk
+        run: |
+          set -euo pipefail
+          cp app/build/outputs/apk/debug/app-debug.apk "KDS-$SAFE_FILE_NAME.apk"
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kds-installable-apk
+          path: generated-apk/KDS-*.apk
+          if-no-files-found: error
+          retention-days: 7
