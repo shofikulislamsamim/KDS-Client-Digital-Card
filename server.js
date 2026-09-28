@@ -447,12 +447,68 @@ app.post('/api/generate-apk', async (req, res) => {
       return res.status(502).json({ error: 'APK build was dispatched, but the GitHub Actions run ID could not be detected.' });
     }
 
-    return res.json({
-      ok: true,
-      runId,
-      workflowUrl: `https://github.com/${GITHUB_REPO}/actions/workflows/${APK_WORKFLOW}`,
-      message: 'Real Android APK build started.'
+    // Wait for the real Android build to finish so the existing Generate App
+    // button receives the actual APK binary, not a JSON status response.
+    const deadline = Date.now() + 5 * 60 * 1000;
+    let finalRun = null;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+      const runResponse = await githubApi(
+        `https://api.github.com/repos/${GITHUB_REPO}/actions/runs/${runId}`
+      );
+      finalRun = runResponse.data;
+      if (finalRun?.status === 'completed') break;
+    }
+
+    if (!finalRun || finalRun.status !== 'completed') {
+      return res.status(504).json({
+        error: 'Android APK build timed out.',
+        detail: `The build is still running. Open GitHub Actions to inspect run ${runId}.`
+      });
+    }
+
+    if (finalRun.conclusion !== 'success') {
+      return res.status(502).json({
+        error: 'Android APK build failed.',
+        detail: `GitHub Actions finished with conclusion: ${finalRun.conclusion || 'unknown'}.`,
+        workflowUrl: finalRun.html_url
+      });
+    }
+
+    const artifactsUrl =
+      `https://api.github.com/repos/${GITHUB_REPO}/actions/runs/${runId}/artifacts?name=kds-installable-apk&per_page=10`;
+    const { data: artifacts } = await githubApi(artifactsUrl);
+    const artifact = (artifacts.artifacts || []).find((item) => !item.expired);
+    if (!artifact) {
+      return res.status(502).json({ error: 'APK build completed, but the installable APK artifact was not found.' });
+    }
+
+    const artifactDownloadUrl =
+      `https://api.github.com/repos/${GITHUB_REPO}/actions/artifacts/${artifact.id}/zip`;
+    const artifactResponse = await fetch(artifactDownloadUrl, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'X-GitHub-Api-Version': GITHUB_API_VERSION
+      }
     });
+    if (!artifactResponse.ok) {
+      return res.status(artifactResponse.status).json({ error: `Could not download APK artifact: ${artifactResponse.status}` });
+    }
+
+    const artifactZip = new AdmZip(Buffer.from(await artifactResponse.arrayBuffer()));
+    const apkEntry = artifactZip.getEntries().find((entry) => /\.apk$/i.test(entry.entryName));
+    if (!apkEntry) {
+      return res.status(502).json({ error: 'The build artifact does not contain an APK file.' });
+    }
+
+    const apkBuffer = apkEntry.getData();
+    const fileName = apkEntry.entryName.split('/').pop() || `${safeFileName}.apk`;
+    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName.replace(/"/g, '')}"`);
+    res.setHeader('Content-Length', String(apkBuffer.length));
+    res.setHeader('Cache-Control', 'no-store');
+    return res.send(apkBuffer);
   } catch (error) {
     console.error('APK workflow dispatch failed:', error);
     return res.status(error.status || 502).json({
