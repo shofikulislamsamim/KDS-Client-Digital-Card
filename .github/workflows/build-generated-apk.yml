@@ -204,7 +204,10 @@ jobs:
           package $PACKAGE_ID;
 
           import android.app.Activity;
+          import android.content.ActivityNotFoundException;
+          import android.content.Intent;
           import android.graphics.Color;
+          import android.net.Uri;
           import android.os.Bundle;
           import android.view.Gravity;
           import android.view.View;
@@ -237,7 +240,14 @@ jobs:
                   settings.setDisplayZoomControls(false);
                   settings.setSupportZoom(false);
                   webView.setWebViewClient(new WebViewClient() {
-                      @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) { return false; }
+                      @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                          return handleExternalUrl(request.getUrl());
+                      }
+
+                      @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                          return handleExternalUrl(Uri.parse(url));
+                      }
+
                       @Override public void onPageFinished(WebView view, String url) { hideSplash(); }
                   });
                   webView.setWebChromeClient(new WebChromeClient());
@@ -247,6 +257,127 @@ jobs:
                   setContentView(root);
                   webView.loadUrl(CARD_URL);
                   splash.postDelayed(this::hideSplash, 5000);
+              }
+
+              /**
+               * Opens phone actions and social links with the appropriate Android app.
+               * If the app is not installed, falls back to the normal web URL where possible.
+               */
+              private boolean handleExternalUrl(Uri uri) {
+                  if (uri == null) return false;
+                  String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
+                  String host = uri.getHost() == null ? "" : uri.getHost().toLowerCase();
+
+                  try {
+                      if ("tel".equals(scheme)) {
+                          startActivity(new Intent(Intent.ACTION_DIAL, uri));
+                          return true;
+                      }
+
+                      if ("mailto".equals(scheme)) {
+                          startActivity(new Intent(Intent.ACTION_SENDTO, uri));
+                          return true;
+                      }
+
+                      if ("sms".equals(scheme) || "smsto".equals(scheme)) {
+                          startActivity(new Intent(Intent.ACTION_SENDTO, uri));
+                          return true;
+                      }
+
+                      if ("whatsapp".equals(scheme)) {
+                          Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                          intent.setPackage("com.whatsapp");
+                          startActivity(intent);
+                          return true;
+                      }
+
+                      if ("fb".equals(scheme)) {
+                          Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                          intent.setPackage("com.facebook.katana");
+                          startActivity(intent);
+                          return true;
+                      }
+
+                      if ("instagram".equals(scheme)) {
+                          Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                          intent.setPackage("com.instagram.android");
+                          startActivity(intent);
+                          return true;
+                      }
+
+                      if ("vnd.youtube".equals(scheme)) {
+                          Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                          intent.setPackage("com.google.android.youtube");
+                          startActivity(intent);
+                          return true;
+                      }
+
+                      if ("linkedin".equals(scheme)) {
+                          Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                          intent.setPackage("com.linkedin.android");
+                          startActivity(intent);
+                          return true;
+                      }
+
+                      if ("tiktok".equals(scheme)) {
+                          Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                          intent.setPackage("com.zhiliaoapp.musically");
+                          startActivity(intent);
+                          return true;
+                      }
+
+                      if ("http".equals(scheme) || "https".equals(scheme)) {
+                          boolean social = host.equals("facebook.com") || host.endsWith(".facebook.com")
+                              || host.equals("fb.watch") || host.endsWith(".fb.watch")
+                              || host.equals("instagram.com") || host.endsWith(".instagram.com")
+                              || host.equals("youtube.com") || host.endsWith(".youtube.com")
+                              || host.equals("youtu.be")
+                              || host.equals("linkedin.com") || host.endsWith(".linkedin.com")
+                              || host.equals("tiktok.com") || host.endsWith(".tiktok.com")
+                              || host.equals("wa.me") || host.endsWith(".wa.me")
+                              || host.equals("api.whatsapp.com") || host.endsWith(".whatsapp.com");
+
+                          if (social) {
+                              Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                              String packageName = null;
+                              if (host.equals("wa.me") || host.endsWith(".wa.me") || host.equals("api.whatsapp.com") || host.endsWith(".whatsapp.com")) {
+                                  packageName = "com.whatsapp";
+                              } else if (host.equals("facebook.com") || host.endsWith(".facebook.com") || host.equals("fb.watch") || host.endsWith(".fb.watch")) {
+                                  packageName = "com.facebook.katana";
+                              } else if (host.equals("instagram.com") || host.endsWith(".instagram.com")) {
+                                  packageName = "com.instagram.android";
+                              } else if (host.equals("youtube.com") || host.endsWith(".youtube.com") || host.equals("youtu.be")) {
+                                  packageName = "com.google.android.youtube";
+                              } else if (host.equals("linkedin.com") || host.endsWith(".linkedin.com")) {
+                                  packageName = "com.linkedin.android";
+                              } else if (host.equals("tiktok.com") || host.endsWith(".tiktok.com")) {
+                                  packageName = "com.zhiliaoapp.musically";
+                              }
+
+                              if (packageName != null) intent.setPackage(packageName);
+
+                              try {
+                                  startActivity(intent);
+                              } catch (ActivityNotFoundException ignored) {
+                                  // App is not installed: open the HTTPS URL in the default browser.
+                                  Intent browser = new Intent(Intent.ACTION_VIEW, uri);
+                                  startActivity(browser);
+                              }
+                              return true;
+                          }
+                      }
+                  } catch (ActivityNotFoundException ignored) {
+                      if ("http".equals(scheme) || "https".equals(scheme)) {
+                          try {
+                              startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                              return true;
+                          } catch (ActivityNotFoundException ignoredAgain) {
+                              return false;
+                          }
+                      }
+                  }
+
+                  return false;
               }
 
               private View createSplash() {
