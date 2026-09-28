@@ -1937,6 +1937,16 @@ function validateAppGeneratorConfig() {
   };
 }
 
+function encodeUtf8Base64(value) {
+  const bytes = new TextEncoder().encode(String(value ?? ""));
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
 async function generateClientApk(e) {
   if (e && typeof e.preventDefault === "function") e.preventDefault();
 
@@ -2011,7 +2021,9 @@ async function generateClientApk(e) {
         profile: config.profile,
         packageId: config.packageId,
         internalAppId: config.internalAppId,
-        splashTitle: config.splashTitle,
+        // Backward-compatible metadata channel: the Edge Function already forwards splashTitle to GitHub Actions.
+        // Embed the selected launcher icon URL so the native APK can compile it into the Android app icon.
+        splashTitle: `KDSMETA:${encodeUtf8Base64(config.iconUrl)}:${encodeUtf8Base64(config.splashTitle)}`,
         splashBgColor: config.splashBgColor
       })
     });
