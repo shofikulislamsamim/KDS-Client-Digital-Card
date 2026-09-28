@@ -73,6 +73,10 @@ jobs:
           SPLASH_TITLE: ${{ inputs.splash_title }}
           SPLASH_BG_COLOR: ${{ inputs.splash_bg_color }}
           ICON_URL: ${{ inputs.icon_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
           # Decode launcher metadata from the existing splash_title input.
           if [[ "$SPLASH_TITLE" == KDSMETA:* ]]; then
             META="${SPLASH_TITLE#KDSMETA:}"
@@ -85,7 +89,7 @@ jobs:
               SPLASH_TITLE="$(printf '%s' "$TITLE_B64" | base64 --decode 2>/dev/null || true)"
             fi
           fi
-          set -euo pipefail
+
           rm -rf generated-apk
           mkdir -p generated-apk/app/src/main/java generated-apk/app/src/main/res/values generated-apk/app/src/main/res/drawable
           PACKAGE_PATH="${PACKAGE_ID//./\/}"
