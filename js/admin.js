@@ -2022,7 +2022,7 @@ async function generateClientApk(e) {
           }
         }
       } catch (_) {
-        // Fallback to in-memory client APK builder below
+        // The server must return the real APK; do not create a client-side fake APK.
       }
     }
 
