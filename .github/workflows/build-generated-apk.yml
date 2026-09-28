@@ -32,6 +32,10 @@ on:
         description: "Splash background hex color"
         required: true
         type: string
+      icon_url:
+        description: "Launcher icon image URL or data URL"
+        required: false
+        type: string
       safe_file_name:
         description: "APK file base name"
         required: true
@@ -68,6 +72,7 @@ jobs:
           INTERNAL_APP_ID: ${{ inputs.internal_app_id }}
           SPLASH_TITLE: ${{ inputs.splash_title }}
           SPLASH_BG_COLOR: ${{ inputs.splash_bg_color }}
+          ICON_URL: ${{ inputs.icon_url }}
         shell: bash
         run: |
           set -euo pipefail
@@ -117,6 +122,29 @@ jobs:
           }
           EOF
 
+          # Resolve the selected client logo/profile image into a real Android launcher resource.
+          ICON_FILE="generated-apk/app/src/main/res/drawable/ic_launcher.png"
+          ICON_SOURCE="$ICON_URL"
+          if [[ -n "$ICON_SOURCE" ]]; then
+            if [[ "$ICON_SOURCE" == data:image/* ]]; then
+              ICON_B64="${ICON_SOURCE#*,}"
+              printf '%s' "$ICON_B64" | base64 --decode > "$ICON_FILE" || rm -f "$ICON_FILE"
+            elif [[ "$ICON_SOURCE" =~ ^https?:// ]]; then
+              curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 "$ICON_SOURCE" -o "$ICON_FILE" || rm -f "$ICON_FILE"
+            fi
+          fi
+          if [[ ! -s "$ICON_FILE" ]]; then
+            cat > generated-apk/app/src/main/res/drawable/ic_launcher.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp" android:height="108dp"
+              android:viewportWidth="108" android:viewportHeight="108">
+              <path android:fillColor="#0B1220" android:pathData="M0,0h108v108h-108z" />
+              <path android:fillColor="#38BDF8" android:pathData="M24,30h60v12h-60zM24,48h60v12h-60zM24,66h36v12h-36z" />
+          </vector>
+          EOF
+          fi
+
           cat > generated-apk/app/src/main/AndroidManifest.xml <<EOF
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -156,16 +184,6 @@ jobs:
                   <item name="android:navigationBarColor">@color/splash_bg</item>
               </style>
           </resources>
-          EOF
-
-          cat > generated-apk/app/src/main/res/drawable/ic_launcher.xml <<'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <vector xmlns:android="http://schemas.android.com/apk/res/android"
-              android:width="108dp" android:height="108dp"
-              android:viewportWidth="108" android:viewportHeight="108">
-              <path android:fillColor="#0B1220" android:pathData="M0,0h108v108h-108z" />
-              <path android:fillColor="#38BDF8" android:pathData="M24,30h60v12h-60zM24,48h60v12h-60zM24,66h36v12h-36z" />
-          </vector>
           EOF
 
           cat > "generated-apk/app/src/main/java/$PACKAGE_PATH/MainActivity.java" <<EOF
