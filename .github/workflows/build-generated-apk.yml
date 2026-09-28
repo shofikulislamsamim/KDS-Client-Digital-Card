@@ -91,7 +91,7 @@ jobs:
           fi
 
           rm -rf generated-apk
-          mkdir -p generated-apk/app/src/main/java generated-apk/app/src/main/res/values generated-apk/app/src/main/res/drawable
+          mkdir -p generated-apk/app/src/main/java generated-apk/app/src/main/res/values generated-apk/app/src/main/res/drawable generated-apk/app/src/main/res/mipmap-anydpi-v26 generated-apk/app/src/main/res/mipmap-xxxhdpi
           PACKAGE_PATH="${PACKAGE_ID//./\/}"
           mkdir -p "generated-apk/app/src/main/java/$PACKAGE_PATH"
 
@@ -136,27 +136,71 @@ jobs:
           }
           EOF
 
-          # Resolve the selected client logo/profile image into a real Android launcher resource.
-          ICON_FILE="generated-apk/app/src/main/res/drawable/ic_launcher.png"
+          # Resolve and fit the selected client logo/profile image for Android launcher icons.
+          # The source image is cropped only when it has transparent margins, then scaled large
+          # enough to use the adaptive icon safe area without distorting its aspect ratio.
           ICON_SOURCE="$ICON_URL"
+          ICON_RAW="/tmp/kds-icon-source"
+          ICON_FG="generated-apk/app/src/main/res/drawable/ic_launcher_foreground.png"
+          ICON_LEGACY="generated-apk/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+
           if [[ -n "$ICON_SOURCE" ]]; then
             if [[ "$ICON_SOURCE" == data:image/* ]]; then
               ICON_B64="${ICON_SOURCE#*,}"
-              printf '%s' "$ICON_B64" | base64 --decode > "$ICON_FILE" || rm -f "$ICON_FILE"
+              printf '%s' "$ICON_B64" | base64 --decode > "$ICON_RAW" || rm -f "$ICON_RAW"
             elif [[ "$ICON_SOURCE" =~ ^https?:// ]]; then
-              curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 "$ICON_SOURCE" -o "$ICON_FILE" || rm -f "$ICON_FILE"
+              curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 "$ICON_SOURCE" -o "$ICON_RAW" || rm -f "$ICON_RAW"
             fi
           fi
-          if [[ ! -s "$ICON_FILE" ]]; then
-            cat > generated-apk/app/src/main/res/drawable/ic_launcher.xml <<'EOF'
+
+          if [[ -s "$ICON_RAW" ]]; then
+            # Normalize PNG/JPEG/WebP/etc. to PNG first.
+            magick "$ICON_RAW" -auto-orient -strip /tmp/kds-icon-normalized.png
+
+            CHANNELS="$(magick identify -format '%[channels]' /tmp/kds-icon-normalized.png 2>/dev/null || true)"
+            if [[ "$CHANNELS" == *a* || "$CHANNELS" == *A* ]]; then
+              # Remove transparent outer padding so the actual logo can fill the icon.
+              magick /tmp/kds-icon-normalized.png -trim +repage /tmp/kds-icon-trimmed.png
+            else
+              cp /tmp/kds-icon-normalized.png /tmp/kds-icon-trimmed.png
+            fi
+
+            # 78% of the adaptive-icon canvas gives a substantially larger logo while
+            # keeping it inside the launcher mask/safe area in normal Android launchers.
+            magick /tmp/kds-icon-trimmed.png               -resize '78%x78%'               -gravity center               -background none               -extent 1080x1080               "$ICON_FG"
+
+            # Legacy launchers/API levels use the same properly fitted square icon.
+            magick "$ICON_FG" -resize 432x432 "$ICON_LEGACY"
+
+            cat > generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background" />
+              <foreground android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          EOF
+
+            cp generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml               generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          else
+            # Fallback icon when no client image is available.
+            cat > generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/ic_launcher_background" />
+              <foreground android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          EOF
+            cp generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml               generated-apk/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+
+            cat > generated-apk/app/src/main/res/drawable/ic_launcher_foreground.xml <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <vector xmlns:android="http://schemas.android.com/apk/res/android"
               android:width="108dp" android:height="108dp"
               android:viewportWidth="108" android:viewportHeight="108">
-              <path android:fillColor="#0B1220" android:pathData="M0,0h108v108h-108z" />
               <path android:fillColor="#38BDF8" android:pathData="M24,30h60v12h-60zM24,48h60v12h-60zM24,66h36v12h-36z" />
           </vector>
           EOF
+            magick -size 432x432 xc:"$SPLASH_BG_COLOR" "$ICON_LEGACY"
           fi
 
           cat > generated-apk/app/src/main/AndroidManifest.xml <<EOF
@@ -169,7 +213,8 @@ jobs:
                   android:usesCleartextTraffic="true"
                   android:label="$APP_NAME"
                   android:theme="@style/AppTheme"
-                  android:icon="@drawable/ic_launcher">
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher_round">
                   <activity
                       android:name=".MainActivity"
                       android:exported="true"
@@ -185,7 +230,10 @@ jobs:
 
           cat > generated-apk/app/src/main/res/values/colors.xml <<EOF
           <?xml version="1.0" encoding="utf-8"?>
-          <resources><color name="splash_bg">$SPLASH_BG_COLOR</color></resources>
+          <resources>
+              <color name="splash_bg">$SPLASH_BG_COLOR</color>
+              <color name="ic_launcher_background">$SPLASH_BG_COLOR</color>
+          </resources>
           EOF
 
           cat > generated-apk/app/src/main/res/values/styles.xml <<'EOF'
