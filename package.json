@@ -1,13 +1,13 @@
 {
   "name": "kds-client-digital-card",
   "version": "1.0.0",
-  "description": "KDS Client Digital Card System",
+  "description": "KDS Digital Card — Premium Digital Identity Platform",
   "type": "module",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
     "build": "echo 'Build complete'",
-    "lint": "node -c server.js js/app.js js/admin.js js/supabase.js"
+    "lint": "node -c server.js js/app.js js/reference-design.js js/admin.js js/supabase.js"
   },
   "dependencies": {
     "express": "^4.21.2"

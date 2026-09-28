@@ -1,215 +1,203 @@
 /* ==============================================================================
-   Khan Digital Solution – Digital Visiting Card & Business Profile
-   Modern, Premium, Responsive CSS Stylesheet
+   KDS DIGITAL CARD — PREMIUM DIGITAL IDENTITY DESIGN SYSTEM
+   Clean, cohesive, mobile-first stylesheet for Personal & Business Cards
    ============================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
-
 :root {
-  --bg-dark: #090d16;
-  --bg-surface: #111827;
-  --bg-card: #151d30;
-  --bg-card-hover: #1c263e;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-highlight: rgba(56, 189, 248, 0.25);
-  
-  --primary: #0284c7;
-  --primary-hover: #0369a1;
-  --primary-glow: rgba(2, 132, 199, 0.25);
-  
-  --accent-cyan: #38bdf8;
-  --accent-whatsapp: #25d366;
-  --accent-whatsapp-hover: #20ba5a;
-  
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-  
-  --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-color);
-  --shadow-hover: 0 25px 50px -12px rgba(2, 132, 199, 0.2), 0 0 0 1px var(--border-highlight);
-  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --kds-bg-canvas: #060a12;
+  --kds-bg-surface: #0b1220;
+  --kds-bg-card: #0f182a;
+  --kds-bg-card-elevated: #142038;
+  --kds-bg-glass: rgba(15, 24, 42, 0.86);
+
+  --kds-border-subtle: rgba(255, 255, 255, 0.07);
+  --kds-border-default: rgba(148, 163, 184, 0.14);
+  --kds-border-accent: rgba(56, 189, 248, 0.28);
+
+  --kds-blue: #0284c7;
+  --kds-blue-bright: #0ea5e9;
+  --kds-cyan: #38bdf8;
+  --kds-gold-subtle: #fbbf24;
+  --kds-whatsapp: #22c55e;
+
+  --kds-text-primary: #f8fafc;
+  --kds-text-secondary: #cbd5e1;
+  --kds-text-muted: #94a3b8;
+  --kds-text-subtle: #64748b;
+
+  --kds-radius-sm: 10px;
+  --kds-radius-md: 14px;
+  --kds-radius-lg: 18px;
+  --kds-radius-xl: 24px;
+  --kds-radius-full: 9999px;
+
+  --kds-shadow-card:
+    0 24px 54px -20px rgba(0, 0, 0, 0.72),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  --kds-transition: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Light Theme Variables if needed */
-[data-theme="light"] {
-  --bg-dark: #f1f5f9;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --border-color: rgba(0, 0, 0, 0.08);
-  --border-highlight: rgba(2, 132, 199, 0.3);
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-subtle: #94a3b8;
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-color);
-}
-
-/* Reset & Base Setup */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
+body.card-body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at 50% 0%, #1e293b 0%, var(--bg-dark) 70%);
+  background-color: var(--kds-bg-canvas);
+  background-image:
+    radial-gradient(circle at 18% 0%, rgba(14, 165, 233, 0.12), transparent 36%),
+    radial-gradient(circle at 85% 10%, rgba(2, 132, 199, 0.08), transparent 34%),
+    linear-gradient(180deg, #08101f 0%, #060a12 100%);
   background-attachment: fixed;
-  color: var(--text-main);
+  color: var(--kds-text-primary);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-x: hidden;
 }
 
-/* Page Layout Wrappers */
-.page-container {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 20px 16px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.business-container {
-  max-width: 680px;
-}
-
-.admin-container {
-  max-width: 1100px;
-  padding: 24px 20px 60px;
-}
-
-/* Supabase Alert Banner */
-.config-banner {
-  background: rgba(234, 179, 8, 0.12);
-  border: 1px solid rgba(234, 179, 8, 0.35);
-  color: #fef08a;
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  font-size: 0.88rem;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  line-height: 1.4;
-  margin-bottom: 4px;
-}
-.config-banner.hidden {
-  display: none !important;
-}
-
-/* Global Hidden Utility */
-.hidden {
-  display: none !important;
-}
-
-/* Admin Modals */
-.admin-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(9, 13, 22, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.admin-modal-backdrop.hidden,
-.admin-modal-backdrop[style*="display: none"] {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-.admin-modal-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+/* ==============================================================================
+   PAGE CONTAINERS
+   ============================================================================== */
+#cardRoot > .page-container {
   width: 100%;
   max-width: 500px;
-  padding: 28px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-  max-height: 90vh;
-  overflow-y: auto;
+  margin: 0 auto;
+  padding: 22px 16px 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-/* Profile Card Container */
-/* Layering fix: keep interactive controls fully above the card background */
-.profile-card {
-  isolation: isolate;
+#cardRoot > .page-container.business-container {
+  max-width: 620px;
 }
 
-.profile-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
+/* ==============================================================================
+   DEMO / PREVIEW MODE SWITCHER BAR
+   ============================================================================== */
+.kds-preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px 6px 14px;
+  background: rgba(11, 18, 32, 0.9);
+  border: 1px solid var(--kds-border-default);
+  border-radius: var(--kds-radius-full);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.kds-preview-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--kds-text-muted);
+  white-space: nowrap;
+}
+
+.kds-preview-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kds-preview-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: var(--kds-radius-full);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--kds-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--kds-transition),
+    color var(--kds-transition),
+    border-color var(--kds-transition);
+}
+
+.kds-preview-tab svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.kds-preview-tab:hover {
+  color: var(--kds-text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.kds-preview-tab.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--kds-blue), var(--kds-blue-bright));
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+}
+
+/* ==============================================================================
+   CARD SURFACES (PERSONAL & BUSINESS)
+   ============================================================================== */
+.profile-card,
+.business-hero,
+.qr-card {
   position: relative;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  isolation: isolate;
+  width: 100%;
+  background: linear-gradient(165deg, rgba(18, 30, 52, 0.96) 0%, rgba(10, 17, 31, 0.98) 100%);
+  border: 1px solid var(--kds-border-default);
+  border-radius: var(--kds-radius-xl);
+  box-shadow: var(--kds-shadow-card);
+  overflow: hidden;
 }
 
-.profile-card::before {
-  display: none;
-}
-
-/* Facebook-style cover photo */
+/* Cover Area */
 .profile-cover {
   position: relative;
-  z-index: 1;
   width: 100%;
-  height: 156px;
+  height: 168px;
   overflow: hidden;
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 42%, #0f172a 100%);
+  background: linear-gradient(135deg, #0b2545 0%, #0284c7 52%, #071120 100%);
 }
+
 .profile-cover::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.28) 100%);
+  background: linear-gradient(180deg, rgba(6, 10, 18, 0.05) 0%, rgba(10, 17, 31, 0.62) 100%);
   pointer-events: none;
 }
+
 .profile-cover-image {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
   object-position: center;
+  display: block;
 }
+
 .profile-cover-placeholder {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 78% 20%, rgba(56,189,248,.42), transparent 34%),
-    linear-gradient(135deg, #0284c7 0%, #0369a1 42%, #0f172a 100%);
+    radial-gradient(circle at 78% 22%, rgba(56, 189, 248, 0.32), transparent 36%),
+    radial-gradient(circle at 20% 80%, rgba(2, 132, 199, 0.24), transparent 42%),
+    linear-gradient(135deg, #0c223d 0%, #0a4168 48%, #07101e 100%);
 }
 
-/* Header & Avatar */
+/* ==============================================================================
+   PERSONAL PROFILE HEADER & AVATAR
+   ============================================================================== */
 .card-header {
   position: relative;
   z-index: 2;
-  padding: 0 24px 20px;
+  padding: 0 24px 22px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -218,227 +206,282 @@ body {
 
 .avatar-wrapper {
   position: relative;
-  width: 146px;
-  height: 146px;
+  width: 144px;
+  height: 144px;
+  margin-top: -72px;
+  margin-bottom: 16px;
   border-radius: 50%;
   padding: 4px;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  margin-top: -73px;
-  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--kds-cyan), var(--kds-blue));
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.48),
+    0 0 0 4px rgba(10, 17, 31, 0.85);
+  flex-shrink: 0;
 }
 
 .avatar-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   border-radius: 50%;
-  background: var(--bg-surface);
+  object-fit: cover;
+  object-position: center;
+  background: var(--kds-bg-surface);
   display: block;
 }
 
-.status-badge {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 18px;
-  height: 18px;
-  background-color: var(--accent-whatsapp);
-  border: 2.5px solid var(--bg-card);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(37, 211, 102, 0.6);
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #0f2542, #091526);
+  color: var(--kds-cyan);
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
-/* Typography */
 .founder-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.65rem;
+  font-size: clamp(1.55rem, 4.6vw, 1.85rem);
   font-weight: 700;
-  color: var(--text-main);
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  margin-bottom: 4px;
+  color: var(--kds-text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  text-wrap: balance;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .founder-title {
+  margin-top: 5px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--accent-cyan);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  color: #7dd3fc;
+  line-height: 1.35;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .company-badge {
+  margin-top: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: #ffffff;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(2, 132, 199, 0.10));
-  border: 1px solid rgba(56, 189, 248, 0.38);
-  padding: 4px 14px;
-  border-radius: var(--radius-full);
-  margin-top: 4px;
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.16);
+  justify-content: center;
+  padding: 5px 14px;
+  border-radius: var(--kds-radius-full);
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.26);
+  color: #e2e8f0;
+  font-size: 0.84rem;
+  font-weight: 600;
   letter-spacing: 0.01em;
+  max-width: 100%;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .founder-bio {
-  font-size: 0.92rem;
-  color: var(--text-muted);
-  text-align: center;
-  max-width: 420px;
   margin: 14px auto 0;
-  line-height: 1.55;
+  max-width: 42ch;
+  font-size: 0.9rem;
+  color: var(--kds-text-muted);
+  line-height: 1.6;
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 
-/* Action Buttons Grid */
+/* ==============================================================================
+   PRIMARY ACTIONS GRID (PERSONAL & BUSINESS)
+   ============================================================================== */
 .actions-grid {
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-  padding: 0 20px 20px;
+  padding: 0 22px 18px;
+  width: 100%;
+}
+
+.actions-grid[data-count="1"] {
+  grid-template-columns: minmax(0, 240px);
+  justify-content: center;
+}
+
+.actions-grid[data-count="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.actions-grid[data-count="3"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.actions-grid[data-count="4"] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .btn-action {
-  position: relative;
-  z-index: 4;
+  min-width: 0;
+  min-height: 74px;
+  padding: 12px 6px;
+  border-radius: var(--kds-radius-md);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--kds-border-default);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: var(--kds-text-primary);
+  text-decoration: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  padding: 14px 6px;
-  border-radius: var(--radius-md);
-  color: var(--text-main);
-  text-decoration: none;
+  gap: 7px;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    transform var(--kds-transition),
+    background-color var(--kds-transition),
+    border-color var(--kds-transition),
+    box-shadow var(--kds-transition);
 }
 
 .btn-action svg {
   width: 22px;
   height: 22px;
-  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+  transition: transform var(--kds-transition);
+}
+
+.btn-action span {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .btn-action:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: var(--border-highlight);
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--kds-border-accent);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
 }
 
-.btn-action:hover svg {
-  transform: scale(1.1);
+.btn-action:active {
+  transform: translateY(0) scale(0.98);
 }
 
-/* Unique Button Colors */
 .btn-action.action-call {
   color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.25);
-  background: rgba(56, 189, 248, 0.06);
+  border-color: rgba(56, 189, 248, 0.24);
+  background: rgba(56, 189, 248, 0.065);
 }
+
 .btn-action.action-whatsapp {
-  color: var(--accent-whatsapp);
-  border-color: rgba(37, 211, 102, 0.25);
-  background: rgba(37, 211, 102, 0.06);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.24);
+  background: rgba(34, 197, 94, 0.065);
 }
+
 .btn-action.action-email {
-  color: #f59e0b;
-  border-color: rgba(245, 158, 11, 0.25);
-  background: rgba(245, 158, 11, 0.06);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.24);
+  background: rgba(251, 191, 36, 0.06);
 }
+
+.btn-action.action-share,
+.btn-action.action-website,
 .btn-action.action-vcard {
-  color: #a855f7;
-  border-color: rgba(168, 85, 247, 0.25);
-  background: rgba(168, 85, 247, 0.06);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.04);
 }
 
-/* Save Contact + Live PDF tools */
+/* ==============================================================================
+   SAVE CONTACT PRIMARY CTA
+   ============================================================================== */
 .save-tools {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 20px 20px;
-}
-.save-tools .btn-save-contact {
-  width: 100%;
-  margin: 0;
-}
-.btn-live-pdf {
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.28);
-}
-.btn-live-pdf:hover {
-  background: linear-gradient(135deg, #6d28d9 0%, #4338ca 100%);
-  box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
+  padding: 0 22px 22px;
 }
 
-/* Big Primary Save Contact Button */
 .btn-save-contact {
-  display: flex;
+  width: 100%;
+  min-height: 52px;
+  padding: 13px 20px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: var(--kds-radius-md);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  width: calc(100% - 40px);
-  margin: 0 20px 20px;
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 14px 20px;
-  font-size: 0.96rem;
-  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
-  transition: all var(--transition-fast);
   text-decoration: none;
-}
-
-.btn-save-contact:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(2, 132, 199, 0.5);
-  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  box-shadow:
+    0 10px 26px rgba(2, 132, 199, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transition:
+    transform var(--kds-transition),
+    box-shadow var(--kds-transition),
+    background var(--kds-transition);
 }
 
 .btn-save-contact svg {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
 }
 
-/* Social Media Section */
-.socials-section {
-  position: relative;
-  z-index: 3;
-  padding: 0 20px 24px;
+.btn-save-contact:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 32px rgba(2, 132, 199, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.btn-save-contact:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* ==============================================================================
+   SOCIAL MEDIA SECTION
+   ============================================================================== */
+.socials-section,
+.business-social-section {
+  margin: 0 22px;
+  padding: 18px 0 22px;
+  border-top: 1px solid var(--kds-border-subtle);
 }
 
 .section-title {
-  font-size: 0.8rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-subtle);
-  font-weight: 700;
-  margin-bottom: 12px;
+  color: var(--kds-text-muted);
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
 }
 
+.section-title::before,
 .section-title::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--border-color);
+  background: var(--kds-border-subtle);
 }
 
 .social-icons-list {
@@ -446,2272 +489,308 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  gap: 14px;
-  margin: 0 auto;
+  gap: 12px;
 }
 
 .social-icon-link {
   position: relative;
-  z-index: 4;
-  flex: 0 0 52px;
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 13px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
+  border: 1px solid var(--kds-border-default);
+  color: var(--kds-text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all var(--transition-fast);
-  position: relative;
+  transition:
+    transform var(--kds-transition),
+    border-color var(--kds-transition),
+    background-color var(--kds-transition),
+    color var(--kds-transition),
+    box-shadow var(--kds-transition);
 }
 
 .social-icon-link svg {
-  width: 32px;
-  height: 32px;
-  transition: transform var(--transition-fast);
+  width: 22px;
+  height: 22px;
 }
 
 .social-icon-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  background: rgba(14, 165, 233, 0.12);
+  border-color: var(--kds-cyan);
+  color: var(--kds-cyan);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
-.social-icon-link:hover svg {
-  transform: scale(1.15);
+.social-icon-link:active {
+  transform: translateY(0) scale(0.96);
 }
 
-/* Tooltip on hover */
-.social-icon-link[data-tooltip]::before {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: #1e293b;
-  color: #f8fafc;
-  padding: 4px 8px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  border-radius: 4px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--border-color);
-  z-index: 10;
+/* ==============================================================================
+   CONNECTED PROFILE SWITCHER (PERSONAL <-> BUSINESS)
+   ============================================================================== */
+.profile-switcher-wrap,
+.kds-business-profile-link-wrap {
+  padding: 0 22px 22px;
 }
 
-.social-icon-link:hover::before {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.kds-business-profile-link-wrap {
+  padding: 0;
 }
 
-/* Switcher Card: Link to Business Profile */
 .card-nav-switch {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.03);
-  border-top: 1px solid var(--border-color);
-  padding: 16px 20px;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--kds-radius-lg);
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.24);
+  color: var(--kds-text-primary);
   text-decoration: none;
-  color: var(--text-main);
-  transition: background var(--transition-fast);
+  transition:
+    transform var(--kds-transition),
+    border-color var(--kds-transition),
+    background-color var(--kds-transition),
+    box-shadow var(--kds-transition);
 }
 
 .card-nav-switch:hover {
-  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 .switch-content {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .switch-logo {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  border: 1px solid var(--border-color);
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  object-fit: contain;
+  background: var(--kds-bg-surface);
+  border: 1px solid var(--kds-border-default);
+  padding: 3px;
+}
+
+.switch-logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--kds-cyan);
+  background: rgba(14, 165, 233, 0.12);
 }
 
 .switch-texts {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+
+.switch-kicker {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kds-gold-subtle);
+  line-height: 1.2;
 }
 
 .switch-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
   font-weight: 700;
-  font-size: 0.92rem;
+  color: var(--kds-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .switch-subtitle {
   font-size: 0.78rem;
-  color: var(--text-muted);
+  color: var(--kds-cyan);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .switch-arrow {
-  color: var(--accent-cyan);
-  transition: transform var(--transition-fast);
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--kds-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--kds-transition), background-color var(--kds-transition);
 }
 
 .card-nav-switch:hover .switch-arrow {
-  transform: translateX(4px);
-}
-
-/* QR Code Card */
-.qr-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  padding: 24px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: var(--shadow-card);
-}
-
-.qr-frame {
-  background: #ffffff;
-  padding: 12px;
-  border-radius: var(--radius-md);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  margin-bottom: 16px;
-  display: inline-block;
-}
-
-.qr-frame canvas,
-.qr-frame img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.qr-title {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.qr-desc {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-bottom: 16px;
-}
-
-.qr-btn-group {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-  max-width: 320px;
-}
-
-.btn-secondary {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: var(--border-highlight);
-  transform: translateY(-2px);
-}
-
-.btn-secondary svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* Footer Section */
-.page-footer {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--text-subtle);
-  padding: 16px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.admin-link {
-  color: var(--text-subtle);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.76rem;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-  transition: all var(--transition-fast);
-}
-
-.admin-link:hover {
-  color: var(--text-muted);
-  border-color: var(--border-color);
+  transform: translateX(3px);
+  background: rgba(56, 189, 248, 0.22);
 }
 
 /* ==============================================================================
-   BUSINESS PROFILE PAGE STYLES (business.html)
+   BUSINESS PROFILE HERO & LOGO
    ============================================================================== */
-.business-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0 16px;
-}
-
-.back-badge-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--accent-cyan);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  background: rgba(56, 189, 248, 0.08);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: var(--radius-full);
-  transition: all var(--transition-fast);
-}
-
-.back-badge-link:hover {
-  background: rgba(56, 189, 248, 0.15);
-  transform: translateX(-2px);
-}
-
 .business-hero {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-color);
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
-}
-
-.business-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #38bdf8, #0284c7, #25d366);
-}
-
-.kds-logo-wrapper {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 16px;
-  border-radius: var(--radius-lg);
-  padding: 6px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-.kds-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  display: block;
-}
-
-.business-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.85rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 4px;
-  color: var(--text-main);
-}
-
-.business-tagline {
-  font-size: 1.02rem;
-  font-weight: 600;
-  color: var(--accent-cyan);
-  margin-bottom: 16px;
-}
-
-.business-about {
-  font-size: 0.92rem;
-  color: var(--text-muted);
-  max-width: 580px;
-  margin: 0 auto 24px;
-  line-height: 1.6;
-}
-
-/* Services Section */
-.services-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.services-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-}
-
-@media (min-width: 600px) {
-  .services-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.service-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: var(--shadow-card);
-  transition: all var(--transition-fast);
-}
-
-.service-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--border-highlight);
-  background: var(--bg-card-hover);
-  box-shadow: var(--shadow-hover);
-}
-
-.service-icon-box {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  background: rgba(2, 132, 199, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  color: var(--accent-cyan);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.service-icon-box svg {
-  width: 22px;
-  height: 22px;
-}
-
-.service-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.service-desc {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-  flex: 1;
-}
-
-/* ==============================================================================
-   ADMIN PANEL STYLES (admin.html)
-   ============================================================================== */
-
-/* Admin Auth View */
-.admin-auth-box {
-  max-width: 420px;
-  margin: 80px auto;
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-color);
-  padding: 36px 28px;
-  box-shadow: var(--shadow-card);
+  padding: 0 0 24px;
   text-align: center;
 }
 
-.auth-header-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  background: rgba(2, 132, 199, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: var(--accent-cyan);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.auth-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.auth-subtitle {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  margin-bottom: 24px;
-}
-
-/* Form Controls */
-.form-group {
-  margin-bottom: 18px;
-  text-align: left;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.form-label span.bengali-hint {
-  font-size: 0.75rem;
-  color: var(--text-subtle);
-  font-weight: normal;
-  margin-left: 4px;
-}
-
-.form-input, .form-textarea, .form-select {
-  width: 100%;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  font-size: 0.92rem;
-  font-family: inherit;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-  outline: none;
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
-  background: rgba(15, 23, 42, 0.9);
-}
-
-.form-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-
-.btn-primary {
-  width: 100%;
-  background: linear-gradient(135deg, #0284c7, #0369a1);
-  color: #ffffff;
-  border: none;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  font-size: 0.94rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all var(--transition-fast);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0369a1, #0284c7);
-  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
-  transform: translateY(-1px);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Admin Dashboard Layout */
-.admin-navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  padding: 12px 20px;
-  border-radius: var(--radius-lg);
-  margin-bottom: 24px;
-}
-
-.admin-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.admin-brand-title {
-  font-weight: 800;
-  font-size: 1.1rem;
-}
-
-.admin-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-badge {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-color);
-}
-
-.btn-logout {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #f87171;
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-logout:hover {
-  background: rgba(239, 68, 68, 0.2);
-}
-
-/* Admin Tabs Navigation */
-.admin-tabs {
-  display: flex;
-  overflow-x: auto;
-  gap: 8px;
-  padding-bottom: 8px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.tab-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  transition: all var(--transition-fast);
-}
-
-.tab-btn:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.tab-btn.active {
-  color: #ffffff;
-  background: var(--primary);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-}
-
-/* Sticky Action Bar for Admin */
-.admin-sticky-bar {
-  position: sticky;
-  top: 16px;
-  z-index: 100;
-  background: rgba(17, 24, 39, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  padding: 12px 20px;
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.sticky-bar-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.save-status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent-whatsapp);
-}
-
-.save-status-dot.dirty {
-  background: #f59e0b;
-}
-
-.sticky-bar-btns {
-  display: flex;
-  gap: 10px;
-}
-
-/* Image Upload Control Box */
-.image-upload-box {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px dashed var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 16px;
+.business-header-content {
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-
-.image-preview-row {
-  display: flex;
   align-items: center;
-  gap: 16px;
 }
 
-.preview-thumb {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--radius-md);
-  object-fit: cover;
-  border: 2px solid var(--border-color);
-  background: var(--bg-surface);
-}
-
-.file-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-}
-
-/* Service Item in Admin */
-.admin-service-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  margin-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.service-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.service-reorder-btns {
-  display: flex;
-  gap: 4px;
-}
-
-.btn-icon {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-icon:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--border-highlight);
-}
-
-.btn-icon.btn-danger {
-  color: #f87171;
-}
-.btn-icon.btn-danger:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.4);
-}
-
-/* Toggle Switch */
-.switch-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.switch-input {
-  display: none;
-}
-
-.switch-slider {
-  width: 40px;
-  height: 22px;
-  background-color: #334155;
-  border-radius: 20px;
-  position: relative;
-  transition: background-color 0.2s;
-}
-
-.switch-slider::before {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  top: 3px;
-  left: 3px;
-  transition: transform 0.2s;
-}
-
-.switch-input:checked + .switch-slider {
-  background-color: var(--accent-whatsapp);
-}
-
-.switch-input:checked + .switch-slider::before {
-  transform: translateX(18px);
-}
-
-/* Toast Message */
-.toast-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.toast {
-  background: #1e293b;
-  border: 1px solid var(--border-color);
-  color: #f8fafc;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  font-size: 0.88rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: auto;
-}
-
-.toast.toast-success {
-  border-color: var(--accent-whatsapp);
-  background: #064e3b;
-}
-
-.toast.toast-error {
-  border-color: #ef4444;
-  background: #7f1d1d;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Spinner */
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #ffffff;
-  animation: spin 0.7s linear infinite;
-  display: inline-block;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .actions-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    padding: 0 12px 16px;
-  }
-  
-  .btn-action {
-    padding: 13px 3px;
-    min-height: 58px;
-    font-size: 0.72rem;
-    line-height: 1.2;
-  }
-
-  .btn-action svg {
-    width: 21px;
-    height: 21px;
-    flex: 0 0 auto;
-  }
-
-  .social-icons-list {
-    gap: 10px;
-  }
-
-  .social-icon-link {
-    width: 48px;
-    height: 48px;
-    flex: 0 0 48px;
-  }
-  
-  .founder-name {
-    font-size: 1.45rem;
-  }
-
-  .admin-navbar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
-  }
-  
-  .admin-sticky-bar {
-    flex-direction: column;
-    gap: 10px;
-    align-items: stretch;
-  }
-}
-
-/* Branding upload controls */
-.image-upload-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-.image-upload-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.image-upload-row .file-input-wrapper {
-  flex: 1;
-}
-.image-upload-row .form-input {
-  margin-bottom: 8px;
-}
-@media (max-width: 640px) {
-  .image-upload-grid { grid-template-columns: 1fr; }
-  .image-upload-row { align-items: flex-start; }
-}
-
-
-/* Post-save Connect With Me modal */
-.connect-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(3, 7, 18, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-.connect-modal-backdrop.hidden { display: none !important; }
-.connect-modal-card {
-  position: relative;
-  width: 100%;
-  max-width: 430px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 28px 20px 20px;
-  border-radius: 22px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-highlight);
-  box-shadow: 0 25px 70px rgba(0,0,0,.55);
-  text-align: center;
-}
-.connect-modal-close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255,255,255,.07);
-  color: var(--text-muted);
-  font-size: 25px;
-  line-height: 1;
-  cursor: pointer;
-}
-.connect-success-icon {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #22c55e;
-  color: #fff;
-  font-size: 30px;
-  font-weight: 800;
-}
-.connect-modal-card h2 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.45rem;
-  margin-bottom: 5px;
-}
-.connect-modal-subtitle {
-  color: var(--text-muted);
-  font-size: .88rem;
-  margin-bottom: 16px;
-}
-.connect-options {
-  display: grid;
-  gap: 9px;
-}
-.connect-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 11px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 13px;
-  background: rgba(255,255,255,.035);
-  color: var(--text-main);
-  text-decoration: none;
-  text-align: left;
-  transition: transform .18s ease, background .18s ease;
-}
-.connect-option:hover { transform: translateY(-1px); background: rgba(255,255,255,.07); }
-.connect-option-icon {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-}
-.connect-option-icon svg { width: 25px; height: 25px; }
-.connect-option-copy { flex: 1; min-width: 0; }
-.connect-option-name { display: block; font-weight: 700; font-size: .9rem; }
-.connect-option-action { display: block; color: var(--text-muted); font-size: .72rem; margin-top: 1px; }
-.connect-option-arrow { color: var(--text-subtle); font-size: 18px; }
-.connect-close-btn {
-  width: 100%;
-  margin-top: 14px;
-  padding: 11px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: rgba(255,255,255,.05);
-  color: var(--text-main);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.connect-option-icon[data-platform="facebook"] { color:#0866ff; background:rgba(8,102,255,.10); }
-.connect-option-icon[data-platform="whatsapp"] { color:#25d366; background:rgba(37,211,102,.10); }
-.connect-option-icon[data-platform="youtube"] { color:#ff0000; background:rgba(255,0,0,.10); }
-.connect-option-icon[data-platform="tiktok"] { color:#fff; background:#000; }
-
-.connect-option-icon[data-platform="linkedin"] { color:#0a66c2; background:rgba(10,102,194,.10); }
-
-/* Only the Contact Saved modal uses Instagram's official multicolor logo */
-.connect-option-icon[data-platform="instagram"] {
-  color: #fff !important;
-  background: transparent !important;
-}
-.connect-option-icon[data-platform="instagram"] .connect-brand-icon {
-  width: 30px;
-  height: 30px;
-  display: block;
-  fill: none !important;
-  stroke: none !important;
-}
-
-
-@media (max-width: 480px) {
-  .profile-cover {
-    height: 145px;
-  }
-  .avatar-wrapper {
-    width: 136px;
-    height: 136px;
-    margin-top: -68px;
-  }
-}
-
-/* Admin cover-photo uploader: compact Facebook-style preview */
-.admin-container .image-upload-box:has(#admProfileCoverPreview) {
-  padding: 14px;
-  gap: 12px;
-}
-.admin-container .image-upload-box:has(#admProfileCoverPreview) .image-preview-row {
-  align-items: center;
-  gap: 14px;
-}
-.admin-container .preview-cover-thumb {
-  display: block;
-  width: 220px;
-  height: 88px;
-  min-width: 220px;
-  max-width: 220px;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 10px;
-  border: 1px solid var(--border-highlight);
-  background: var(--bg-surface);
-  box-shadow: 0 6px 18px rgba(0,0,0,.22);
-}
-.admin-container .image-upload-box:has(#admProfileCoverPreview) .file-input-wrapper {
-  min-width: 0;
-}
-.admin-container .image-upload-box:has(#admProfileCoverPreview) .file-input-wrapper .form-input {
-  margin: 0 0 4px;
-  min-height: 40px;
-}
-.admin-container .image-upload-box:has(#admProfileCoverPreview) > div:last-child .form-input {
-  min-height: 40px;
-}
-@media (max-width: 640px) {
-  .admin-container .image-upload-box:has(#admProfileCoverPreview) .image-preview-row {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .admin-container .preview-cover-thumb {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    height: 120px;
-  }
-}
-
-/* Business profile: exact same cover + profile sizing/border system as personal card */
-.business-hero {
-  padding: 0 24px 32px;
-}
-
-/* The cover uses the exact same .profile-cover dimensions as the personal card. */
-.business-profile-cover {
-  width: calc(100% + 48px);
-  margin-left: -24px;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-}
-
-/* Exact match to the personal .avatar-wrapper: 146px desktop, 136px mobile. */
 .business-profile-logo {
   position: relative;
   z-index: 3;
-  width: 146px;
-  height: 146px;
-  margin: -73px auto 16px;
-  border-radius: 50%;
+  width: 124px;
+  height: 124px;
+  margin: -62px auto 16px;
+  border-radius: 26px;
   padding: 4px;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  border: 0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, var(--kds-cyan), var(--kds-blue));
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.46),
+    0 0 0 4px rgba(10, 17, 31, 0.85);
 }
+
 .business-profile-logo .kds-logo-img {
-  border-radius: 50%;
-}
-
-@media (max-width: 480px) {
-  .business-hero {
-    padding: 0 18px 28px;
-  }
-  .business-profile-cover {
-    width: calc(100% + 36px);
-    margin-left: -18px;
-  }
-  .business-profile-logo {
-    width: 136px;
-    height: 136px;
-    margin-top: -68px;
-  }
-}
-
-
-/* ==============================================================================
-   Mobile / Android optimization
-   Designed for 320px–480px touch screens, safe areas and Android browsers.
-   ============================================================================== */
-html {
-  width: 100%;
-  overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  touch-action: manipulation;
-}
-
-body {
-  width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-img, svg, canvas {
-  max-width: 100%;
-}
-
-button, a, input, textarea, select {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button, a.btn-action, a.btn-save-contact, .social-icon-link {
-  touch-action: manipulation;
-}
-
-@media (max-width: 600px) {
-  .page-container,
-  .business-container {
-    width: 100%;
-    max-width: 100%;
-    padding: 10px 10px calc(28px + env(safe-area-inset-bottom));
-    gap: 12px;
-  }
-
-  .profile-card,
-  .business-hero {
-    width: 100%;
-    border-radius: 18px;
-  }
-
-  .profile-cover {
-    height: clamp(118px, 34vw, 145px);
-  }
-
-  .card-header {
-    padding: 0 14px 16px;
-  }
-
-  .avatar-wrapper,
-  .business-profile-logo {
-    width: 112px;
-    height: 112px;
-    margin-top: -56px;
-    margin-bottom: 12px;
-  }
-
-  .status-badge {
-    width: 16px;
-    height: 16px;
-    right: 4px;
-    bottom: 4px;
-    border-width: 2px;
-  }
-
-  .founder-name {
-    max-width: 100%;
-    font-size: clamp(1.25rem, 6vw, 1.5rem);
-    line-height: 1.18;
-    overflow-wrap: anywhere;
-  }
-
-  .founder-title {
-    font-size: .88rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .company-badge {
-    max-width: 100%;
-    padding: 4px 10px;
-    font-size: .78rem;
-    white-space: normal;
-    text-align: center;
-  }
-
-  .founder-bio {
-    max-width: 100%;
-    padding: 0 4px;
-    margin-top: 10px;
-    font-size: .84rem;
-    line-height: 1.5;
-  }
-
-  .actions-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 7px;
-    padding: 0 12px 14px;
-  }
-
-  .btn-action {
-    min-width: 0;
-    min-height: 64px;
-    padding: 9px 3px;
-    border-radius: 11px;
-    font-size: .68rem;
-    line-height: 1.15;
-    gap: 5px;
-  }
-
-  .btn-action svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .btn-save-contact {
-    width: calc(100% - 24px);
-    margin: 0 12px 14px;
-    min-height: 48px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-size: .9rem;
-  }
-
-  .socials-section {
-    padding: 0 12px 18px;
-  }
-
-  .section-title {
-    font-size: .72rem;
-    margin-bottom: 9px;
-  }
-
-  .social-icons-list {
-    gap: 8px;
-  }
-
-  .social-icon-link {
-    flex: 0 0 46px;
-    width: 46px;
-    height: 46px;
-    border-radius: 11px;
-  }
-
-  .social-icon-link svg {
-    width: 27px;
-    height: 27px;
-  }
-
-  /* Tooltips are not useful on touch screens. */
-  .social-icon-link[data-tooltip]::before {
-    display: none;
-  }
-
-  .card-nav-switch {
-    padding: 13px 14px;
-    min-height: 52px;
-    gap: 10px;
-  }
-
-  .switch-content {
-    min-width: 0;
-  }
-
-  .switch-title,
-  .switch-subtitle {
-    overflow-wrap: anywhere;
-  }
-
-  /* Business profile */
-  .business-hero {
-    padding: 0 14px 20px;
-  }
-
-  .business-profile-cover {
-    width: calc(100% + 28px);
-    margin-left: -14px;
-    border-radius: 18px 18px 0 0;
-  }
-
-  .business-name {
-    max-width: 100%;
-    font-size: clamp(1.35rem, 6.5vw, 1.65rem);
-    line-height: 1.18;
-    overflow-wrap: anywhere;
-  }
-
-  .business-tagline {
-    font-size: .88rem;
-    line-height: 1.35;
-    margin-bottom: 10px;
-  }
-
-  .business-about {
-    max-width: 100%;
-    margin-bottom: 16px;
-    padding: 0 2px;
-    font-size: .82rem;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-
-  .services-section {
-    gap: 10px;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 9px;
-  }
-
-  .service-card {
-    padding: 14px;
-    gap: 8px;
-    border-radius: 14px;
-  }
-
-  .service-icon-box {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-  }
-
-  .service-icon-box svg {
-    width: 19px;
-    height: 19px;
-  }
-
-  .service-title {
-    font-size: .92rem;
-    line-height: 1.25;
-  }
-
-  .service-desc {
-    font-size: .77rem;
-    line-height: 1.45;
-  }
-
-  /* QR section stays compact and centered */
-  .qr-card {
-    padding: 14px !important;
-    overflow: hidden;
-  }
-
-  .qr-frame {
-    width: min(220px, 72vw);
-    height: min(220px, 72vw);
-    margin: 0 auto;
-  }
-
-  .qr-frame canvas,
-  .qr-frame .qr-generated-image {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100%;
-  }
-
-  .qr-actions,
-  .qr-card .actions,
-  .qr-card .button-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .qr-actions button,
-  .qr-card button {
-    min-height: 44px;
-    font-size: .8rem;
-  }
-
-  /* Admin also becomes a proper one-column mobile interface. */
-  .admin-container {
-    width: 100%;
-    max-width: 100%;
-    padding: 10px 10px calc(36px + env(safe-area-inset-bottom));
-  }
-
-  .admin-navbar {
-    margin-bottom: 12px;
-    padding: 11px 12px;
-    border-radius: 14px;
-  }
-
-  .admin-brand {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .admin-brand-title {
-    font-size: .95rem;
-  }
-
-  .admin-nav-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .user-badge {
-    max-width: 65%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .admin-tabs {
-    gap: 5px;
-    margin: 0 -2px 14px;
-    padding: 3px 2px 7px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .admin-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .tab-btn {
-    min-height: 42px;
-    padding: 9px 12px;
-    font-size: .78rem;
-  }
-
-  .admin-sticky-bar {
-    top: 6px;
-    margin-bottom: 12px;
-    padding: 9px 10px;
-    border-radius: 13px;
-  }
-
-  .sticky-bar-info {
-    font-size: .76rem;
-  }
-
-  .sticky-bar-btns {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .sticky-bar-btns button {
-    min-height: 42px;
-  }
-
-  .admin-modal-backdrop {
-    padding: 10px;
-  }
-
-  .admin-modal-card {
-    max-height: calc(100dvh - 20px);
-    padding: 18px 14px;
-    border-radius: 16px;
-  }
-
-  .form-input,
-  .form-textarea,
-  .form-select {
-    min-height: 44px;
-    font-size: 16px; /* prevents Android Chrome zoom on focus */
-  }
-
-  .form-textarea {
-    min-height: 100px;
-  }
-
-  .image-upload-box {
-    padding: 12px;
-  }
-
-  .image-upload-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .preview-thumb {
-    width: 84px;
-    height: 84px;
-  }
-
-  .toast-container {
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-  }
-
-  .toast {
-    width: 100%;
-    font-size: .8rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .page-container,
-  .business-container {
-    padding-left: 7px;
-    padding-right: 7px;
-  }
-
-  .actions-grid {
-    gap: 5px;
-    padding-left: 9px;
-    padding-right: 9px;
-  }
-
-  .btn-action {
-    font-size: .62rem;
-    min-height: 60px;
-  }
-
-  .social-icon-link {
-    flex-basis: 43px;
-    width: 43px;
-    height: 43px;
-  }
-
-  .social-icon-link svg {
-    width: 25px;
-    height: 25px;
-  }
-
-  .business-hero {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .business-profile-cover {
-    width: calc(100% + 20px);
-    margin-left: -10px;
-  }
-
-  .business-profile-logo,
-  .avatar-wrapper {
-    width: 104px;
-    height: 104px;
-    margin-top: -52px;
-  }
-}
-
-@media (orientation: landscape) and (max-height: 500px) {
-  .profile-cover {
-    height: 105px;
-  }
-
-  .avatar-wrapper,
-  .business-profile-logo {
-    width: 92px;
-    height: 92px;
-    margin-top: -46px;
-  }
-
-  .card-header {
-    padding-bottom: 10px;
-  }
-}
-
-
-/* ==============================================================================
-   KDS CARD REFRESH — premium glass / editorial layout
-   Safe visual layer: keeps existing IDs, data bindings and admin-managed content.
-   ============================================================================== */
-:root {
-  --kds-blue: #0ea5e9;
-  --kds-blue-strong: #0284c7;
-  --kds-ink: #07111f;
-  --kds-panel: rgba(10, 20, 36, .78);
-  --kds-line: rgba(148, 163, 184, .16);
-  --kds-soft: rgba(255,255,255,.68);
-}
-
-body {
-  background:
-    radial-gradient(circle at 15% 0%, rgba(14,165,233,.14), transparent 32%),
-    radial-gradient(circle at 90% 12%, rgba(59,130,246,.10), transparent 30%),
-    #050a12;
-}
-
-.page-container {
-  max-width: 720px;
-  gap: 18px;
-}
-
-.profile-card,
-.business-hero,
-.qr-card {
-  border: 1px solid var(--kds-line);
-  background: linear-gradient(145deg, rgba(15,27,46,.94), rgba(7,15,28,.96));
-  box-shadow: 0 24px 70px rgba(0,0,0,.34);
-}
-
-.profile-card {
-  overflow: hidden;
-}
-
-.profile-cover {
-  height: 190px;
-  position: relative;
-  overflow: hidden;
-  background:
-    linear-gradient(135deg, rgba(2,132,199,.82), rgba(7,15,28,.15) 52%, rgba(3,7,18,.9)),
-    radial-gradient(circle at 75% 20%, rgba(56,189,248,.35), transparent 35%);
-}
-
-.profile-cover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 35%, rgba(5,10,18,.58));
-  pointer-events: none;
-}
-
-.profile-cover-placeholder {
   width: 100%;
   height: 100%;
-  background:
-    radial-gradient(circle at 75% 25%, rgba(56,189,248,.34), transparent 20%),
-    linear-gradient(135deg, #0b1c31, #0a4b70 50%, #06101d);
-}
-
-.profile-cover-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  border-radius: 22px;
+  object-fit: contain;
+  background: var(--kds-bg-surface);
+  padding: 6px;
   display: block;
 }
 
-.card-header {
-  position: relative;
-  padding-bottom: 22px;
-}
-
-.avatar-wrapper,
-.business-profile-logo {
-  border: 4px solid rgba(255,255,255,.94);
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  box-shadow: 0 18px 42px rgba(0,0,0,.40);
-}
-
-.avatar-img,
-.business-profile-logo .kds-logo-img {
-  background: #07111f;
-}
-
-.status-badge {
-  box-shadow: 0 0 0 4px #0b1728, 0 0 0 6px rgba(34,197,94,.14);
-}
-
-.founder-name,
-.business-name {
-  letter-spacing: -.035em;
+.kds-logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #0f2542, #091526) !important;
+  color: var(--kds-cyan);
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
   font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
-.founder-title {
-  color: #bae6fd;
+.business-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.6rem, 4.8vw, 1.95rem);
+  font-weight: 800;
+  color: var(--kds-text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  text-wrap: balance;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
-.company-badge,
 .business-tagline {
-  border: 1px solid rgba(56,189,248,.24);
-  background: rgba(14,165,233,.09);
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 13px;
+  border-radius: var(--kds-radius-full);
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.24);
   color: #7dd3fc;
+  font-size: 0.86rem;
+  font-weight: 600;
+  max-width: 100%;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-.founder-bio,
 .business-about {
-  color: rgba(226,232,240,.74);
+  margin: 14px auto 0;
+  max-width: 52ch;
+  font-size: 0.9rem;
+  color: var(--kds-text-muted);
+  line-height: 1.62;
+  overflow-wrap: anywhere;
 }
 
-.actions-grid {
-  max-width: 520px;
-  margin-inline: auto;
+.business-actions-wrap {
+  margin-top: 20px;
 }
 
-.btn-action {
-  border: 1px solid var(--kds-line);
-  background: rgba(255,255,255,.035);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
-  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+.business-save-tools {
+  padding-top: 2px;
 }
 
-.btn-action:hover {
-  transform: translateY(-2px);
-  border-color: rgba(56,189,248,.34);
-  background: rgba(14,165,233,.08);
+.business-social-section {
+  margin-top: 4px;
+  padding-bottom: 0;
 }
 
-.btn-save-contact {
-  background: linear-gradient(135deg, #0284c7, #0ea5e9);
-  box-shadow: 0 12px 30px rgba(2,132,199,.24);
-  border: 0;
-}
-
-.social-icon-link {
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.035);
-  box-shadow: 0 8px 22px rgba(0,0,0,.18);
-  transition: transform .2s ease, border-color .2s ease, background .2s ease;
-}
-
-.social-icon-link:hover {
-  transform: translateY(-3px);
-  border-color: rgba(56,189,248,.42);
-  background: rgba(14,165,233,.10);
-}
-
-.card-nav-switch {
-  margin: 0 14px 16px;
-  border: 1px solid rgba(56,189,248,.18);
-  background: linear-gradient(135deg, rgba(14,165,233,.08), rgba(255,255,255,.025));
-}
-
-.qr-card {
-  padding: 22px;
-}
-
-.qr-frame {
-  width: 236px;
-  height: 236px;
-  padding: 8px;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 18px 45px rgba(0,0,0,.30);
-}
-
-.qr-frame canvas,
-.qr-frame .qr-generated-image {
-  border-radius: 10px;
-}
-
+/* ==============================================================================
+   BUSINESS SERVICES SECTION
+   ============================================================================== */
 .services-section {
-  padding: 4px;
-}
-
-.services-grid {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
-.service-card {
-  border: 1px solid rgba(255,255,255,.08);
-  background: linear-gradient(145deg, rgba(17,31,52,.86), rgba(9,18,31,.9));
-  box-shadow: 0 14px 34px rgba(0,0,0,.18);
-  transition: transform .2s ease, border-color .2s ease;
-}
-
-.service-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(56,189,248,.28);
-}
-
-.service-icon-box {
-  background: rgba(14,165,233,.10);
-  border: 1px solid rgba(56,189,248,.18);
-  color: #38bdf8;
-}
-
-.page-footer {
-  color: rgba(148,163,184,.60);
-  padding-top: 4px;
-}
-
-@media (max-width: 600px) {
-  .page-container,
-  .business-container {
-    gap: 12px;
-  }
-
-  .profile-cover {
-    height: 150px;
-  }
-
-  .profile-card,
-  .business-hero,
-  .qr-card {
-    box-shadow: 0 16px 42px rgba(0,0,0,.28);
-  }
-
-  .qr-frame {
-    width: min(230px, 76vw);
-    height: min(230px, 76vw);
-  }
-}
-
-
-/* Profile photo refinement: larger on phones, one clean border, no live-status dot. */
-.avatar-wrapper,
-.business-profile-logo {
-  width: 146px;
-  height: 146px;
-  padding: 0;
-  background: transparent;
-  border: 4px solid #ffffff;
-  box-shadow: 0 16px 36px rgba(0,0,0,.38);
-}
-
-.status-badge {
-  display: none !important;
-}
-
-@media (max-width: 600px) {
-  .avatar-wrapper,
-  .business-profile-logo {
-    width: 140px;
-    height: 140px;
-    margin-top: -70px;
-    padding: 0;
-    border: 4px solid #ffffff;
-  }
-}
-
-@media (max-width: 360px) {
-  .avatar-wrapper,
-  .business-profile-logo {
-    width: 128px;
-    height: 128px;
-    margin-top: -64px;
-  }
-}
-
-
-/* Profile photo border: restore the original KDS blue gradient as a single border. */
-.avatar-wrapper,
-.business-profile-logo {
-  padding: 4px;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  border: 0;
-}
-
-@media (max-width: 600px) {
-  .avatar-wrapper,
-  .business-profile-logo {
-    padding: 4px;
-    border: 0;
-  }
-}
-
-@media (max-width: 360px) {
-  .avatar-wrapper,
-  .business-profile-logo {
-    padding: 4px;
-    border: 0;
-  }
-}
-
-
-/* Personal profile: explicitly match the business profile's KDS blue border. */
-.profile-card .avatar-wrapper {
-  padding: 4px;
-  background: linear-gradient(135deg, #38bdf8, #0284c7);
-  border: 0;
-}
-
-@media (max-width: 600px) {
-  .profile-card .avatar-wrapper {
-    padding: 4px;
-    border: 0;
-  }
-}
-
-@media (max-width: 360px) {
-  .profile-card .avatar-wrapper {
-    padding: 4px;
-    border: 0;
-  }
-}
-
-
-/* Final card fixes: make the QR fill its reserved frame. */
-.qr-frame {
-  width: 236px;
-  height: 236px;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.qr-frame canvas,
-.qr-frame img,
-.qr-frame .qr-generated-image {
-  display: block;
-  width: 220px !important;
-  height: 220px !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-}
-
-@media (max-width: 600px) {
-  .qr-frame {
-    width: min(250px, 82vw);
-    height: min(250px, 82vw);
-    padding: 8px;
-  }
-
-  .qr-frame canvas,
-  .qr-frame img,
-  .qr-frame .qr-generated-image {
-    width: 100% !important;
-    height: 100% !important;
-  }
-}
-
-
-/* Final QR layout: large, centered, with a small safe margin. */
-.qr-frame {
-  width: 340px;
-  height: 340px;
-  padding: 12px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.qr-frame .qr-generated {
-  width: 316px !important;
-  height: 316px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 316px !important;
-}
-.qr-frame .qr-generated canvas,
-.qr-frame .qr-generated img {
-  width: 316px !important;
-  height: 316px !important;
-  max-width: none !important;
-  max-height: none !important;
-  display: block !important;
-  object-fit: contain !important;
-}
-@media (max-width: 600px) {
-  .qr-frame {
-    width: min(340px, 90vw);
-    height: min(340px, 90vw);
-    padding: 10px;
-  }
-  .qr-frame .qr-generated {
-    width: calc(min(340px, 90vw) - 20px) !important;
-    height: calc(min(340px, 90vw) - 20px) !important;
-    flex-basis: calc(min(340px, 90vw) - 20px) !important;
-  }
-  .qr-frame .qr-generated canvas,
-  .qr-frame .qr-generated img {
-    width: calc(min(340px, 90vw) - 20px) !important;
-    height: calc(min(340px, 90vw) - 20px) !important;
-  }
-}
-
-
-/* QR FINAL FIX — one visible QR only, compact frame. QRCode.js may create both
-   canvas and img; keep the canvas and hide the duplicate image. */
-.qr-card .qr-frame {
-  width: 236px !important;
-  height: 236px !important;
-  padding: 8px !important;
-  margin: 0 auto !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-
-.qr-card .qr-frame .qr-generated {
-  width: 220px !important;
-  height: 220px !important;
-  flex: 0 0 220px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.qr-card .qr-frame .qr-generated canvas {
-  display: block !important;
-  width: 220px !important;
-  height: 220px !important;
-  max-width: none !important;
-  max-height: none !important;
-  object-fit: contain !important;
-}
-
-.qr-card .qr-frame .qr-generated img {
-  display: none !important;
-}
-
-@media (max-width: 600px) {
-  .qr-card .qr-frame {
-    width: min(226px, 78vw) !important;
-    height: min(226px, 78vw) !important;
-    padding: 7px !important;
-  }
-
-  .qr-card .qr-frame .qr-generated {
-    width: calc(min(226px, 78vw) - 14px) !important;
-    height: calc(min(226px, 78vw) - 14px) !important;
-    flex-basis: calc(min(226px, 78vw) - 14px) !important;
-  }
-
-  .qr-card .qr-frame .qr-generated canvas {
-    width: calc(min(226px, 78vw) - 14px) !important;
-    height: calc(min(226px, 78vw) - 14px) !important;
-  }
-}
-
-
-/* PERSONAL QR — final medium-size layout */
-#cardQr .qr-frame {
-  width: 216px !important;
-  height: 216px !important;
-  padding: 8px !important;
-  margin: 0 auto !important;
-  border-radius: 16px !important;
-}
-
-#cardQr .qr-frame .qr-generated {
-  width: 200px !important;
-  height: 200px !important;
-  flex: 0 0 200px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-#cardQr .qr-frame .qr-generated canvas {
-  display: block !important;
-  width: 200px !important;
-  height: 200px !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-}
-
-#cardQr .qr-frame .qr-generated img {
-  display: none !important;
-}
-
-@media (max-width: 600px) {
-  #cardQr .qr-frame {
-    width: min(216px, 72vw) !important;
-    height: min(216px, 72vw) !important;
-    padding: 7px !important;
-  }
-
-  #cardQr .qr-frame .qr-generated {
-    width: calc(min(216px, 72vw) - 14px) !important;
-    height: calc(min(216px, 72vw) - 14px) !important;
-    flex-basis: calc(min(216px, 72vw) - 14px) !important;
-  }
-
-  #cardQr .qr-frame .qr-generated canvas {
-    width: calc(min(216px, 72vw) - 14px) !important;
-    height: calc(min(216px, 72vw) - 14px) !important;
-  }
-}
-
-
-/* FINAL QR DEDUPLICATION — never allow multiple QR render nodes */
-#cardQr .qr-frame .qr-generated {
-  overflow: hidden !important;
-}
-#cardQr .qr-frame .qr-generated > * {
-  display: none !important;
-}
-#cardQr .qr-frame .qr-generated > canvas:first-child,
-#cardQr .qr-frame .qr-generated > img:first-child {
-  display: block !important;
-  width: 200px !important;
-  height: 200px !important;
-  max-width: 200px !important;
-  max-height: 200px !important;
-  flex: 0 0 200px !important;
-  object-fit: contain !important;
-}
-
-
-/* ==========================================================================
-   PERSONAL + BUSINESS — FINAL CONNECTED PROFILE POLISH
-   ========================================================================== */
-
-/* Business QR: same medium, single-profile presentation as Personal QR. */
-#cardBusinessQr .qr-frame {
-  width: 216px !important;
-  height: 216px !important;
-  padding: 8px !important;
-  margin: 0 auto !important;
-  border-radius: 16px !important;
-}
-#cardBusinessQr .qr-frame .qr-generated {
-  width: 200px !important;
-  height: 200px !important;
-  flex: 0 0 200px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-}
-#cardBusinessQr .qr-frame .qr-generated > * {
-  display: none !important;
-}
-#cardBusinessQr .qr-frame .qr-generated > canvas:first-child,
-#cardBusinessQr .qr-frame .qr-generated > img:first-child {
-  display: block !important;
-  width: 200px !important;
-  height: 200px !important;
-  max-width: 200px !important;
-  max-height: 200px !important;
-  flex: 0 0 200px !important;
-  object-fit: contain !important;
-}
-
-/* Connected Business Profile navigation: one clear back action only. */
-.business-container .kds-business-profile-link-wrap {
-  margin-top: 4px !important;
-}
-.business-container .kds-business-profile-link-wrap .btn-save-contact {
-  max-width: 360px;
-}
-
-/* Keep the connected business card clean on narrow screens. */
-@media (max-width: 600px) {
-  #cardBusinessQr .qr-frame {
-    width: min(216px, 72vw) !important;
-    height: min(216px, 72vw) !important;
-    padding: 7px !important;
-  }
-  #cardBusinessQr .qr-frame .qr-generated {
-    width: calc(min(216px, 72vw) - 14px) !important;
-    height: calc(min(216px, 72vw) - 14px) !important;
-    flex-basis: calc(min(216px, 72vw) - 14px) !important;
-  }
-  #cardBusinessQr .qr-frame .qr-generated > canvas:first-child,
-  #cardBusinessQr .qr-frame .qr-generated > img:first-child {
-    width: calc(min(216px, 72vw) - 14px) !important;
-    height: calc(min(216px, 72vw) - 14px) !important;
-    max-width: calc(min(216px, 72vw) - 14px) !important;
-    max-height: calc(min(216px, 72vw) - 14px) !important;
-    flex-basis: calc(min(216px, 72vw) - 14px) !important;
-  }
-}
-
-/* Connected profile footer branding. */
-.business-container .kds-card-bottom-motto {
-  text-align: center;
-  padding: 16px 12px 4px;
-}
-.business-container .kds-card-bottom-motto .motto-text {
-  font-weight: 700;
-  letter-spacing: .08em;
-}
-
-
-/* BUSINESS CONTACT ACTIONS — all 5 actions on one row */
-.business-container .actions-grid {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  gap: 10px !important;
-  width: 100% !important;
-  max-width: 760px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  box-sizing: border-box !important;
-}
-.business-container .actions-grid .btn-action,
-.business-container .actions-grid .kds-action-box {
-  min-width: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-@media (max-width: 600px) {
-  .business-container .actions-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 4px !important;
-    max-width: 100% !important;
-  }
-  .business-container .actions-grid .btn-action,
-  .business-container .actions-grid .kds-action-box {
-    min-width: 0 !important;
-    padding-left: 2px !important;
-    padding-right: 2px !important;
-  }
-  .business-container .actions-grid .action-box-label,
-  .business-container .actions-grid .btn-action span {
-    font-size: 10px !important;
-    white-space: nowrap !important;
-  }
-  .business-container .actions-grid .action-box-icon,
-  .business-container .actions-grid .btn-action svg {
-    width: 22px !important;
-    height: 22px !important;
-  }
-}
-
-
-/* Premium Services — stable structured service cards */
-.services-section {
-  margin-top: 2px;
-  padding: 0;
-}
-
-.services-section .section-title {
+.services-section > .section-title {
   margin-bottom: 2px;
+  padding: 0 6px;
 }
 
 .services-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .service-card {
-  min-width: 0;
-  min-height: 178px;
+  background: linear-gradient(155deg, rgba(18, 30, 52, 0.94) 0%, rgba(10, 18, 33, 0.96) 100%);
+  border: 1px solid var(--kds-border-default);
+  border-radius: var(--kds-radius-lg);
   padding: 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(56,189,248,.14);
-  background: linear-gradient(145deg, rgba(15,29,49,.96), rgba(8,17,31,.98));
-  box-shadow: 0 14px 36px rgba(0,0,0,.22);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  gap: 10px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+  transition:
+    transform var(--kds-transition),
+    border-color var(--kds-transition),
+    box-shadow var(--kds-transition);
 }
 
 .service-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(56,189,248,.34);
-  box-shadow: 0 18px 42px rgba(0,0,0,.28);
+  border-color: var(--kds-border-accent);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.3);
 }
 
 .kds-service-card-top {
@@ -2722,1746 +801,438 @@ body {
 }
 
 .service-icon-box {
-  width: 50px;
-  height: 50px;
-  flex: 0 0 50px;
-  border-radius: 14px;
-  background: rgba(14,165,233,.09);
-  border: 1px solid rgba(56,189,248,.24);
-  color: #38bdf8;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: var(--kds-cyan);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .service-icon-box svg {
-  width: 24px;
-  height: 24px;
+  width: 21px;
+  height: 21px;
 }
 
 .service-number {
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .12em;
-  color: rgba(148,163,184,.55);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--kds-text-subtle);
 }
 
 .service-title {
-  margin: 0;
-  color: #f8fafc;
-  font-size: 1.02rem;
-  line-height: 1.35;
-  font-weight: 750;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--kds-text-primary);
+  line-height: 1.3;
   overflow-wrap: anywhere;
 }
 
 .service-desc {
-  margin: 0;
-  color: #94a3b8;
-  font-size: .84rem;
+  font-size: 0.84rem;
+  color: var(--kds-text-muted);
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 560px) {
-  /* Keep each service readable on phones; desktop/tablet layout remains unchanged. */
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .service-card {
-    min-height: 0;
-    padding: 14px;
-    border-radius: 16px;
-  }
-
-  .service-icon-box {
-    width: 42px;
-    height: 42px;
-    flex-basis: 42px;
-    border-radius: 12px;
-  }
-
-  .service-icon-box svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .service-title {
-    font-size: .92rem;
-  }
-
-  .service-desc {
-    font-size: .76rem;
-    line-height: 1.48;
-  }
+/* ==============================================================================
+   BUSINESS ADDRESS & GOOGLE MAPS SECTION
+   ============================================================================== */
+.business-address-section {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: var(--kds-radius-lg);
+  background: linear-gradient(145deg, rgba(16, 28, 48, 0.94), rgba(10, 17, 31, 0.96));
+  border: 1px solid var(--kds-border-default);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
 }
 
-
-/* BUSINESS LOGO PLACEHOLDER — clean fallback when no logo is uploaded */
-.kds-logo-placeholder {
-  display: flex !important;
+.business-address-content {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.business-address-map-only {
   justify-content: center;
-  color: #7dd3fc;
-  background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(2,132,199,.08));
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.45rem;
-  font-weight: 800;
-  letter-spacing: .04em;
-  text-transform: uppercase;
 }
 
-
-/* KDS UI REFINEMENT — profile sizing, social heading, and business action breathing room */
-.avatar-wrapper {
-  width: 160px;
-  height: 160px;
-  margin-top: -80px;
-  margin-bottom: 18px;
-}
-
-.socials-section .section-title {
-  justify-content: center;
-  text-align: center;
-}
-
-.socials-section .section-title::before,
-.socials-section .section-title::after {
+.business-address-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
   flex: 1;
 }
 
-.business-hero .section-title {
-  justify-content: center !important;
-  text-align: center;
+.business-address-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--kds-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.business-profile-logo {
-  width: 112px;
-  height: 112px;
-  border-radius: 50%;
-  padding: 6px;
+.business-address-icon svg {
+  width: 19px;
+  height: 19px;
 }
 
-.business-profile-logo .kds-logo-img {
-  border-radius: 50%;
-}
-
-.business-container .actions-grid {
-  gap: 8px !important;
-}
-
-.business-container .actions-grid .btn-action {
-  min-height: 76px;
-  padding: 12px 5px !important;
-  gap: 8px;
-  border-radius: 14px;
-}
-
-.business-container .actions-grid .btn-action svg {
-  width: 24px;
-  height: 24px;
-}
-
-@media (max-width: 600px) {
-  .avatar-wrapper {
-    width: 154px;
-    height: 154px;
-    margin-top: -77px;
-  }
-
-  .business-profile-logo {
-    width: 106px;
-    height: 106px;
-  }
-
-  .business-container .actions-grid {
-    gap: 5px !important;
-  }
-
-  .business-container .actions-grid .btn-action {
-    min-height: 70px;
-    padding: 10px 2px !important;
-    gap: 6px;
-    border-radius: 12px;
-  }
-
-  .business-container .actions-grid .btn-action span {
-    font-size: 9.5px !important;
-  }
-
-  .business-container .actions-grid .btn-action svg {
-    width: 23px;
-    height: 23px;
-  }
-}
-
-
-/* Business profile polish — give the five actions room without changing the one-row rule */
-.business-container .actions-grid {
-  max-width: 100% !important;
-  gap: 10px !important;
-}
-
-.business-container .actions-grid .btn-action {
+.business-address-info {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  padding: 13px 6px !important;
-  gap: 9px !important;
+  text-align: left;
 }
 
-@media (max-width: 600px) {
-  .business-container .actions-grid {
-    width: 100% !important;
-    gap: 6px !important;
-  }
-
-  .business-container .actions-grid .btn-action {
-    min-height: 72px;
-    padding: 9px 2px !important;
-    gap: 7px !important;
-  }
-
-  .business-container .actions-grid .btn-action span {
-    font-size: 9px !important;
-    line-height: 1.15;
-  }
-
-  .business-container .actions-grid .btn-action svg {
-    width: 24px !important;
-    height: 24px !important;
-  }
+.business-address-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--kds-text-subtle);
 }
 
-
-/* FINAL BUSINESS PROFILE SPACING FIX */
-.business-profile-logo {
-  width: 146px !important;
-  height: 146px !important;
-  margin: -73px auto 18px !important;
-  padding: 5px !important;
-  border-radius: 50% !important;
+.business-address-text {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--kds-text-primary);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
-.business-profile-logo .kds-logo-img,
-.business-profile-logo .kds-logo-placeholder {
+
+.business-map-link {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 9px 14px;
+  border-radius: 11px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.26);
+  color: #7dd3fc;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+  transition:
+    background-color var(--kds-transition),
+    border-color var(--kds-transition),
+    transform var(--kds-transition);
+}
+
+.business-map-link svg {
+  width: 17px;
+  height: 17px;
+}
+
+.business-map-link:hover {
+  transform: translateY(-1px);
+  background: rgba(14, 165, 233, 0.18);
+  border-color: var(--kds-cyan);
+  color: #ffffff;
+}
+
+/* ==============================================================================
+   PREMIUM QR CODE SECTION
+   ============================================================================== */
+.qr-card {
+  padding: 24px 22px 22px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08), transparent 48%),
+    linear-gradient(165deg, rgba(18, 30, 52, 0.96) 0%, rgba(10, 17, 31, 0.98) 100%);
+}
+
+.qr-frame {
+  width: min(220px, 100%);
+  aspect-ratio: 1 / 1;
+  padding: 10px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.35),
+    0 0 0 4px rgba(255, 255, 255, 0.04);
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.qr-frame .qr-generated {
+  width: 100%;
+  height: 100%;
+  max-width: 200px;
+  max-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.qr-frame .qr-generated > * {
+  display: none !important;
+}
+
+.qr-frame .qr-generated > canvas:first-child,
+.qr-frame .qr-generated > img:first-child {
+  display: block !important;
   width: 100% !important;
   height: 100% !important;
-  border-radius: 50% !important;
-}
-
-.business-container .actions-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-  width: calc(100% - 28px) !important;
-  max-width: 760px !important;
-  margin: 4px auto 20px !important;
-  padding: 0 !important;
-}
-.business-container .actions-grid .btn-action {
-  min-width: 0 !important;
-  min-height: 78px !important;
-  width: 100% !important;
-  padding: 11px 4px !important;
-  gap: 7px !important;
-  border-radius: 14px !important;
-  overflow: hidden !important;
-}
-.business-container .actions-grid .btn-action svg {
-  width: 23px !important;
-  height: 23px !important;
-  flex: 0 0 23px !important;
-}
-.business-container .actions-grid .btn-action span {
-  display: block !important;
-  width: 100% !important;
-  font-size: 10px !important;
-  line-height: 1.2 !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-  text-align: center !important;
-}
-
-@media (max-width: 600px) {
-  .business-profile-logo {
-    width: 120px !important;
-    height: 120px !important;
-    margin: -60px auto 14px !important;
-  }
-  .business-container .actions-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 5px !important;
-    width: calc(100% - 16px) !important;
-    margin-bottom: 16px !important;
-  }
-  .business-container .actions-grid .btn-action {
-    min-height: 68px !important;
-    padding: 8px 2px !important;
-    gap: 5px !important;
-    border-radius: 11px !important;
-  }
-  .business-container .actions-grid .btn-action svg {
-    width: 21px !important;
-    height: 21px !important;
-    flex-basis: 21px !important;
-  }
-  .business-container .actions-grid .btn-action span {
-    font-size: 8.5px !important;
-    line-height: 1.15 !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .business-profile-logo {
-    width: 108px !important;
-    height: 108px !important;
-    margin: -54px auto 12px !important;
-  }
-  .business-container .actions-grid {
-    width: calc(100% - 10px) !important;
-    gap: 4px !important;
-  }
-  .business-container .actions-grid .btn-action {
-    min-height: 64px !important;
-    padding: 7px 1px !important;
-  }
-  .business-container .actions-grid .btn-action svg {
-    width: 20px !important;
-    height: 20px !important;
-    flex-basis: 20px !important;
-  }
-  .business-container .actions-grid .btn-action span {
-    font-size: 8px !important;
-  }
-}
-
-
-/* STEP 2 — Business cover + logo positioning only */
-.business-hero {
-  padding-top: 0 !important;
-}
-.business-profile-cover {
-  margin-left: -24px !important;
-  margin-right: -24px !important;
-  width: calc(100% + 48px) !important;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
-}
-.business-profile-logo {
-  position: relative !important;
-  z-index: 3 !important;
-  margin: -73px auto 18px !important;
-}
-@media (max-width: 600px) {
-  .business-profile-cover {
-    margin-left: -24px !important;
-    margin-right: -24px !important;
-    width: calc(100% + 48px) !important;
-  }
-  .business-profile-logo { margin: -60px auto 14px !important; }
-}
-@media (max-width: 360px) {
-  .business-profile-logo { margin: -54px auto 12px !important; }
-}
-
-/* STEP 3 — Business text-to-actions spacing only */
-.business-profile-logo + .business-name {
-  margin-top: 0 !important;
-  margin-bottom: 5px !important;
-}
-.business-name + .business-tagline {
-  margin-bottom: 12px !important;
-}
-.business-tagline + .business-about {
-  margin-top: 0 !important;
-  margin-bottom: 18px !important;
-}
-.business-container .actions-grid {
-  margin-top: 0 !important;
-  margin-bottom: 20px !important;
-}
-@media (max-width: 600px) {
-  .business-profile-logo + .business-name {
-    margin-bottom: 4px !important;
-  }
-  .business-name + .business-tagline {
-    margin-bottom: 10px !important;
-  }
-  .business-tagline + .business-about {
-    margin-bottom: 14px !important;
-  }
-  .business-container .actions-grid {
-    margin-bottom: 16px !important;
-  }
-}
-
-
-/* STEP 4 — Business social media spacing/alignment only */
-.business-social-section {
-  margin-top: 4px !important;
-  padding-top: 2px !important;
-}
-.business-social-section .section-title {
-  justify-content: center !important;
-  width: 100% !important;
-  margin-bottom: 14px !important;
-}
-.business-social-section .social-icons-list {
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 12px !important;
-  margin: 0 auto !important;
-}
-@media (max-width: 600px) {
-  .business-social-section { margin-top: 2px !important; }
-  .business-social-section .section-title { margin-bottom: 12px !important; }
-  .business-social-section .social-icons-list { gap: 9px !important; }
-}
-
-
-/* STEP 5 — Business services spacing only */
-.business-container .services-section {
-  margin-top: 2px !important;
-  padding-top: 0 !important;
-}
-.business-container .services-section > .section-title {
-  margin-bottom: 12px !important;
-  justify-content: center !important;
-}
-.business-container .services-grid {
-  gap: 14px !important;
-}
-.business-container .service-card {
-  min-height: 178px !important;
-}
-@media (max-width: 560px) {
-  .business-container .services-section > .section-title {
-    margin-bottom: 10px !important;
-  }
-  .business-container .services-grid {
-    gap: 10px !important;
-  }
-  .business-container .service-card {
-    min-height: 0 !important;
-  }
-}
-
-
-/* STEP 6 — Business QR/Profile sharing spacing only */
-#cardBusinessQr {
-  margin-top: 0 !important;
-  text-align: center !important;
-}
-#cardBusinessQr .qr-title {
-  margin-top: 16px !important;
-  margin-bottom: 6px !important;
-  text-align: center !important;
-}
-#cardBusinessQr .qr-desc {
-  max-width: 440px !important;
-  margin: 0 auto 14px !important;
-  text-align: center !important;
-}
-#cardBusinessQr .qr-btn-group {
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 10px !important;
-  margin: 0 auto !important;
-}
-@media (max-width: 600px) {
-  #cardBusinessQr .qr-title { margin-top: 14px !important; }
-  #cardBusinessQr .qr-desc { margin-bottom: 12px !important; }
-  #cardBusinessQr .qr-btn-group { gap: 8px !important; }
-}
-
-
-/* STEP 7 — Connected Personal Profile navigation spacing only */
-.profile-card .card-nav-switch {
-  width: calc(100% - 28px) !important;
-  max-width: 520px !important;
-  margin: 2px auto 16px !important;
-  box-sizing: border-box !important;
-}
-.profile-card .card-nav-switch .switch-content {
-  min-width: 0 !important;
-}
-@media (max-width: 600px) {
-  .profile-card .card-nav-switch {
-    width: calc(100% - 24px) !important;
-    margin: 2px auto 14px !important;
-  }
-}
-
-
-/* STEP 9 — Business address + Google Maps bar before QR */
-.business-address-section {
-  width: calc(100% - 28px) !important;
-  max-width: 760px !important;
-  margin: 6px auto 18px !important;
-  padding: 14px 16px !important;
-  border: 1px solid rgba(56,189,248,.16) !important;
-  border-radius: 16px !important;
-  background: linear-gradient(135deg, rgba(14,165,233,.07), rgba(255,255,255,.025)) !important;
-  box-sizing: border-box !important;
-}
-.business-address-content {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 14px !important;
-}
-.business-address-text {
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
-  text-align: left !important;
-  overflow-wrap: anywhere !important;
-  line-height: 1.5 !important;
-}
-.business-map-link {
-  flex: 0 0 auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  text-decoration: none !important;
-  white-space: nowrap !important;
-}
-.business-map-link svg {
-  width: 20px !important;
-  height: 20px !important;
-}
-@media (max-width: 600px) {
-  .business-address-section {
-    width: calc(100% - 24px) !important;
-    margin: 4px auto 14px !important;
-    padding: 13px 14px !important;
-  }
-  .business-address-content {
-    align-items: flex-start !important;
-    gap: 10px !important;
-  }
-  .business-map-link span { display: none !important; }
-  .business-map-link svg {
-    width: 22px !important;
-    height: 22px !important;
-  }
-}
-
-
-/* STEP 10 — Center Business actions, social heading, and Personal Profile link */
-.business-container .actions-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  width: calc(100% - 28px) !important;
-  max-width: 620px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-.business-social-section .section-title {
-  justify-content: center !important;
-  text-align: center !important;
-  width: 100% !important;
-}
-
-.business-social-section .section-title::before,
-.business-social-section .section-title::after {
-  content: '' !important;
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-  height: 1px !important;
-  background: var(--border-color) !important;
-}
-
-.business-container .kds-business-profile-link-wrap {
-  width: 100% !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-.business-container .kds-business-profile-link-wrap .btn-save-contact {
-  width: calc(100% - 28px) !important;
-  max-width: 360px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-@media (max-width: 600px) {
-  .business-container .actions-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    width: calc(100% - 24px) !important;
-    max-width: 620px !important;
-  }
-
-  .business-container .kds-business-profile-link-wrap .btn-save-contact {
-    width: calc(100% - 24px) !important;
-    max-width: 360px !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .business-container .actions-grid {
-    width: calc(100% - 16px) !important;
-  }
-}
-
-
-/* STEP 11 — Balance Business action row outer spacing */
-.business-container .actions-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  width: calc(100% - 48px) !important;
-  max-width: 620px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  box-sizing: border-box !important;
-}
-
-@media (max-width: 600px) {
-  .business-container .actions-grid {
-    width: calc(100% - 32px) !important;
-    max-width: 620px !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .business-container .actions-grid {
-    width: calc(100% - 24px) !important;
-  }
-}
-
-
-/* STEP 12 — Make Business action row fill the symmetric hero content width */
-.business-container .actions-grid {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  align-self: stretch !important;
-  box-sizing: border-box !important;
-}
-
-@media (max-width: 600px) {
-  .business-container .actions-grid {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-}
-
-
-/* STEP 13 — Final symmetric Business action row alignment */
-.business-container .actions-grid {
-  width: calc(100% - 48px) !important;
-  max-width: none !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  box-sizing: border-box !important;
-}
-
-@media (max-width: 600px) {
-  .business-container .actions-grid {
-    width: calc(100% - 24px) !important;
-    max-width: none !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .business-container .actions-grid {
-    width: calc(100% - 16px) !important;
-  }
-}
-
-
-/* STEP 14 — Isolate Business action row from legacy spacing rules */
-.business-container .business-actions-wrap {
-  width: 100% !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: stretch !important;
-  margin: 0 0 20px !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
-}
-
-.business-container .business-actions-wrap .actions-grid {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 10px !important;
-  box-sizing: border-box !important;
-}
-
-.business-container .business-actions-wrap .btn-action {
-  width: 100% !important;
-  min-width: 0 !important;
-  box-sizing: border-box !important;
-}
-
-@media (max-width: 600px) {
-  .business-container .business-actions-wrap {
-    margin-bottom: 16px !important;
-  }
-
-  .business-container .business-actions-wrap .actions-grid {
-    width: 100% !important;
-    gap: 6px !important;
-  }
-}
-
-
-/* STEP 15 — Correct the actual outer alignment: center the Business action wrapper */
-.business-container .business-actions-wrap {
-  width: calc(100% - 48px) !important;
-  max-width: none !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  box-sizing: border-box !important;
-}
-
-.business-container .business-actions-wrap .actions-grid {
-  width: 100% !important;
-  max-width: none !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  box-sizing: border-box !important;
-}
-
-@media (max-width: 600px) {
-  .business-container .business-actions-wrap {
-    width: calc(100% - 24px) !important;
-    max-width: none !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .business-container .business-actions-wrap {
-    width: calc(100% - 16px) !important;
-  }
-}
-
-/* STEP 16 — Business address: stable address row + dedicated Maps action */
-.business-container .business-address-section {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 4px 0 18px !important;
-  padding: 14px 16px !important;
-  border: 1px solid rgba(56,189,248,.18) !important;
-  border-radius: 16px !important;
-  background: linear-gradient(135deg, rgba(14,165,233,.07), rgba(255,255,255,.025)) !important;
-  box-sizing: border-box !important;
-}
-.business-container .business-address-content {
-  width: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 14px !important;
-  box-sizing: border-box !important;
-}
-.business-container .business-address-main {
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  text-align: left !important;
-}
-.business-container .business-address-icon {
-  flex: 0 0 22px !important;
-  width: 22px !important;
-  height: 22px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #38bdf8 !important;
-}
-.business-container .business-address-icon svg { width: 22px !important; height: 22px !important; }
-.business-container .business-address-text {
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
-  margin: 0 !important;
-  color: var(--text-main) !important;
-  font-size: .92rem !important;
-  line-height: 1.5 !important;
-  overflow-wrap: anywhere !important;
-  text-align: left !important;
-}
-.business-container .business-map-link {
-  flex: 0 0 auto !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  min-height: 40px !important;
-  padding: 8px 11px !important;
-  border: 1px solid rgba(56,189,248,.22) !important;
-  border-radius: 11px !important;
-  background: rgba(14,165,233,.08) !important;
-  color: #7dd3fc !important;
-  text-decoration: none !important;
-  white-space: nowrap !important;
-  box-sizing: border-box !important;
-}
-.business-container .business-map-link svg { width: 19px !important; height: 19px !important; }
-.business-container .business-map-link:hover {
-  background: rgba(14,165,233,.14) !important;
-  border-color: rgba(56,189,248,.4) !important;
-}
-@media (max-width: 600px) {
-  .business-container .business-address-section { margin: 4px 0 14px !important; padding: 12px !important; }
-  .business-container .business-address-content { gap: 10px !important; }
-  .business-container .business-address-main { gap: 8px !important; }
-  .business-container .business-address-icon,
-  .business-container .business-address-icon svg { width: 20px !important; height: 20px !important; flex-basis: 20px !important; }
-  .business-container .business-address-text { font-size: .84rem !important; }
-  .business-container .business-map-link {
-    min-width: 42px !important; width: 42px !important; height: 42px !important;
-    padding: 0 !important; border-radius: 11px !important;
-  }
-  .business-container .business-map-link span { display: none !important; }
-}
-
-/* STEP 17 — Conditional Business address/location visibility */
-.business-container .business-address-map-only {
-  justify-content: flex-end !important;
-}
-
-
-/* DESIGN POLISH v1 — visual-only premium refinement
-   Scope: client card display only. No data, routing, template, or admin behavior changes. */
-
-/* Personal profile hierarchy */
-#cardPersonal .card-header {
-  padding-bottom: 22px;
-}
-#cardPersonal .founder-name {
-  font-size: clamp(1.62rem, 4.8vw, 1.9rem);
-  letter-spacing: -0.028em;
-  line-height: 1.18;
-}
-#cardPersonal .founder-title {
-  margin-top: 3px;
-  margin-bottom: 5px;
-}
-#cardPersonal .company-badge {
-  margin-top: 5px;
-}
-#cardPersonal .founder-bio {
-  margin-top: 12px;
-  max-width: 430px;
-}
-
-/* Personal actions: same four-column structure, subtle Call/WhatsApp emphasis */
-#cardPersonal > .actions-grid {
-  gap: 10px;
-  padding-bottom: 18px;
-}
-#cardPersonal > .actions-grid .btn-action {
-  min-height: 78px;
-  padding: 12px 6px;
-  border-radius: 14px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
-}
-#cardPersonal > .actions-grid .btn-action.action-call,
-#cardPersonal > .actions-grid .btn-action.action-whatsapp {
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 6px 18px rgba(2,132,199,.08);
-}
-#cardPersonal > .actions-grid .btn-action.action-call svg,
-#cardPersonal > .actions-grid .btn-action.action-whatsapp svg {
-  width: 24px;
-  height: 24px;
-}
-#cardPersonal > .actions-grid .btn-action.action-email,
-#cardPersonal > .actions-grid .btn-action.action-vcard {
-  opacity: .94;
-}
-#cardPersonal > .actions-grid .btn-action:active {
-  transform: translateY(0) scale(.985);
-}
-
-/* Personal Save Contact becomes the clear next step without changing behavior */
-#cardPersonal .save-tools {
-  padding: 0 20px 22px;
-}
-#cardPersonal .save-tools .btn-save-contact {
-  min-height: 50px;
-  margin-bottom: 0;
-  border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(2,132,199,.24), inset 0 1px 0 rgba(255,255,255,.10);
-}
-
-/* Personal social section: cleaner separation and breathing room */
-#cardPersonal .socials-section {
-  margin: 0 20px;
-  padding: 18px 0 20px;
-  border-top: 1px solid var(--border-color);
-}
-#cardPersonal .socials-section .section-title {
-  justify-content: center;
-  text-align: center;
-  margin-bottom: 13px;
-}
-#cardPersonal .social-icons-list {
-  justify-content: center;
-  gap: 11px;
-}
-
-/* Connected profile switch reads as a deliberate profile transition */
-#cardPersonal .card-nav-switch {
-  position: relative;
-  overflow: hidden;
-  border-color: rgba(56,189,248,.20);
-  background: linear-gradient(135deg, rgba(56,189,248,.07), rgba(255,255,255,.025));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
-}
-#cardPersonal .card-nav-switch .switch-subtitle {
-  color: var(--accent-cyan);
-}
-
-/* QR sharing section: make it feel like the final conversion/share area */
-#cardQr {
-  margin-top: 0;
-  padding-top: 22px;
-  text-align: center;
-}
-#cardQr .qr-title {
-  margin-top: 15px;
-  margin-bottom: 6px;
-  text-align: center;
-}
-#cardQr .qr-desc {
-  max-width: 420px;
-  margin: 0 auto 14px;
-  text-align: center;
-}
-#cardQr .qr-btn-group {
-  justify-content: center;
-  gap: 9px;
-}
-
-/* Business profile: stronger three-zone hierarchy without changing structure */
-.business-container .business-hero {
-  position: relative;
-}
-.business-container .business-name {
-  letter-spacing: -0.022em;
-  line-height: 1.16;
-}
-.business-container .business-about {
-  max-width: 560px;
-}
-.business-container .business-actions-wrap {
-  margin-top: 2px !important;
-}
-.business-container .business-actions-wrap .btn-action {
-  min-height: 76px !important;
-  padding: 11px 6px !important;
-  border-radius: 14px !important;
-}
-.business-container .business-actions-wrap .btn-action svg {
-  width: 23px !important;
-  height: 23px !important;
-}
-.business-container .business-actions-wrap .btn-action.action-call,
-.business-container .business-actions-wrap .btn-action.action-whatsapp {
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 6px 18px rgba(2,132,199,.07);
-}
-.business-container .business-actions-wrap .kds-action-disabled {
-  opacity: .46;
-  cursor: default;
-  transform: none !important;
-}
-
-/* Business social / services / address become visually distinct sections */
-.business-container .business-social-section {
-  margin-left: 24px;
-  margin-right: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
-}
-.business-container .services-section {
-  padding: 2px 24px 0;
-}
-.business-container .service-card {
-  border-color: rgba(56,189,248,.12);
-  background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.018));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
-  border-radius: 16px;
-}
-.business-container .service-card:hover {
-  border-color: rgba(56,189,248,.28);
-  transform: translateY(-2px);
-}
-.business-container .business-address-section {
-  margin-top: 18px !important;
-}
-
-/* Business QR stays the final share destination */
-#cardBusinessQr {
-  margin-top: 2px !important;
-  padding-top: 22px;
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  #cardPersonal > .actions-grid .btn-action {
-    min-height: 72px;
-    padding: 10px 4px;
-  }
-  #cardPersonal > .actions-grid .btn-action.action-call svg,
-  #cardPersonal > .actions-grid .btn-action.action-whatsapp svg {
-    width: 23px;
-    height: 23px;
-  }
-  #cardPersonal .socials-section {
-    margin: 0 16px;
-    padding-top: 16px;
-    padding-bottom: 18px;
-  }
-  #cardPersonal .card-nav-switch {
-    width: calc(100% - 24px) !important;
-  }
-  .business-container .business-social-section {
-    margin-left: 16px;
-    margin-right: 16px;
-  }
-  .business-container .services-section {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .business-container .business-actions-wrap .btn-action {
-    min-height: 70px !important;
-    padding: 9px 3px !important;
-  }
-}
-
-@media (max-width: 360px) {
-  #cardPersonal > .actions-grid {
-    gap: 6px;
-  }
-  #cardPersonal > .actions-grid .btn-action {
-    min-height: 68px;
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-  #cardPersonal > .actions-grid .btn-action span {
-    font-size: .72rem;
-  }
-  .business-container .business-social-section {
-    margin-left: 12px;
-    margin-right: 12px;
-  }
-  .business-container .services-section {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-}
-
-
-/* DESIGN POLISH v2 — responsive rhythm and section hierarchy
-   Scope: display styling only. No data, routing, or interaction logic changes. */
-
-/* Shared section-title rhythm */
-#cardPersonal .section-title,
-.business-container .section-title {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-/* Personal QR: calm final section with clear separation */
-#cardQr {
-  border-top: 1px solid var(--border-color);
-  margin-left: 16px;
-  margin-right: 16px;
-  padding: 22px 4px 0;
-}
-#cardQr .qr-frame,
-#cardBusinessQr .qr-frame {
-  box-shadow: 0 12px 28px rgba(0,0,0,.22), 0 0 0 1px rgba(255,255,255,.08);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-/* Keep long names/taglines from disturbing the card rhythm */
-#cardPersonal .founder-name,
-.business-container .business-name {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-#cardPersonal .founder-title,
-.business-container .business-tagline {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-
-/* Business service cards: consistent internal hierarchy */
-.business-container .service-card .service-title {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  line-height: 1.25;
-}
-.business-container .service-card .service-desc {
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
-/* Prevent action labels from colliding on narrow screens */
-#cardPersonal > .actions-grid .btn-action,
-.business-container .business-actions-wrap .btn-action {
-  min-width: 0;
-  overflow: hidden;
-}
-#cardPersonal > .actions-grid .btn-action span,
-.business-container .business-actions-wrap .btn-action span {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  #cardQr {
-    margin-left: 12px;
-    margin-right: 12px;
-    padding-top: 18px;
-  }
-  #cardQr .qr-btn-group,
-  #cardBusinessQr .qr-btn-group {
-    flex-wrap: wrap;
-  }
-  #cardQr .qr-btn-group .btn-secondary,
-  #cardBusinessQr .qr-btn-group .btn-secondary {
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 380px) {
-  #cardPersonal > .actions-grid .btn-action span,
-  .business-container .business-actions-wrap .btn-action span {
-    font-size: .68rem;
-  }
-  #cardPersonal > .actions-grid .btn-action,
-  .business-container .business-actions-wrap .btn-action {
-    border-radius: 12px;
-  }
-}
-
-
-/* DESIGN POLISH v3 — premium shell, focus states, and visual consistency
-   Scope: display styling only. No data, routing, template, or interaction logic changes. */
-
-/* Give the card itself a cleaner premium frame without changing its geometry. */
-.client-card-container .profile-card {
-  box-shadow:
-    0 24px 55px -24px rgba(0,0,0,.72),
-    0 0 0 1px rgba(255,255,255,.055),
-    0 0 28px rgba(2,132,199,.045);
-}
-
-/* Keep the cover visually strong while remaining compact on phones. */
-.client-card-container .profile-cover {
-  height: 160px;
-}
-.client-card-container .profile-cover-image {
-  transition: transform .45s cubic-bezier(.16,1,.3,1);
-}
-.client-card-container .profile-card:hover .profile-cover-image {
-  transform: scale(1.012);
-}
-
-/* Cleaner avatar separation from the cover. */
-#cardPersonal .avatar-wrapper {
-  box-shadow:
-    0 12px 28px rgba(0,0,0,.42),
-    0 0 0 4px rgba(9,13,22,.82);
-}
-
-/* Keep primary actions visually crisp and predictable. */
-#cardPersonal > .actions-grid .btn-action,
-.business-container .business-actions-wrap .btn-action,
-.btn-save-contact,
-.btn-secondary,
-.card-nav-switch,
-.business-map-link {
-  -webkit-tap-highlight-color: transparent;
-}
-
-#cardPersonal > .actions-grid .btn-action:focus-visible,
-.business-container .business-actions-wrap .btn-action:focus-visible,
-.btn-save-contact:focus-visible,
-.btn-secondary:focus-visible,
-.card-nav-switch:focus-visible,
-.business-map-link:focus-visible,
-.social-icon-link:focus-visible {
-  outline: 2px solid rgba(56,189,248,.78);
-  outline-offset: 3px;
-}
-
-/* Prevent hover motion from feeling excessive on touch devices. */
-@media (hover: none) {
-  .client-card-container .profile-card:hover .profile-cover-image {
-    transform: none;
-  }
-}
-
-/* Small-screen shell tuning: preserve breathing room without widening the card. */
-@media (max-width: 600px) {
-  .client-card-container .profile-cover {
-    height: 148px;
-  }
-  .client-card-container .profile-card {
-    border-radius: 22px;
-  }
-}
-
-@media (max-width: 380px) {
-  .client-card-container .profile-cover {
-    height: 140px;
-  }
-  .client-card-container .profile-card {
-    border-radius: 20px;
-  }
-}
-
-
-/* DESIGN POLISH v4 — section rhythm and premium content grouping
-   Scope: client-card presentation only. No data, routing, template, or interaction changes. */
-
-/* Personal card: create a deliberate visual rhythm between major content groups. */
-#cardPersonal .card-header {
-  padding-left: 24px;
-  padding-right: 24px;
-}
-#cardPersonal .save-tools {
-  position: relative;
-}
-#cardPersonal .save-tools::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: -1px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--border-color) 18%,
-    var(--border-color) 82%,
-    transparent
-  );
-  opacity: .72;
-}
-
-/* Business hero: separate brand identity from the next content zone cleanly. */
-.business-container .business-hero {
-  padding-bottom: 26px;
-}
-.business-container .business-social-section {
-  padding-top: 18px;
-}
-.business-container .business-social-section + .services-section {
-  margin-top: 2px;
-}
-
-/* Services heading gets a little more authority without adding visual clutter. */
-.business-container .services-section > .section-title {
-  margin-bottom: 14px;
-  color: var(--text-muted);
-}
-.business-container .services-section > .section-title::after {
-  opacity: .72;
-}
-
-/* Keep service cards visually balanced when descriptions have different lengths. */
-.business-container .service-card {
-  min-height: 178px;
-}
-.business-container .service-card .service-icon-box {
-  flex: 0 0 44px;
-}
-.business-container .service-card .service-number {
-  color: var(--text-subtle);
-  font-family: 'Outfit', sans-serif;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-}
-
-/* Make the address zone read as business information, not another action row. */
-.business-container .business-address-section {
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
-}
-.business-container .business-address-text {
-  font-weight: 500;
-}
-.business-container .business-map-link {
-  font-weight: 700;
-}
-
-/* Final motto stays subtle and does not compete with the card content. */
-.business-container .kds-card-bottom-motto,
-#cardPersonal .kds-card-bottom-motto {
-  opacity: .82;
-}
-.business-container .motto-text,
-#cardPersonal .motto-text {
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: .08em;
-  font-size: .72rem;
-  font-weight: 700;
-}
-
-@media (max-width: 600px) {
-  #cardPersonal .card-header {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-  #cardPersonal .save-tools::before {
-    left: 16px;
-    right: 16px;
-  }
-  .business-container .business-hero {
-    padding-bottom: 22px;
-  }
-  .business-container .business-social-section {
-    padding-top: 16px;
-  }
-  .business-container .service-card {
-    min-height: 164px;
-  }
-}
-
-@media (max-width: 380px) {
-  #cardPersonal .card-header {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-  .business-container .service-card {
-    min-height: 154px;
-  }
-  .business-container .motto-text,
-  #cardPersonal .motto-text {
-    font-size: .66rem;
-    letter-spacing: .06em;
-  }
-}
-
-
-/* DESIGN POLISH v5 — QR share area refinement
-   Scope: display styling only. No QR generation, sharing, or data logic changes. */
-
-/* Make QR sections feel like the deliberate final sharing step. */
-#cardQr,
-#cardBusinessQr {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(56,189,248,.14);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(56,189,248,.08), transparent 42%),
-    var(--bg-card);
-  box-shadow:
-    0 18px 38px -24px rgba(0,0,0,.65),
-    0 0 0 1px rgba(255,255,255,.025);
-}
-
-#cardQr::before,
-#cardBusinessQr::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 18%;
-  right: 18%;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(56,189,248,.55), transparent);
-  opacity: .75;
-}
-
-#cardQr .qr-frame,
-#cardBusinessQr .qr-frame {
-  margin-top: 2px;
-  padding: 10px;
-  border: 1px solid rgba(2,132,199,.10);
-  box-shadow:
-    0 14px 30px rgba(0,0,0,.28),
-    0 0 0 4px rgba(255,255,255,.025);
-}
-
-#cardQr .qr-title,
-#cardBusinessQr .qr-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.08rem;
-  font-weight: 700;
-  letter-spacing: -.01em;
-}
-
-#cardQr .qr-desc,
-#cardBusinessQr .qr-desc {
-  max-width: 430px;
-  line-height: 1.55;
-}
-
-#cardQr .qr-btn-group,
-#cardBusinessQr .qr-btn-group {
-  max-width: 340px;
-}
-
-#cardQr .qr-btn-group .btn-secondary,
-#cardBusinessQr .qr-btn-group .btn-secondary {
-  min-height: 46px;
-  border-radius: 13px;
-  background: rgba(255,255,255,.035);
-}
-
-#cardQr .qr-btn-group .btn-secondary:first-child,
-#cardBusinessQr .qr-btn-group .btn-secondary:first-child {
-  border-color: rgba(56,189,248,.18);
-}
-
-#cardQr .qr-btn-group .btn-secondary:hover,
-#cardBusinessQr .qr-btn-group .btn-secondary:hover {
-  background: rgba(56,189,248,.07);
-}
-
-@media (max-width: 600px) {
-  #cardQr,
-  #cardBusinessQr {
-    border-radius: 18px;
-  }
-  #cardQr .qr-frame,
-  #cardBusinessQr .qr-frame {
-    padding: 9px;
-  }
-  #cardQr .qr-btn-group,
-  #cardBusinessQr .qr-btn-group {
-    max-width: 100%;
-    gap: 8px;
-  }
-}
-
-@media (max-width: 380px) {
-  #cardQr .qr-btn-group .btn-secondary,
-  #cardBusinessQr .qr-btn-group .btn-secondary {
-    min-height: 43px;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-}
-
-
-/* FIX — Personal QR alignment
-   Keep the QR frame and generated code mathematically centered inside the
-   Personal QR card. This is display-only and does not change QR generation. */
-#cardQr {
-  width: calc(100% - 32px) !important;
-  max-width: none !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  box-sizing: border-box !important;
-  align-items: center !important;
-}
-
-#cardQr .qr-frame {
-  width: 216px !important;
-  height: 216px !important;
-  padding: 8px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: relative !important;
-  left: 0 !important;
-}
-
-#cardQr .qr-frame .qr-generated {
-  width: 200px !important;
-  height: 200px !important;
-  margin: 0 auto !important;
-  position: relative !important;
-  left: 0 !important;
-  transform: none !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-#cardQr .qr-frame .qr-generated > canvas:first-child,
-#cardQr .qr-frame .qr-generated > img:first-child {
-  display: block !important;
-  width: 200px !important;
-  height: 200px !important;
-  margin: 0 auto !important;
-  position: relative !important;
-  left: 0 !important;
-  transform: none !important;
+  max-width: 200px !important;
+  max-height: 200px !important;
   object-fit: contain !important;
 }
 
-@media (max-width: 600px) {
-  #cardQr {
-    width: calc(100% - 24px) !important;
-  }
-
-  #cardQr .qr-frame {
-    width: min(216px, 72vw) !important;
-    height: min(216px, 72vw) !important;
-    padding: 7px !important;
-  }
-
-  #cardQr .qr-frame .qr-generated {
-    width: calc(min(216px, 72vw) - 14px) !important;
-    height: calc(min(216px, 72vw) - 14px) !important;
-    flex-basis: calc(min(216px, 72vw) - 14px) !important;
-  }
-
-  #cardQr .qr-frame .qr-generated > canvas:first-child,
-  #cardQr .qr-frame .qr-generated > img:first-child {
-    width: calc(min(216px, 72vw) - 14px) !important;
-    height: calc(min(216px, 72vw) - 14px) !important;
-  }
+.qr-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--kds-text-primary);
+  margin-bottom: 5px;
 }
 
-
-/* PERSONAL QR CONTAINER SHAPE ALIGNMENT
-   Keep the Personal QR section outer container visually identical
-   to the Personal Profile card shape. QR generation/content is untouched. */
-#cardQr.qr-card {
-  width: 100% !important;
-  max-width: none !important;
-  border-radius: 22px !important;
-  box-sizing: border-box !important;
+.qr-desc {
+  font-size: 0.84rem;
+  color: var(--kds-text-muted);
+  max-width: 38ch;
+  line-height: 1.5;
+  margin: 0 auto 16px;
 }
 
-@media (max-width: 600px) {
-  #cardQr.qr-card {
-    border-radius: 20px !important;
-  }
+.qr-btn-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
 }
 
+.qr-btn-group .btn-secondary {
+  min-height: 46px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--kds-border-default);
+  color: var(--kds-text-primary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition:
+    transform var(--kds-transition),
+    background-color var(--kds-transition),
+    border-color var(--kds-transition);
+}
+
+.qr-btn-group .btn-secondary svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.qr-btn-group .btn-secondary:hover {
+  transform: translateY(-1px);
+  background: rgba(14, 165, 233, 0.1);
+  border-color: var(--kds-border-accent);
+}
 
 /* ==============================================================================
-   KDS PREMIUM POLISH — SAME REFERENCE DESIGN
-   Visual refinement only: no layout/section redesign.
+   STATUS & SUBSCRIPTION SCREENS
    ============================================================================== */
-
-.profile-card,
-.business-hero,
-.qr-card,
-.service-card {
-  box-shadow:
-    0 18px 38px rgba(0, 0, 0, 0.24),
-    0 0 0 1px rgba(255, 255, 255, 0.025);
+.status-svg-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: var(--kds-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
 }
 
-.profile-card,
-.business-hero,
-.qr-card,
-.service-card,
-.btn-action,
-.social-icon-link,
-.btn-secondary,
-.card-nav-switch {
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast),
-    border-color var(--transition-fast),
-    background-color var(--transition-fast);
+.status-svg-badge.expired,
+.status-svg-badge.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
 }
 
-.profile-cover {
-  height: 160px;
+.status-svg-badge.inactive {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
 }
 
-.card-header {
-  padding-left: 22px;
-  padding-right: 22px;
-  padding-bottom: 22px;
+/* ==============================================================================
+   FOOTER & TOAST NOTIFICATION
+   ============================================================================== */
+.kds-card-bottom-motto {
+  text-align: center;
+  padding: 6px 12px 0;
+  opacity: 0.78;
 }
 
-.avatar-wrapper {
-  margin-bottom: 14px;
-  box-shadow:
-    0 12px 28px rgba(0, 0, 0, 0.34),
-    0 0 0 4px rgba(9, 13, 22, 0.35);
+.motto-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--kds-cyan);
+  text-transform: uppercase;
 }
 
-.founder-name,
-.business-name {
-  text-rendering: optimizeLegibility;
+.page-footer {
+  text-align: center;
+  font-size: 0.76rem;
+  color: var(--kds-text-subtle);
+  padding: 4px 0 12px;
 }
 
-.founder-title {
-  margin-top: 1px;
+.kds-card-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 99999;
+  max-width: calc(100vw - 24px);
+  padding: 11px 18px;
+  border-radius: var(--kds-radius-full);
+  background: rgba(10, 18, 33, 0.96);
+  border: 1px solid rgba(56, 189, 248, 0.36);
+  color: #f8fafc;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+  animation: kdsToastUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.company-badge {
-  padding: 5px 13px;
-  margin-top: 6px;
+.kds-card-toast.fade-out {
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-.founder-bio {
-  margin-top: 12px;
-  max-width: 430px;
+@keyframes kdsToastUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
-.actions-grid {
-  gap: 9px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 18px;
-}
-
-.btn-action {
-  min-height: 72px;
-  padding: 13px 5px;
-  border-color: rgba(255, 255, 255, 0.085);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
-}
-
+/* ==============================================================================
+   FOCUS & ACCESSIBILITY
+   ============================================================================== */
 .btn-action:focus-visible,
 .btn-save-contact:focus-visible,
 .btn-secondary:focus-visible,
 .social-icon-link:focus-visible,
 .card-nav-switch:focus-visible,
-.business-map-link:focus-visible {
-  outline: 2px solid var(--accent-cyan);
+.business-map-link:focus-visible,
+.kds-preview-tab:focus-visible {
+  outline: 2px solid var(--kds-cyan);
   outline-offset: 3px;
 }
 
-.btn-action:hover {
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
-}
-
-.btn-save-contact {
-  min-height: 50px;
-  margin-bottom: 18px;
-  letter-spacing: 0.005em;
-}
-
-.socials-section,
-.business-social-section {
-  padding-bottom: 22px;
-}
-
-.social-icons-list {
-  gap: 12px;
-}
-
-.social-icon-link {
-  width: 50px;
-  height: 50px;
-  flex-basis: 50px;
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.035);
-}
-
-.social-icon-link svg {
-  width: 30px;
-  height: 30px;
-}
-
-.social-icon-link:hover {
-  box-shadow: 0 9px 20px rgba(0, 0, 0, 0.22);
-}
-
-.card-nav-switch {
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-
-.qr-card {
-  padding: 22px 20px 20px;
-}
-
-.qr-frame {
-  padding: 11px;
-  margin-bottom: 15px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
-}
-
-.qr-title {
-  margin-bottom: 5px;
-}
-
-.qr-desc {
-  max-width: 390px;
-  line-height: 1.5;
-  margin-bottom: 15px;
-}
-
-.btn-secondary {
-  min-height: 42px;
-}
-
-.business-hero {
-  padding: 30px 22px 22px;
-}
-
-.business-profile-cover {
-  margin: -30px -22px 24px;
-  width: calc(100% + 44px);
-}
-
-.business-profile-logo {
-  margin-bottom: 14px;
-}
-
-.business-about {
-  margin-bottom: 22px;
-}
-
-.service-card {
-  padding: 18px;
-}
-
-.service-card:hover {
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
-}
-
-.service-number {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-subtle);
-  letter-spacing: 0.08em;
-}
-
-.kds-card-bottom-motto {
-  opacity: 0.82;
-}
-
-.page-footer {
-  padding-top: 14px;
-}
-
+/* ==============================================================================
+   MOBILE RESPONSIVE REFINEMENTS (<= 600px)
+   ============================================================================== */
 @media (max-width: 600px) {
-  .profile-cover {
-    height: 150px;
+  #cardRoot > .page-container {
+    padding: 12px 12px calc(32px + env(safe-area-inset-bottom));
+    gap: 14px;
   }
 
-  .card-header {
-    padding-bottom: 20px;
+  .profile-card,
+  .business-hero,
+  .qr-card {
+    border-radius: 22px;
+  }
+
+  .profile-cover {
+    height: 148px;
+  }
+
+  .card-header,
+  .business-header-content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .avatar-wrapper {
+    width: 132px;
+    height: 132px;
+    margin-top: -66px;
+    margin-bottom: 14px;
+  }
+
+  .business-profile-logo {
+    width: 112px;
+    height: 112px;
+    margin-top: -56px;
+    margin-bottom: 14px;
+    border-radius: 22px;
+  }
+
+  .business-profile-logo .kds-logo-img {
+    border-radius: 18px;
   }
 
   .actions-grid {
     gap: 8px;
+    padding: 0 16px 16px;
   }
 
   .btn-action {
     min-height: 68px;
+    padding: 10px 4px;
+    font-size: 0.74rem;
+    border-radius: 12px;
+  }
+
+  .save-tools,
+  .profile-switcher-wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 18px;
+  }
+
+  .socials-section,
+  .business-social-section {
+    margin-left: 16px;
+    margin-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 18px;
   }
 
   .social-icons-list {
@@ -4469,32 +1240,136 @@ body {
   }
 
   .social-icon-link {
-    width: 48px;
-    height: 48px;
-    flex-basis: 48px;
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
   }
 
-  .business-hero {
-    padding-left: 18px;
-    padding-right: 18px;
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
-  .business-profile-cover {
-    margin-left: -18px;
-    margin-right: -18px;
-    width: calc(100% + 36px);
+  .service-card {
+    padding: 16px;
+  }
+
+  .business-address-section {
+    padding: 14px;
+  }
+
+  .business-address-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .business-map-link {
+    width: 100%;
+  }
+
+  .qr-card {
+    padding: 20px 16px 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .kds-preview-label {
+    display: none;
+  }
+
+  .kds-preview-bar {
+    justify-content: center;
+    padding: 5px;
+  }
+
+  .kds-preview-tabs {
+    width: 100%;
+  }
+
+  .kds-preview-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  .actions-grid {
+    gap: 8px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .actions-grid[data-count="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .btn-action {
+    min-height: 60px;
+    padding: 10px 8px;
+    font-size: 0.8rem;
+  }
+
+  .socials-section,
+  .business-social-section {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .social-icons-list {
+    gap: 8px;
+  }
+
+  .social-icon-link {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .qr-btn-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  #cardRoot > .page-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .card-header,
+  .business-header-content {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .actions-grid[data-count="3"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .actions-grid[data-count="3"] > .btn-action:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .save-tools,
+  .profile-switcher-wrap {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .card-nav-switch {
+    padding: 12px;
+    gap: 10px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .profile-card,
-  .business-hero,
-  .qr-card,
-  .service-card,
-  .btn-action,
-  .social-icon-link,
-  .btn-secondary,
-  .card-nav-switch {
-    transition: none !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

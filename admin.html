@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Client Management Studio • KDS</title>
-  <meta name="description" content="KDS Client Digital Visiting Card Admin Dashboard">
+  <title>Client Management Studio • KDS Digital Card</title>
+  <meta name="description" content="KDS Digital Card Admin Studio — Create and manage Personal, Personal + Business, and Business Digital Identity Cards">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/style.css?v=20260922-14">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css?v=20260928-03">
 </head>
 <body class="admin-body">
   <header class="topbar">
@@ -41,7 +41,7 @@
       <div class="eyebrow">ADMIN ACCESS</div>
       <h1>Sign in to Dashboard</h1>
       <p class="hint">শুধু অনুমোদিত Admin credentials দিয়ে Client Management ব্যবহার করা যাবে।</p>
-      
+
       <form id="loginForm">
         <label>
           <span class="form-label">Email Address</span>
@@ -79,24 +79,42 @@
 
     <!-- Admin Main Dashboard -->
     <section id="adminApp" class="hidden" style="grid-column: 1 / -1;">
+      <!-- Admin Section Navigation Bar -->
+      <nav class="admin-nav-bar" aria-label="Admin Studio Navigation">
+        <button type="button" id="navClientsBtn" class="admin-nav-tab active">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="9" x2="10" y2="9"/><line x1="6" y1="13" x2="14" y2="13"/></svg>
+          <span>Client Management</span>
+        </button>
+        <button type="button" id="navAppGeneratorBtn" class="admin-nav-tab">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <span>App Generator</span>
+        </button>
+      </nav>
+
       <!-- Stats Row -->
       <div class="admin-stats-row">
         <div class="stat-card">
-          <div class="stat-icon total">📇</div>
+          <div class="stat-icon total" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="9" x2="10" y2="9"/><line x1="6" y1="13" x2="14" y2="13"/></svg>
+          </div>
           <div>
             <div class="stat-value" id="statTotal">0</div>
             <div class="stat-label">Total Cards</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon active">🟢</div>
+          <div class="stat-icon active" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
           <div>
             <div class="stat-value" id="statActive">0</div>
             <div class="stat-label">Active Subscriptions</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon inactive">🔒</div>
+          <div class="stat-icon inactive" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
           <div>
             <div class="stat-value" id="statInactive">0</div>
             <div class="stat-label">Inactive / Expired</div>
@@ -113,10 +131,16 @@
               <h1 id="formTitle">New Client</h1>
               <p id="formSubtitle" class="panel-subtitle">Add only the information required for this card template</p>
             </div>
-            <button id="resetBtn" class="btn-ghost-sm" type="button" title="Clear form and create new client">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-              <span>Reset</span>
-            </button>
+            <div class="panel-head-actions">
+              <a id="previewCurrentBtn" class="btn-ghost-sm btn-preview-current hidden" href="./card.html?preview=demo" target="_blank" rel="noopener" title="Preview this client card">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <span>Preview</span>
+              </a>
+              <button id="resetBtn" class="btn-ghost-sm" type="button" title="Clear form and create new client">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                <span>Reset</span>
+              </button>
+            </div>
           </div>
 
           <form id="clientForm">
@@ -126,21 +150,27 @@
             <div class="form-section-label">1. Card Template Type</div>
             <div class="template-pick">
               <button type="button" data-template="personal" class="active">
-                <span class="template-icon">👤</span>
+                <span class="template-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
                 <span class="template-text">
                   <strong>Personal Card</strong>
-                  <small>Profile, contacts, bio & socials</small>
+                  <small>Profile, contacts, bio &amp; socials</small>
                 </span>
               </button>
               <button type="button" data-template="personal_business">
-                <span class="template-icon">👤＋</span>
+                <span class="template-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
                 <span class="template-text">
                   <strong>Personal + Business</strong>
                   <small>Personal profile connected to business profile</small>
                 </span>
               </button>
               <button type="button" data-template="business_only">
-                <span class="template-icon">🏢</span>
+                <span class="template-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                </span>
                 <span class="template-text">
                   <strong>Business Card</strong>
                   <small>Business profile only — no personal profile</small>
@@ -202,7 +232,7 @@
                     <input id="companyLogo" class="form-input" type="url" placeholder="Upload logo or paste image URL">
                     <label class="btn-file-picker" title="Upload company logo">
                       <input type="file" id="companyLogoFile" accept="image/*" class="hidden">
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="7" y2="8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2h-14a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                       <span>Upload</span>
                     </label>
                   </div>
@@ -251,7 +281,7 @@
                 <label>
                   <span class="form-label">Google Maps Location Link</span>
                   <input id="businessAddress" class="form-input" type="url" placeholder="Paste Google Maps share/location link">
-                  <small class="form-help">Location icon-এ ক্লিক করলে এই Google Maps link খুলবে।</small>
+                  <small class="form-help">Location বাটনে ক্লিক করলে এই Google Maps link খুলবে।</small>
                 </label>
                 <label class="wide">
                   <span class="form-label">Business Website</span>
@@ -261,7 +291,7 @@
                   <div class="form-label">Services</div>
                   <div id="servicesEditor" class="services-editor" aria-live="polite"></div>
                   <button type="button" id="addServiceBtn" class="btn-add-service" onclick="addServiceRow()">+ Add Service</button>
-                  <small class="form-help">প্রতিটি service-এর নাম এবং তার নিচে/পাশে সেই service-এর description আলাদাভাবে দিন।</small>
+                  <small class="form-help">প্রতিটি service-এর নাম এবং তার পাশে সেই service-এর description আলাদাভাবে দিন।</small>
                 </div>
               </div>
 
@@ -275,9 +305,9 @@
               </div>
             </div>
 
-            <div class="form-section-label">4. Images & Social Media</div>
-            <div class="section-helper">কার্ডে যে ছবি ও Personal social icons দেখা যাবে সেগুলো এখানে দিন।</div>
-            <div class="grid">
+            <div class="form-section-label personal-media-field">4. Images &amp; Social Media</div>
+            <div class="section-helper personal-media-field">কার্ডে যে ছবি ও Personal social icons দেখা যাবে সেগুলো এখানে দিন।</div>
+            <div class="grid personal-media-field">
               <div class="upload-wrap personal-media-field">
                 <span class="form-label">Profile Photo</span>
                 <div class="upload-row">
@@ -294,7 +324,7 @@
                 </div>
               </div>
 
-              <div class="upload-wrap">
+              <div class="upload-wrap personal-media-field">
                 <span class="form-label">Cover Photo</span>
                 <div class="upload-row">
                   <input id="cover" class="form-input" type="url" placeholder="Upload cover or paste image URL">
@@ -318,12 +348,12 @@
               <label class="personal-social-fields"><span class="form-label">TikTok</span><input id="tiktok" class="form-input" type="url" placeholder="https://www.tiktok.com/@username"></label>
             </div>
 
-                        <!-- Subscription Management Box -->
+            <!-- Subscription Management Box -->
             <section class="subscription-editor">
               <div class="subscription-head">
                 <div>
                   <div class="eyebrow">SUBSCRIPTION CONTROL</div>
-                  <h3>Access & Expiry Rules</h3>
+                  <h3>Access &amp; Expiry Rules</h3>
                 </div>
                 <span id="subscriptionBadge" class="status-badge inactive">Inactive</span>
               </div>
@@ -410,8 +440,302 @@
           </div>
         </section>
       </div>
+
+      <!-- App Generator Section (Shared by Main Menu & Manage Clients -> Generate App) -->
+      <section id="appGeneratorSection" class="panel app-generator-panel" aria-label="App Generator">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">ANDROID APK STUDIO</div>
+            <h2>App Generator</h2>
+            <p class="panel-subtitle">Select a client, customize App-specific branding &amp; splash screen, preview live, and generate an Android APK without altering the original Digital Card.</p>
+          </div>
+          <div class="panel-head-actions">
+            <button id="appGenResetDefaultsBtn" class="btn-ghost-sm" type="button" title="Reload selected client defaults">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              <span>Reload Client Defaults</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="app-gen-layout">
+          <!-- Left Column: Editable App Configuration Form -->
+          <form id="appGeneratorForm" class="app-gen-form" novalidate>
+            <div class="form-section-label" style="margin-top: 0;">1. Select Client &amp; App Identity</div>
+            <div class="grid">
+              <div class="wide">
+                <span class="form-label">Select Client <span class="required">*</span></span>
+                <div class="app-gen-client-picker">
+                  <input id="appGenClientSearch" class="form-input" type="search" placeholder="Filter clients by name, company, phone, or slug..." style="margin-bottom: 8px;">
+                  <select id="appGenClientSelect" class="form-select">
+                    <option value="">— Select an existing client —</option>
+                  </select>
+                </div>
+                <small class="form-help">Selecting a client loads their current card details as editable defaults for this APK.</small>
+              </div>
+
+              <label class="wide">
+                <span class="form-label">App Name <span class="required">*</span></span>
+                <input id="appGenAppName" class="form-input" type="text" required placeholder="e.g. Md. Rahim Ahmed">
+                <small class="form-help">Display name shown on the phone home screen. Changing this does not rename the client's Digital Card.</small>
+              </label>
+            </div>
+
+            <div class="form-section-label">2. App Profile &amp; Target Card URL</div>
+            <div class="app-gen-profile-options" id="appGenProfileGroup" role="radiogroup" aria-label="App Profile">
+              <label class="app-profile-option active" data-app-profile="personal">
+                <input type="radio" name="appGenProfile" value="personal" checked>
+                <span class="app-profile-radio-dot"></span>
+                <span class="app-profile-text">
+                  <strong>Personal</strong>
+                  <small>Opens Personal Profile</small>
+                </span>
+              </label>
+              <label class="app-profile-option" data-app-profile="business">
+                <input type="radio" name="appGenProfile" value="business">
+                <span class="app-profile-radio-dot"></span>
+                <span class="app-profile-text">
+                  <strong>Business</strong>
+                  <small>Opens Business Profile</small>
+                </span>
+              </label>
+              <label class="app-profile-option" data-app-profile="personal_business">
+                <input type="radio" name="appGenProfile" value="personal_business">
+                <span class="app-profile-radio-dot"></span>
+                <span class="app-profile-text">
+                  <strong>Personal + Business</strong>
+                  <small>Opens Connected Dual Profile</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="grid" style="margin-top: 14px;">
+              <div class="wide">
+                <div class="app-gen-label-row">
+                  <span class="form-label">Card URL <span class="required">*</span></span>
+                  <button type="button" id="appGenResetUrlBtn" class="btn-inline-link">Use Client Default URL</button>
+                </div>
+                <input id="appGenCardUrl" class="form-input" type="url" required placeholder="https://yourdomain.com/card.html?slug=client-slug">
+                <small class="form-help">The generated APK opens this live URL when launched. Editing this field does not modify the client's saved slug.</small>
+              </div>
+            </div>
+
+            <div class="form-section-label">3. App Icon &amp; Profile / Card Photo</div>
+            <div class="grid">
+              <!-- App Icon -->
+              <div class="app-asset-card">
+                <div class="app-asset-head">
+                  <div class="app-asset-thumb-wrap" id="appGenIconPreviewBox">
+                    <img id="appGenIconThumb" class="app-asset-thumb hidden" src="" alt="App Icon Preview">
+                    <div id="appGenIconFallback" class="app-asset-fallback">KDS</div>
+                  </div>
+                  <div class="app-asset-meta">
+                    <span class="form-label">App Icon</span>
+                    <small class="form-help">Used as the Android launcher icon. Automatically scaled for all screen densities.</small>
+                  </div>
+                </div>
+                <input id="appGenIconUrl" class="form-input" type="url" placeholder="Paste icon image URL or upload">
+                <div class="app-asset-actions">
+                  <label class="mini-btn view" title="Upload custom App Icon">
+                    <input type="file" id="appGenIconFile" accept="image/*" class="hidden">
+                    <span>Upload / Replace</span>
+                  </label>
+                  <button type="button" id="appGenIconUseLogoBtn" class="mini-btn">Use Client Logo</button>
+                  <button type="button" id="appGenIconUsePhotoBtn" class="mini-btn">Use Profile Photo</button>
+                  <button type="button" id="appGenIconRemoveBtn" class="mini-btn danger">Remove</button>
+                </div>
+              </div>
+
+              <!-- Profile / Card Photo -->
+              <div class="app-asset-card">
+                <div class="app-asset-head">
+                  <div class="app-asset-thumb-wrap" id="appGenPhotoPreviewBox">
+                    <img id="appGenPhotoThumb" class="app-asset-thumb hidden" src="" alt="App Photo Preview">
+                    <div id="appGenPhotoFallback" class="app-asset-fallback">P</div>
+                  </div>
+                  <div class="app-asset-meta">
+                    <span class="form-label">Profile / Card Photo</span>
+                    <small class="form-help">App-specific profile image preview. Does not overwrite the original Card photo.</small>
+                  </div>
+                </div>
+                <input id="appGenPhotoUrl" class="form-input" type="url" placeholder="Paste photo URL or upload">
+                <div class="app-asset-actions">
+                  <label class="mini-btn view" title="Upload custom App Photo">
+                    <input type="file" id="appGenPhotoFile" accept="image/*" class="hidden">
+                    <span>Upload / Replace</span>
+                  </label>
+                  <button type="button" id="appGenPhotoUseClientBtn" class="mini-btn">Use Client Photo</button>
+                  <button type="button" id="appGenPhotoRemoveBtn" class="mini-btn danger">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section-label">4. Splash Screen Configuration</div>
+            <div class="grid">
+              <div class="app-asset-card wide">
+                <div class="app-asset-head">
+                  <div class="app-asset-thumb-wrap" id="appGenSplashPreviewBox">
+                    <img id="appGenSplashThumb" class="app-asset-thumb hidden" src="" alt="Splash Image Preview">
+                    <div id="appGenSplashFallback" class="app-asset-fallback">KDS</div>
+                  </div>
+                  <div class="app-asset-meta">
+                    <span class="form-label">Splash Logo / Image</span>
+                    <small class="form-help">Displayed centered on the launch splash screen before opening the live Digital Card.</small>
+                  </div>
+                </div>
+                <input id="appGenSplashImageUrl" class="form-input" type="url" placeholder="Paste splash logo/image URL or upload">
+                <div class="app-asset-actions">
+                  <label class="mini-btn view" title="Upload Splash Image">
+                    <input type="file" id="appGenSplashImageFile" accept="image/*" class="hidden">
+                    <span>Upload / Replace</span>
+                  </label>
+                  <button type="button" id="appGenSplashUseIconBtn" class="mini-btn">Use App Icon</button>
+                  <button type="button" id="appGenSplashUseLogoBtn" class="mini-btn">Use Client Logo</button>
+                  <button type="button" id="appGenSplashRemoveBtn" class="mini-btn danger">Remove</button>
+                </div>
+              </div>
+
+              <label>
+                <span class="form-label">Splash App Title (Optional)</span>
+                <input id="appGenSplashTitle" class="form-input" type="text" placeholder="e.g. Md. Rahim Ahmed">
+              </label>
+
+              <div>
+                <span class="form-label">Splash Background Color</span>
+                <div class="color-picker-row">
+                  <input id="appGenSplashBgColor" class="color-swatch-input" type="color" value="#060a12" aria-label="Splash Background Color">
+                  <input id="appGenSplashBgHex" class="form-input" type="text" value="#060a12" maxlength="7" placeholder="#060a12">
+                </div>
+              </div>
+            </div>
+
+            <p id="appGenValidationMsg" class="auth-message hidden" role="alert"></p>
+
+            <div class="app-gen-submit-row">
+              <button type="submit" id="generateApkBtn" class="btn-primary full">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Generate APK</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Right Column: Live App Preview & Generation Result -->
+          <div class="app-gen-sidebar">
+            <div id="appGenLivePreview" class="app-preview-card">
+              <div class="eyebrow">LIVE APP PREVIEW</div>
+              <div class="app-preview-device">
+                <!-- Home Screen Icon Preview -->
+                <div class="app-preview-launcher">
+                  <div class="app-preview-icon-box" id="previewAppIconBox">
+                    <img id="previewAppIconImg" class="hidden" src="" alt="App Icon">
+                    <span id="previewAppIconInitials">KDS</span>
+                  </div>
+                  <div class="app-preview-title" id="previewAppNameText">Digital Card App</div>
+                  <div class="app-preview-subtitle">Digital Card App</div>
+                </div>
+
+                <!-- Splash Screen Mini Preview -->
+                <div class="app-preview-splash" id="previewSplashBox" style="background-color: #060a12;">
+                  <span class="splash-preview-tag">SPLASH SCREEN</span>
+                  <div class="splash-preview-logo-wrap">
+                    <img id="previewSplashLogoImg" class="hidden" src="" alt="Splash Logo">
+                    <span id="previewSplashLogoInitials">KDS</span>
+                  </div>
+                  <div class="splash-preview-title" id="previewSplashTitleText">Digital Card App</div>
+                  <div class="splash-preview-PhotoBadge" id="previewPhotoBadgeWrap">
+                    <img id="previewAppPhotoImg" class="hidden" src="" alt="Profile Photo">
+                    <span id="previewAppPhotoLabel">Card Photo Ready</span>
+                  </div>
+                </div>
+
+                <!-- Configuration Meta Summary -->
+                <div class="app-preview-meta">
+                  <div class="app-preview-meta-row">
+                    <span>Selected Profile</span>
+                    <strong id="previewAppProfileBadge" class="client-template-pill personal">Personal</strong>
+                  </div>
+                  <div class="app-preview-meta-row">
+                    <span>Opening Behavior</span>
+                    <strong id="previewAppBehaviorText">Opens live Personal Card</strong>
+                  </div>
+                  <div class="app-preview-url-box">
+                    <span>Card URL</span>
+                    <code id="previewAppCardUrlText">Select a client to preview URL</code>
+                  </div>
+                </div>
+
+                <a id="appGenOpenCardPreviewBtn" class="btn-secondary full-width" href="./card.html?preview=demo" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  <span>Open Card Preview</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Generation Result Card -->
+            <div id="appGenResultBox" class="app-result-card hidden" aria-live="polite">
+              <div class="app-result-status">
+                <span class="app-result-check" aria-hidden="true">✓</span>
+                <strong>App Generated Successfully</strong>
+              </div>
+              <div class="app-result-details">
+                <div class="app-result-item">
+                  <span>App Name:</span>
+                  <strong id="resultAppName">—</strong>
+                </div>
+                <div class="app-result-item">
+                  <span>Card URL:</span>
+                  <code id="resultCardUrl">—</code>
+                </div>
+                <div class="app-result-item">
+                  <span>Profile:</span>
+                  <strong id="resultProfile">—</strong>
+                </div>
+              </div>
+              <div class="app-result-actions">
+                <button type="button" id="downloadApkBtn" class="btn-primary full">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Download APK</span>
+                </button>
+                <div class="app-result-secondary-row">
+                  <button type="button" id="openGeneratedAppBtn" class="btn-secondary">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    <span>Open Generated App</span>
+                  </button>
+                  <button type="button" id="regenerateApkBtn" class="btn-ghost-sm">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    <span>Generate Again</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </section>
   </main>
+
+  <!-- Generated App Interactive Shell Simulator Modal -->
+  <div id="generatedAppViewerBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="generatedAppViewerTitle">
+    <div class="modal-dialog app-simulator-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 id="generatedAppViewerTitle" class="modal-title">Generated App</h3>
+          <small id="generatedAppViewerSub" class="form-help" style="margin-top:2px;"></small>
+        </div>
+        <button id="generatedAppViewerCloseBtn" class="modal-close" type="button" aria-label="Close app viewer">&times;</button>
+      </div>
+      <div class="app-simulator-viewport">
+        <div id="generatedAppSplashOverlay" class="app-simulator-splash">
+          <div class="app-simulator-splash-logo">
+            <img id="generatedAppSplashImg" class="hidden" src="" alt="Splash">
+            <span id="generatedAppSplashInitials">KDS</span>
+          </div>
+          <div id="generatedAppSplashTitle" class="app-simulator-splash-title">KDS Digital Card</div>
+          <div class="app-simulator-splash-sub">Opening Live Digital Card...</div>
+        </div>
+        <iframe id="generatedAppIframe" class="app-simulator-iframe" src="about:blank" title="Generated Client App Live View"></iframe>
+      </div>
+    </div>
+  </div>
 
   <!-- In-App Modal Dialog for Confirmation & Subscription -->
   <div id="adminModalBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -431,8 +755,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./js/supabase.js?v=20260920-1"></script>
-  <script src="./js/app.js?v=20260925-06"></script>
-  <script src="./js/admin.js?v=20260925-06"></script>
+  <script src="./js/supabase.js?v=20260928-01"></script>
+  <script src="./js/app.js?v=20260928-01"></script>
+  <script src="./js/admin.js?v=20260928-01"></script>
 </body>
 </html>

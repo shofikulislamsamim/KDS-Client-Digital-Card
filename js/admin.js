@@ -2,6 +2,11 @@ const form = qs("#clientForm");
 let selectedTemplate = "personal";
 let editingClient = null;
 let allClients = [];
+let isAdminAuthenticated = false;
+
+function escJsAttr(v) {
+  return esc(String(v ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'"));
+}
 
 // Tracks Storage assets uploaded in the current unsaved form session.
 // Each entry is keyed by the corresponding URL/text input selector.
@@ -63,6 +68,7 @@ const ADMIN_ICONS = {
   external: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
   edit: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
   power: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>`,
+  apk: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
   trash: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`
 };
 
@@ -283,6 +289,11 @@ function clearForm() {
   setTemplate(["personal", "personal_business", "business_only"].includes(paramTemplate) ? paramTemplate : "personal");
   if (qs("#formTitle")) qs("#formTitle").textContent = "New Client";
   if (qs("#formSubtitle")) qs("#formSubtitle").textContent = "Fill in the client details to generate a visiting card";
+  const previewBtn = qs("#previewCurrentBtn");
+  if (previewBtn) {
+    previewBtn.classList.add("hidden");
+    previewBtn.href = "./card.html?preview=demo";
+  }
   if (qs("#duration")) qs("#duration").value = "30";
   if (qs("#customDays")) qs("#customDays").value = "";
   if (qs("#customDaysWrap")) qs("#customDaysWrap").classList.add("hidden");
@@ -340,8 +351,14 @@ function fillForm(c) {
   if (personalCompany) personalCompany.value = c.company || "";
   setTemplate(c.template || "personal");
   renderServiceEditor(c.businessServices || "");
-  if (qs("#formTitle")) qs("#formTitle").textContent = "Edit: " + (c.name || "Client");
+  const displayName = c.template === "business_only" ? c.company || c.name || "Business" : c.name || "Client";
+  if (qs("#formTitle")) qs("#formTitle").textContent = "Edit: " + displayName;
   if (qs("#formSubtitle")) qs("#formSubtitle").textContent = "Update client data and manage subscription";
+  const previewBtn = qs("#previewCurrentBtn");
+  if (previewBtn) {
+    previewBtn.href = c.template === "business_only" ? getCardFullUrl(c, "business") : cardUrl(c);
+    previewBtn.classList.remove("hidden");
+  }
   updateImagePreviews();
   renderSubscriptionFields(c);
 }
@@ -358,7 +375,10 @@ function renderSubscriptionFields(c) {
   const endEl = qs("#subscriptionEnd");
   if (endEl) endEl.textContent = c.subscriptionEnd ? formatDateTime(c.subscriptionEnd) : "No expiry";
   const actBtn = qs("#activateBtn");
-  if (actBtn) actBtn.textContent = s.status === "active" ? "Extend / Renew" : "Activate";
+  if (actBtn) {
+    const labelSpan = actBtn.querySelector("span") || actBtn;
+    labelSpan.textContent = s.status === "active" ? "Extend / Renew" : "Activate";
+  }
 }
 
 const VALIDATION_LIMITS = Object.freeze({
@@ -458,6 +478,11 @@ function validateClientForm(data) {
   const urlFields = [
     ["website", "Website"],
     ["businessWebsite", "Business Website"],
+    ["businessAddress", "Google Maps Location"],
+    ["photo", "Profile Photo"],
+    ["cover", "Cover Photo"],
+    ["businessCover", "Business Cover Photo"],
+    ["companyLogo", "Company Logo"],
     ["facebook", "Facebook"],
     ["instagram", "Instagram"],
     ["linkedin", "LinkedIn"],
@@ -581,7 +606,13 @@ function renderListItems(list) {
   if (!box) return;
 
   if (!list.length) {
-    box.innerHTML = '<div class="empty-list"><div class="empty-icon">📭</div><p>এখনো কোনো client তৈরি হয়নি। বাম পাশের ফর্ম থেকে নতুন ক্লায়েন্ট যোগ করুন।</p></div>';
+    box.innerHTML = `
+      <div class="empty-list">
+        <div class="empty-icon-ring" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <p>এখনো কোনো client তৈরি হয়নি। বাম পাশের ফর্ম থেকে নতুন ক্লায়েন্ট যোগ করুন।</p>
+      </div>`;
     return;
   }
 
@@ -589,6 +620,9 @@ function renderListItems(list) {
     .map((c) => {
       const s = subscriptionState(c);
       const isBiz = c.template === "business" || c.template === "personal_business" || c.template === "business_only";
+      const isBizOnly = c.template === "business_only";
+      const displayName = isBizOnly ? c.company || c.name || "Business Card" : c.name || c.company || "Client Card";
+      const avatarSrc = isBizOnly ? c.companyLogo || c.photo : c.photo || c.companyLogo;
       const fullUrl = getCardFullUrl(c);
 
       return `
@@ -596,19 +630,20 @@ function renderListItems(list) {
           <div class="client-item-left">
             <div class="client-item-avatar">
               ${
-                c.photo
-                  ? `<img src="${esc(sanitizeUrl(c.photo))}" alt="${esc(c.name)}">`
-                  : `<div class="avatar-ph">${esc(c.name ? c.name.charAt(0).toUpperCase() : "C")}</div>`
+                avatarSrc
+                  ? `<img src="${esc(sanitizeUrl(avatarSrc))}" alt="${esc(displayName)}">`
+                  : `<div class="avatar-ph">${esc(displayName ? displayName.charAt(0).toUpperCase() : "C")}</div>`
               }
             </div>
             <div class="client-item-meta">
               <div class="client-item-name-row">
-                <strong class="client-item-name">${esc(c.name)}</strong>
+                <strong class="client-item-name">${esc(displayName)}</strong>
                 <span class="client-template-pill ${isBiz ? "business" : "personal"}">${c.template === "personal_business" ? "Personal + Business" : c.template === "business_only" ? "Business" : "Personal"}</span>
               </div>
               <div class="client-item-sub">
-                ${c.designation ? `<span>${esc(c.designation)}</span>` : ""}
-                ${c.company ? `<span class="company-name">• ${esc(c.company)}</span>` : ""}
+                ${!isBizOnly && c.designation ? `<span>${esc(c.designation)}</span>` : ""}
+                ${!isBizOnly && c.company ? `<span class="company-name">• ${esc(c.company)}</span>` : ""}
+                ${isBizOnly && c.tagline ? `<span>${esc(c.tagline)}</span>` : ""}
               </div>
               <div class="list-sub">
                 <span class="status-badge ${s.status}">${esc(s.label)}</span>
@@ -618,30 +653,33 @@ function renderListItems(list) {
           </div>
           <div class="client-actions">
             ${c.template === "personal_business" ? `
-              <a class="mini-btn view" href="${cardUrl(c)}" target="_blank" title="Open Personal Profile">
+              <a class="mini-btn view" href="${cardUrl(c)}" target="_blank" rel="noopener" title="Open Personal Profile">
                 ${ADMIN_ICONS.external}<span>Personal</span>
               </a>
-              <a class="mini-btn view" href="${getCardFullUrl(c, "business")}" target="_blank" title="Open Business Profile">
+              <a class="mini-btn view" href="${getCardFullUrl(c, "business")}" target="_blank" rel="noopener" title="Open Business Profile">
                 ${ADMIN_ICONS.external}<span>Business</span>
               </a>
             ` : `
-              <a class="mini-btn view" href="${c.template === "business_only" ? getCardFullUrl(c, "business") : cardUrl(c)}" target="_blank" title="Open Card in New Tab">
+              <a class="mini-btn view" href="${c.template === "business_only" ? getCardFullUrl(c, "business") : cardUrl(c)}" target="_blank" rel="noopener" title="Open Card in New Tab">
                 ${ADMIN_ICONS.external}<span>View</span>
               </a>
             `}
-            <button class="mini-btn copy" onclick="copyCardLink('${esc(fullUrl)}')" type="button" title="Copy Card Link">
+            <button class="mini-btn copy" onclick="copyCardLink('${escJsAttr(fullUrl)}')" type="button" title="Copy Card Link">
               ${ADMIN_ICONS.copy}<span>Copy</span>
             </button>
-            <button class="mini-btn edit" onclick="editClient('${esc(c.id)}')" type="button" title="Edit Client Data">
+            <button class="mini-btn edit" onclick="editClient('${escJsAttr(c.id)}')" type="button" title="Edit Client Data">
               ${ADMIN_ICONS.edit}<span>Edit</span>
             </button>
-            <button class="mini-btn sub" onclick="quickActivate('${esc(c.id)}')" type="button" title="Activate or Renew">
+            <button class="mini-btn sub" onclick="quickActivate('${escJsAttr(c.id)}')" type="button" title="Activate or Renew">
               ${ADMIN_ICONS.power}<span>Renew</span>
             </button>
-            <button class="mini-btn warn" onclick="quickDeactivate('${esc(c.id)}')" type="button" title="Deactivate Card">
+            <button class="mini-btn warn" onclick="quickDeactivate('${escJsAttr(c.id)}')" type="button" title="Deactivate Card">
               Off
             </button>
-            <button class="mini-btn danger" onclick="deleteClient('${esc(c.id)}')" type="button" title="Delete Card">
+            <button class="mini-btn app-gen" onclick="openAppGeneratorForClient('${escJsAttr(c.id)}')" type="button" title="Generate Android APK for this client">
+              ${ADMIN_ICONS.apk}<span>Generate App</span>
+            </button>
+            <button class="mini-btn danger" onclick="deleteClient('${escJsAttr(c.id)}')" type="button" title="Delete Card">
               ${ADMIN_ICONS.trash}<span>Delete</span>
             </button>
           </div>
@@ -655,6 +693,9 @@ async function loadAndRenderList() {
     allClients = await getClients();
     updateStats(allClients);
     filterClients();
+    if (typeof populateAppGenClientDropdown === "function") {
+      populateAppGenClientDropdown();
+    }
   } catch (e) {
     const box = qs("#clientList");
     if (box) box.innerHTML = '<div class="empty-list error">Client list load করতে সমস্যা হয়েছে।</div>';
@@ -674,31 +715,71 @@ function filterClients() {
       (c.company || "").toLowerCase().includes(query) ||
       (c.designation || "").toLowerCase().includes(query) ||
       (c.phone || "").toLowerCase().includes(query) ||
-      (c.email || "").toLowerCase().includes(query)
+      (c.email || "").toLowerCase().includes(query) ||
+      (c.businessPhone || "").toLowerCase().includes(query) ||
+      (c.businessEmail || "").toLowerCase().includes(query) ||
+      (c.slug || "").toLowerCase().includes(query)
     );
   });
   renderListItems(filtered);
 }
 
+async function findAdminClient(id) {
+  const cached = allClients.find((item) => item.id === id);
+  if (cached) return { ...cached };
+  if (typeof getClientForAdmin === "function") {
+    const fromDb = await getClientForAdmin(id);
+    if (fromDb) return fromDb;
+  }
+  return getClient(id);
+}
+
 window.copyCardLink = async function (url) {
   try {
-    await navigator.clipboard.writeText(url);
-    showToast("Card link copied to clipboard!", "success");
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+      showToast("Card link copied to clipboard!", "success");
+      return;
+    }
+    const ta = document.createElement("textarea");
+    ta.value = url;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    const copied = document.execCommand("copy");
+    document.body.removeChild(ta);
+    if (copied) {
+      showToast("Card link copied to clipboard!", "success");
+      return;
+    }
   } catch (e) {
-    prompt("Card link:", url);
+    // Fallback to modal below
   }
+
+  openModal({
+    title: "Copy Card Link",
+    bodyHtml: `
+      <p class="modal-desc">Select and copy the public card link below:</p>
+      <input type="text" class="form-input" value="${esc(url)}" readonly onclick="this.select()">
+    `,
+    confirmText: "Done",
+    onConfirm: async () => true
+  });
 };
 
 window.editClient = async function (id) {
+  if (!isAdminAuthenticated) return;
   try {
-    const c = await getClient(id);
+    const c = await findAdminClient(id);
     if (c) {
       fillForm(c);
       const formEl = qs("#clientForm");
       if (formEl) {
         formEl.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      showToast(`Editing "${c.name}"`, "info");
+      showToast(`Editing "${c.template === "business_only" ? c.company || c.name : c.name}"`, "info");
     }
   } catch (e) {
     showError(e);
@@ -706,8 +787,9 @@ window.editClient = async function (id) {
 };
 
 window.quickActivate = async function (id) {
+  if (!isAdminAuthenticated) return;
   try {
-    const c = await getClient(id);
+    const c = await findAdminClient(id);
     if (!c) return;
 
     openModal({
@@ -749,10 +831,10 @@ window.quickActivate = async function (id) {
         }
 
         extendSubscription(c, days);
-        await saveClient(c);
+        const saved = await saveClient(c);
         if (editingClient && editingClient.id === id) {
-          editingClient = c;
-          fillForm(c);
+          editingClient = saved;
+          fillForm(saved);
         }
         await loadAndRenderList();
         showToast(`"${c.name}" renewed for ${days || "unlimited"} days!`, "success");
@@ -772,8 +854,9 @@ window.quickActivate = async function (id) {
 };
 
 window.quickDeactivate = async function (id) {
+  if (!isAdminAuthenticated) return;
   try {
-    const c = await getClient(id);
+    const c = await findAdminClient(id);
     if (!c) return;
 
     openModal({
@@ -786,10 +869,10 @@ window.quickDeactivate = async function (id) {
       isDanger: true,
       onConfirm: async () => {
         deactivateSubscription(c);
-        await saveClient(c);
+        const saved = await saveClient(c);
         if (editingClient && editingClient.id === id) {
-          editingClient = c;
-          fillForm(c);
+          editingClient = saved;
+          fillForm(saved);
         }
         await loadAndRenderList();
         showToast(`"${c.name}" subscription deactivated.`, "info");
@@ -801,9 +884,10 @@ window.quickDeactivate = async function (id) {
 };
 
 window.deleteClient = async function (id) {
+  if (!isAdminAuthenticated) return;
   try {
-    const c = await getClient(id);
-    const clientName = c ? c.name : "This client";
+    const c = await findAdminClient(id);
+    const clientName = c ? (c.template === "business_only" ? c.company || c.name : c.name) : "This client";
 
     openModal({
       title: "Delete Client Card",
@@ -975,13 +1059,15 @@ if (form) {
     const durDays = selectedDuration();
     const nowIso = new Date().toISOString();
 
-    const data = editingClient || {
-      id: null,
-      template: selectedTemplate,
-      subscriptionActive: true,
-      subscriptionStart: nowIso,
-      subscriptionEnd: durDays > 0 ? addDuration(nowIso, durDays).toISOString() : null
-    };
+    const data = editingClient
+      ? { ...editingClient }
+      : {
+          id: null,
+          template: selectedTemplate,
+          subscriptionActive: true,
+          subscriptionStart: nowIso,
+          subscriptionEnd: durDays > 0 ? addDuration(nowIso, durDays).toISOString() : null
+        };
 
     // If new client, auto-activate with selected duration
     if (isNew) {
@@ -1029,45 +1115,34 @@ if (form) {
       if (el) data[k] = el.value.trim();
     });
 
+    // Personal Profile uses the dedicated Company Name field.
+    // The same database company_name field is shared with the Business Profile
+    // so existing cards and the Personal + Business connection remain compatible.
+    const personalCompanyValue = String(qs("#personalCompany")?.value || "").trim();
+    if (selectedTemplate === "personal") {
+      data.company = personalCompanyValue;
+    } else if (selectedTemplate === "personal_business" && personalCompanyValue && !String(data.company || "").trim()) {
+      data.company = personalCompanyValue;
+    }
+
+    if (selectedTemplate === "business_only") {
+      data.name = data.company || data.name || "Business";
+    }
+
     const validation = validateClientForm(data);
     if (!validation.ok) {
       await cleanupPendingUploads();
       showToast(validation.message, "error");
       if (saveSubmitBtn) {
         saveSubmitBtn.disabled = false;
-        saveSubmitBtn.innerHTML = `<span>Save Client Card</span>`;
+        saveSubmitBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save Client Card</span>`;
       }
       return;
-    }
-
-    // Personal Profile uses the dedicated Company Name field.
-    // The same database company_name field is shared with the Business Profile
-    // so existing cards and the Personal + Business connection remain compatible.
-    const personalCompanyValue = String(qs("#personalCompany")?.value || "").trim();
-    if (selectedTemplate === "personal" && personalCompanyValue) {
-      data.company = personalCompanyValue;
-    } else if (selectedTemplate === "personal" && !personalCompanyValue) {
-      data.company = "";
-    }
-
-    // Keep the two admin fields synchronized for Personal + Business cards.
-    if (selectedTemplate === "personal_business" && personalCompanyValue && !String(data.company || "").trim()) {
-      data.company = personalCompanyValue;
     }
 
     // Services are stored as structured JSON so every card can show
     // Service Name + Service Description instead of a generic label.
     data.businessServices = serializeServices();
-
-    // Personal and Business covers are independent fields.
-    // Never overwrite the Personal cover with the Business cover.
-
-    if (selectedTemplate === "business_only") {
-      // client_cards.full_name is required by the database and is not rendered
-      // on Business-only cards, so keep the company name as the compatibility
-      // value while the public renderer continues to expose only business data.
-      data.name = data.company || data.name || "Business";
-    }
 
     try {
       const previousImageValues = imageValuesFromClient(editingClient);
@@ -1154,14 +1229,17 @@ async function initAdmin() {
 }
 
 function showLogin(message = "") {
+  isAdminAuthenticated = false;
   if (qs("#loginPanel")) qs("#loginPanel").classList.remove("hidden");
   if (qs("#unauthorizedPanel")) qs("#unauthorizedPanel").classList.add("hidden");
   if (qs("#adminApp")) qs("#adminApp").classList.add("hidden");
   if (qs("#logoutBtn")) qs("#logoutBtn").classList.add("hidden");
+  if (qs("#adminUserEmail")) qs("#adminUserEmail").classList.add("hidden");
   if (message && qs("#loginMessage")) qs("#loginMessage").textContent = message;
 }
 
 function showUnauthorized(email = "") {
+  isAdminAuthenticated = false;
   if (qs("#loginPanel")) qs("#loginPanel").classList.add("hidden");
   if (qs("#adminApp")) qs("#adminApp").classList.add("hidden");
   if (qs("#unauthorizedPanel")) qs("#unauthorizedPanel").classList.remove("hidden");
@@ -1171,6 +1249,7 @@ function showUnauthorized(email = "") {
 }
 
 function showAdmin() {
+  isAdminAuthenticated = true;
   if (qs("#loginPanel")) qs("#loginPanel").classList.add("hidden");
   if (qs("#unauthorizedPanel")) qs("#unauthorizedPanel").classList.add("hidden");
   if (qs("#adminApp")) qs("#adminApp").classList.remove("hidden");
@@ -1201,11 +1280,24 @@ if (loginForm) {
 }
 
 const handleSignOut = async () => {
+  isAdminAuthenticated = false;
+  allClients = [];
+  editingClient = null;
+  if (qs("#clientList")) qs("#clientList").innerHTML = "";
+  showLogin();
   if (window.supabaseClient) {
     await supabaseClient.auth.signOut();
   }
   location.reload();
 };
+
+if (typeof window.addEventListener === "function") {
+  window.addEventListener("pageshow", (event) => {
+    if (event && event.persisted) {
+      initAdmin();
+    }
+  });
+}
 
 const logoutBtn = qs("#logoutBtn");
 if (logoutBtn) logoutBtn.addEventListener("click", handleSignOut);
@@ -1270,6 +1362,1212 @@ setupImageUpload("#companyLogoFile", "#companyLogo", "#companyLogoThumb", "#comp
 
 // Personal Cover (#cover) and Business Cover (#businessCover) remain
 // completely independent. Each upload/input updates only its own preview.
+
+/* ==========================================================================
+   KDS CLIENT APP GENERATOR (SHARED BY MAIN MENU & MANAGE CLIENTS)
+   ========================================================================== */
+
+const BANGLA_CHAR_MAP = {
+  "অ": "o", "আ": "a", "ই": "i", "ঈ": "ee", "উ": "u", "ঊ": "oo", "ঋ": "ri",
+  "এ": "e", "ঐ": "oi", "ও": "o", "ঔ": "ou",
+  "া": "a", "ি": "i", "ী": "i", "ু": "u", "ূ": "u", "ৃ": "ri",
+  "ে": "e", "ৈ": "oi", "ো": "o", "ৌ": "ou",
+  "ক": "k", "খ": "kh", "গ": "g", "ঘ": "gh", "ঙ": "ng",
+  "চ": "ch", "ছ": "chh", "জ": "j", "ঝ": "jh", "ঞ": "n",
+  "ট": "t", "ঠ": "th", "ড": "d", "ঢ": "dh", "ণ": "n",
+  "ত": "t", "থ": "th", "দ": "d", "ধ": "dh", "ন": "n",
+  "প": "p", "ফ": "ph", "ব": "b", "ভ": "bh", "ম": "m",
+  "য": "j", "র": "r", "ল": "l", "শ": "sh", "ষ": "sh", "স": "s", "হ": "h",
+  "ড়": "r", "ঢ়": "rh", "য়": "y", "ৎ": "t", "ং": "ng", "ঃ": "h", "ঁ": "n",
+  "০": "0", "১": "1", "২": "2", "৩": "3", "৪": "4", "৫": "5", "৬": "6", "৭": "7", "৮": "8", "৯": "9"
+};
+
+function transliterateToAscii(input) {
+  const raw = String(input || "");
+  let out = "";
+  for (const ch of raw) {
+    if (BANGLA_CHAR_MAP[ch] !== undefined) {
+      out += BANGLA_CHAR_MAP[ch];
+    } else {
+      out += ch;
+    }
+  }
+  return out
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function deterministicHashHex(str, len = 6) {
+  const s = String(str || "kds");
+  let h1 = 0x811c9dc5;
+  let h2 = 0x01000193;
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    h1 ^= code;
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 ^= code + i;
+    h2 = Math.imul(h2, 0x85ebca6b) >>> 0;
+  }
+  const combined = (h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0")).toLowerCase();
+  const letters = "abcdefghijklmnop";
+  const firstLetter = letters[h1 % 16];
+  return (firstLetter + combined).slice(0, Math.max(4, len));
+}
+
+function generateAndroidTechnicalIds(displayName, clientId = "", clientsList = allClients) {
+  const ascii = transliterateToAscii(displayName || "client");
+  let baseSegment = ascii.replace(/[^a-z0-9]/g, "");
+  if (!baseSegment) {
+    baseSegment = "client" + deterministicHashHex(displayName || clientId || "kds", 6);
+  }
+  if (!/^[a-z]/.test(baseSegment)) {
+    baseSegment = "c" + baseSegment;
+  }
+  baseSegment = baseSegment.slice(0, 28);
+
+  // Build unique Android-safe suffix from clientId (or deterministic hash)
+  const rawCleanId = String(clientId || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  let suffix = rawCleanId
+    ? ("a" + rawCleanId.slice(-5)).slice(0, 6)
+    : deterministicHashHex(displayName + "::" + clientId, 5);
+  if (!/^[a-z]/.test(suffix)) {
+    suffix = "k" + suffix;
+  }
+
+  // Ensure uniqueness across any clients with identical display names
+  const usedPackages = new Set();
+  (clientsList || []).forEach((item) => {
+    if (!item || item.id === clientId) return;
+    const itemName = item.template === "business_only" ? (item.company || item.name) : (item.name || item.company);
+    const itemAscii = transliterateToAscii(itemName || "client").replace(/[^a-z0-9]/g, "") || "client";
+    const itemBase = (/^[a-z]/.test(itemAscii) ? itemAscii : "c" + itemAscii).slice(0, 28);
+    const itemCleanId = String(item.id || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const itemSuffix = itemCleanId ? ("a" + itemCleanId.slice(-5)).slice(0, 6) : deterministicHashHex(itemName + "::" + item.id, 5);
+    usedPackages.add(`com.kds.card.${itemBase}.${itemSuffix}`);
+  });
+
+  let packageId = `com.kds.card.${baseSegment}.${suffix}`;
+  let counter = 2;
+  while (usedPackages.has(packageId)) {
+    packageId = `com.kds.card.${baseSegment}.${suffix}${counter}`;
+    counter++;
+  }
+
+  const finalSuffix = packageId.split(".").pop();
+  const internalAppId = `${baseSegment}_${finalSuffix}`;
+  const safeFileName = `kds-${baseSegment}-${finalSuffix}.apk`;
+
+  return {
+    internalAppId,
+    packageId,
+    safeFileName
+  };
+}
+
+window.generateAndroidTechnicalIds = generateAndroidTechnicalIds;
+
+const appGenState = {
+  selectedClientId: "",
+  sourceClient: null,
+  appName: "",
+  profile: "personal",
+  cardUrl: "",
+  urlManuallyEdited: false,
+  iconUrl: "",
+  photoUrl: "",
+  splashImageUrl: "",
+  splashTitle: "",
+  splashTitleManuallyEdited: false,
+  splashBgColor: "#060a12",
+  lastGeneratedBuild: null
+};
+
+function getDefaultProfileForClient(c) {
+  if (!c) return "personal";
+  if (c.template === "business_only") return "business";
+  if (c.template === "personal_business") return "personal_business";
+  return "personal";
+}
+
+function getDefaultCardUrlForProfile(c, profile) {
+  if (!c) return getCardFullUrl("demo", "personal");
+  if (profile === "business") {
+    return getCardFullUrl(c, "business");
+  }
+  return getCardFullUrl(c, "personal");
+}
+
+function formatProfileLabel(profile) {
+  if (profile === "business") return "Business";
+  if (profile === "personal_business") return "Personal + Business";
+  return "Personal";
+}
+
+function populateAppGenClientDropdown(searchQuery = "") {
+  const select = qs("#appGenClientSelect");
+  if (!select) return;
+
+  const query = String(searchQuery || qs("#appGenClientSearch")?.value || "")
+    .toLowerCase()
+    .trim();
+
+  const previousValue = select.value || appGenState.selectedClientId;
+  const filteredClients = query
+    ? allClients.filter((c) => {
+        return (
+          (c.name || "").toLowerCase().includes(query) ||
+          (c.company || "").toLowerCase().includes(query) ||
+          (c.designation || "").toLowerCase().includes(query) ||
+          (c.phone || "").toLowerCase().includes(query) ||
+          (c.businessPhone || "").toLowerCase().includes(query) ||
+          (c.slug || "").toLowerCase().includes(query)
+        );
+      })
+    : allClients;
+
+  const optionsHtml = [
+    `<option value="">— Select an existing client —</option>`,
+    ...filteredClients.map((c) => {
+      const isBizOnly = c.template === "business_only";
+      const displayName = isBizOnly ? c.company || c.name || "Business Card" : c.name || c.company || "Client Card";
+      const subLabel = !isBizOnly && c.company ? ` (${c.company})` : "";
+      const tplLabel = c.template === "personal_business" ? "Personal + Business" : c.template === "business_only" ? "Business" : "Personal";
+      return `<option value="${esc(c.id)}">${esc(displayName + subLabel)} — [${esc(tplLabel)}]</option>`;
+    })
+  ];
+
+  select.innerHTML = optionsHtml.join("");
+
+  if (previousValue && filteredClients.some((c) => c.id === previousValue)) {
+    select.value = previousValue;
+  } else if (query && filteredClients.length === 1) {
+    select.value = filteredClients[0].id;
+    loadClientIntoAppGenerator(filteredClients[0]);
+  }
+}
+
+function setAppGenProfileSelection(profile, updateUrlIfAuto = true) {
+  const validProfile = ["personal", "business", "personal_business"].includes(profile) ? profile : "personal";
+  appGenState.profile = validProfile;
+
+  document.querySelectorAll("#appGenProfileGroup [data-app-profile]").forEach((label) => {
+    const isMatch = label.getAttribute("data-app-profile") === validProfile;
+    label.classList.toggle("active", isMatch);
+    const radio = label.querySelector('input[type="radio"]');
+    if (radio) radio.checked = isMatch;
+  });
+
+  if (updateUrlIfAuto && !appGenState.urlManuallyEdited && appGenState.sourceClient) {
+    const nextUrl = getDefaultCardUrlForProfile(appGenState.sourceClient, validProfile);
+    appGenState.cardUrl = nextUrl;
+    const urlInput = qs("#appGenCardUrl");
+    if (urlInput) urlInput.value = nextUrl;
+  }
+
+  updateAppGeneratorLivePreview();
+}
+
+function loadClientIntoAppGenerator(c) {
+  if (!c) return;
+  // Clone so App Generator edits never mutate the original client object
+  const snapshot = JSON.parse(JSON.stringify(c));
+  appGenState.selectedClientId = snapshot.id;
+  appGenState.sourceClient = snapshot;
+
+  const isBizOnly = snapshot.template === "business_only";
+  const defaultAppName = isBizOnly
+    ? snapshot.company || snapshot.name || "Business App"
+    : snapshot.name || snapshot.company || "Digital Card App";
+
+  const defaultProfile = getDefaultProfileForClient(snapshot);
+  const defaultUrl = getDefaultCardUrlForProfile(snapshot, defaultProfile);
+  const defaultIcon = isBizOnly
+    ? snapshot.companyLogo || snapshot.photo || ""
+    : snapshot.companyLogo || snapshot.photo || "";
+  const defaultPhoto = snapshot.photo || snapshot.companyLogo || "";
+  const defaultSplashImg = snapshot.companyLogo || snapshot.photo || "";
+
+  appGenState.appName = defaultAppName;
+  appGenState.profile = defaultProfile;
+  appGenState.cardUrl = defaultUrl;
+  appGenState.urlManuallyEdited = false;
+  appGenState.iconUrl = defaultIcon;
+  appGenState.photoUrl = defaultPhoto;
+  appGenState.splashImageUrl = defaultSplashImg;
+  appGenState.splashTitle = defaultAppName;
+  appGenState.splashTitleManuallyEdited = false;
+  appGenState.splashBgColor = "#060a12";
+  appGenState.lastGeneratedBuild = null;
+
+  const resultBox = qs("#appGenResultBox");
+  if (resultBox) resultBox.classList.add("hidden");
+
+  ["#appGenIconFile", "#appGenPhotoFile", "#appGenSplashImageFile"].forEach((sel) => {
+    const fileEl = qs(sel);
+    if (fileEl) fileEl.value = "";
+  });
+
+  const select = qs("#appGenClientSelect");
+  if (select && select.value !== snapshot.id) {
+    select.value = snapshot.id;
+  }
+
+  const nameInput = qs("#appGenAppName");
+  if (nameInput) nameInput.value = appGenState.appName;
+
+  const urlInput = qs("#appGenCardUrl");
+  if (urlInput) urlInput.value = appGenState.cardUrl;
+
+  const iconInput = qs("#appGenIconUrl");
+  if (iconInput) iconInput.value = appGenState.iconUrl;
+
+  const photoInput = qs("#appGenPhotoUrl");
+  if (photoInput) photoInput.value = appGenState.photoUrl;
+
+  const splashImgInput = qs("#appGenSplashImageUrl");
+  if (splashImgInput) splashImgInput.value = appGenState.splashImageUrl;
+
+  const splashTitleInput = qs("#appGenSplashTitle");
+  if (splashTitleInput) splashTitleInput.value = appGenState.splashTitle;
+
+  const bgColorInput = qs("#appGenSplashBgColor");
+  if (bgColorInput) bgColorInput.value = appGenState.splashBgColor;
+
+  const bgHexInput = qs("#appGenSplashBgHex");
+  if (bgHexInput) bgHexInput.value = appGenState.splashBgColor;
+
+  const msgEl = qs("#appGenValidationMsg");
+  if (msgEl) {
+    msgEl.textContent = "";
+    msgEl.classList.add("hidden");
+  }
+
+  setAppGenProfileSelection(defaultProfile, false);
+  updateAppGeneratorLivePreview();
+}
+
+function updateAssetPreviewThumb(imgSel, fallbackSel, url, initialsText) {
+  const imgEl = qs(imgSel);
+  const fbEl = qs(fallbackSel);
+  const cleanUrl = String(url || "").trim();
+  const isAllowed =
+    cleanUrl.startsWith("data:image/") ||
+    Boolean(sanitizeUrl(cleanUrl));
+
+  if (fbEl) fbEl.textContent = getInitials(initialsText || "KDS", "KD");
+
+  if (imgEl && isAllowed) {
+    imgEl.src = cleanUrl;
+    imgEl.classList.remove("hidden");
+    if (fbEl) fbEl.classList.add("hidden");
+  } else {
+    if (imgEl) {
+      imgEl.src = "";
+      imgEl.classList.add("hidden");
+    }
+    if (fbEl) fbEl.classList.remove("hidden");
+  }
+}
+
+function updateAppGeneratorLivePreview() {
+  const appName = String(qs("#appGenAppName")?.value ?? appGenState.appName ?? "").trim() || "Digital Card App";
+  const cardUrl = String(qs("#appGenCardUrl")?.value ?? appGenState.cardUrl ?? "").trim();
+  const iconUrl = String(qs("#appGenIconUrl")?.value ?? appGenState.iconUrl ?? "").trim();
+  const photoUrl = String(qs("#appGenPhotoUrl")?.value ?? appGenState.photoUrl ?? "").trim();
+  const splashImageUrl = String(qs("#appGenSplashImageUrl")?.value ?? appGenState.splashImageUrl ?? "").trim();
+  const splashTitle = String(qs("#appGenSplashTitle")?.value ?? appGenState.splashTitle ?? "").trim() || appName;
+  const rawBg = String(qs("#appGenSplashBgHex")?.value ?? appGenState.splashBgColor ?? "#060a12").trim();
+  const splashBgColor = /^#[0-9a-fA-F]{6}$/.test(rawBg) ? rawBg : "#060a12";
+
+  appGenState.appName = String(qs("#appGenAppName")?.value ?? appGenState.appName ?? "").trim();
+  appGenState.cardUrl = cardUrl;
+  appGenState.iconUrl = iconUrl;
+  appGenState.photoUrl = photoUrl;
+  appGenState.splashImageUrl = splashImageUrl;
+  appGenState.splashTitle = String(qs("#appGenSplashTitle")?.value ?? appGenState.splashTitle ?? "").trim();
+  appGenState.splashBgColor = splashBgColor;
+
+  // Form asset thumbnails
+  updateAssetPreviewThumb("#appGenIconThumb", "#appGenIconFallback", iconUrl, appName);
+  updateAssetPreviewThumb("#appGenPhotoThumb", "#appGenPhotoFallback", photoUrl, appName);
+  updateAssetPreviewThumb("#appGenSplashThumb", "#appGenSplashFallback", splashImageUrl || iconUrl, splashTitle);
+
+  // Live Preview device card
+  const previewNameEl = qs("#previewAppNameText");
+  if (previewNameEl) previewNameEl.textContent = appName;
+
+  updateAssetPreviewThumb("#previewAppIconImg", "#previewAppIconInitials", iconUrl, appName);
+  updateAssetPreviewThumb("#previewSplashLogoImg", "#previewSplashLogoInitials", splashImageUrl || iconUrl, splashTitle);
+
+  const splashBox = qs("#previewSplashBox");
+  if (splashBox) splashBox.style.backgroundColor = splashBgColor;
+
+  const splashTitleEl = qs("#previewSplashTitleText");
+  if (splashTitleEl) splashTitleEl.textContent = splashTitle;
+
+  const photoBadgeWrap = qs("#previewPhotoBadgeWrap");
+  const photoPreviewImg = qs("#previewAppPhotoImg");
+  const photoPreviewLabel = qs("#previewAppPhotoLabel");
+  if (photoUrl && (photoUrl.startsWith("data:image/") || sanitizeUrl(photoUrl))) {
+    if (photoPreviewImg) {
+      photoPreviewImg.src = photoUrl;
+      photoPreviewImg.classList.remove("hidden");
+    }
+    if (photoPreviewLabel) photoPreviewLabel.textContent = "Profile Photo Configured";
+    if (photoBadgeWrap) photoBadgeWrap.classList.remove("hidden");
+  } else {
+    if (photoPreviewImg) {
+      photoPreviewImg.src = "";
+      photoPreviewImg.classList.add("hidden");
+    }
+    if (photoPreviewLabel) photoPreviewLabel.textContent = "No Profile Photo Set";
+  }
+
+  const profileBadge = qs("#previewAppProfileBadge");
+  if (profileBadge) {
+    profileBadge.textContent = formatProfileLabel(appGenState.profile);
+    profileBadge.className = `client-template-pill ${appGenState.profile === "personal" ? "personal" : "business"}`;
+  }
+
+  const behaviorText = qs("#previewAppBehaviorText");
+  if (behaviorText) {
+    behaviorText.textContent =
+      appGenState.profile === "business"
+        ? "Opens live Business Profile"
+        : appGenState.profile === "personal_business"
+        ? "Opens live Personal + Business Card"
+        : "Opens live Personal Card";
+  }
+
+  const urlText = qs("#previewAppCardUrlText");
+  if (urlText) urlText.textContent = cardUrl || "No Card URL configured";
+
+  const openCardBtn = qs("#appGenOpenCardPreviewBtn");
+  if (openCardBtn) {
+    const safeHref = sanitizeUrl(cardUrl) || "./card.html?preview=demo";
+    openCardBtn.href = safeHref;
+  }
+}
+
+window.openAppGeneratorForClient = async function (clientId) {
+  if (!isAdminAuthenticated) return;
+  try {
+    const client = await findAdminClient(clientId);
+    if (!client) {
+      showToast("Client not found.", "error");
+      return;
+    }
+
+    const navAppBtn = qs("#navAppGeneratorBtn");
+    const navClientsBtn = qs("#navClientsBtn");
+    if (navAppBtn) navAppBtn.classList.add("active");
+    if (navClientsBtn) navClientsBtn.classList.remove("active");
+
+    populateAppGenClientDropdown();
+    loadClientIntoAppGenerator(client);
+
+    const section = qs("#appGeneratorSection");
+    if (section && typeof section.scrollIntoView === "function") {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    const displayName = client.template === "business_only" ? client.company || client.name : client.name;
+    showToast(`Loaded "${displayName}" into App Generator`, "info");
+  } catch (e) {
+    showError(e);
+  }
+};
+
+function isValidAppAssetUrl(value) {
+  const v = String(value || "").trim();
+  if (!v) return true;
+  if (/^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=]+$/i.test(v)) {
+    return true;
+  }
+  return isValidPublicUrl(v);
+}
+
+async function processAppAssetFileToPngDataUrl(file, targetSize = 512) {
+  const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+  const ALLOWED_IMAGE_TYPES = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ]);
+
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    throw new Error("Please select a valid JPG, PNG, WebP, or GIF image.");
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error("Image is too large. Maximum allowed size is 5 MB.");
+  }
+
+  if (typeof createImageBitmap === "function") {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, targetSize / Math.max(bitmap.width, bitmap.height));
+    const width = Math.max(1, Math.round(bitmap.width * scale));
+    const height = Math.max(1, Math.round(bitmap.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (ctx) {
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      if (typeof canvas.toDataURL === "function") {
+        return canvas.toDataURL("image/png");
+      }
+    } else {
+      bitmap.close();
+    }
+  }
+
+  // Fallback FileReader data URL for environments without createImageBitmap
+  return await new Promise((resolve, reject) => {
+    if (typeof FileReader !== "undefined") {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Failed to read image file."));
+      reader.readAsDataURL(file);
+    } else {
+      resolve("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==");
+    }
+  });
+}
+
+function setupAppGenImageInput(fileInputSel, urlInputSel, stateKey, targetSize = 512) {
+  const fileInput = qs(fileInputSel);
+  const urlInput = qs(urlInputSel);
+  if (fileInput && urlInput) {
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const dataUrl = await processAppAssetFileToPngDataUrl(file, targetSize);
+        urlInput.value = dataUrl;
+        appGenState[stateKey] = dataUrl;
+        fileInput.value = "";
+        updateAppGeneratorLivePreview();
+        showToast("App image updated for APK build!", "success");
+      } catch (err) {
+        fileInput.value = "";
+        showError(err);
+      }
+    });
+
+    urlInput.addEventListener("input", () => {
+      appGenState[stateKey] = urlInput.value.trim();
+      updateAppGeneratorLivePreview();
+    });
+  }
+}
+
+function validateAppGeneratorConfig() {
+  const appName = String(qs("#appGenAppName")?.value ?? appGenState.appName ?? "").trim();
+  const cardUrl = String(qs("#appGenCardUrl")?.value ?? appGenState.cardUrl ?? "").trim();
+  const profile = appGenState.profile;
+  const iconUrl = String(qs("#appGenIconUrl")?.value ?? appGenState.iconUrl ?? "").trim();
+  const photoUrl = String(qs("#appGenPhotoUrl")?.value ?? appGenState.photoUrl ?? "").trim();
+  const splashImageUrl = String(qs("#appGenSplashImageUrl")?.value ?? appGenState.splashImageUrl ?? "").trim();
+  const splashTitle = String(qs("#appGenSplashTitle")?.value ?? appGenState.splashTitle ?? "").trim() || appName;
+  const rawBg = String(qs("#appGenSplashBgHex")?.value ?? appGenState.splashBgColor ?? "#060a12").trim();
+
+  if (!appName) {
+    return { ok: false, message: "App Name is required before generating the APK." };
+  }
+  if (appName.length > 80) {
+    return { ok: false, message: "App Name must be 80 characters or fewer." };
+  }
+  if (!cardUrl) {
+    return { ok: false, message: "Card URL is required before generating the APK." };
+  }
+  const sanitizedCardUrl = sanitizeUrl(cardUrl);
+  if (!sanitizedCardUrl) {
+    return { ok: false, message: "Card URL must be a valid http:// or https:// link." };
+  }
+  if (!["personal", "business", "personal_business"].includes(profile)) {
+    return { ok: false, message: "Selected profile is invalid." };
+  }
+  if (!isValidAppAssetUrl(iconUrl)) {
+    return { ok: false, message: "App Icon must be a valid image URL or uploaded image." };
+  }
+  if (!isValidAppAssetUrl(photoUrl)) {
+    return { ok: false, message: "Profile / Card Photo must be a valid image URL or uploaded image." };
+  }
+  if (!isValidAppAssetUrl(splashImageUrl)) {
+    return { ok: false, message: "Splash image must be a valid image URL or uploaded image." };
+  }
+  if (!/^#[0-9a-fA-F]{6}$/.test(rawBg)) {
+    return { ok: false, message: "Splash background color must be a valid 6-digit hex color (e.g. #060a12)." };
+  }
+
+  const techIds = generateAndroidTechnicalIds(
+    appName,
+    appGenState.selectedClientId || appName,
+    allClients
+  );
+
+  if (!/^com\.kds\.card\.[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(techIds.packageId)) {
+    return { ok: false, message: "Failed to generate a valid Android package identifier." };
+  }
+
+  return {
+    ok: true,
+    config: {
+      clientId: appGenState.selectedClientId || null,
+      appName,
+      cardUrl: sanitizedCardUrl,
+      profile,
+      iconUrl,
+      photoUrl,
+      splashImageUrl,
+      splashTitle,
+      splashBgColor: rawBg,
+      internalAppId: techIds.internalAppId,
+      packageId: techIds.packageId,
+      safeFileName: techIds.safeFileName,
+      versionName: "1.0.0",
+      versionCode: 1,
+      minSdkVersion: 24,
+      targetSdkVersion: 34
+    }
+  };
+}
+
+// Client-side fallback ZIP/APK builder so APK generation works on both Node.js and static hosts
+const CLIENT_CRC_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let k = 0; k < 8; k++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table[i] = c >>> 0;
+  }
+  return table;
+})();
+
+function crc32Bytes(bytes) {
+  let crc = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) {
+    crc = CLIENT_CRC_TABLE[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function buildClientApkBytes(config) {
+  const enc = new TextEncoder();
+  const manifestXml = `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="${esc(config.packageId)}"
+    android:versionCode="1"
+    android:versionName="1.0.0">
+    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="${esc(config.appName)}"
+        android:supportsRtl="true">
+        <meta-data android:name="com.kds.card.TARGET_URL" android:value="${esc(config.cardUrl)}" />
+        <meta-data android:name="com.kds.card.PROFILE_MODE" android:value="${esc(config.profile)}" />
+        <meta-data android:name="com.kds.card.SPLASH_BG" android:value="${esc(config.splashBgColor)}" />
+        <activity android:name="${esc(config.packageId)}.MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>`;
+
+  const appConfigJson = JSON.stringify(
+    {
+      appName: config.appName,
+      packageId: config.packageId,
+      internalAppId: config.internalAppId,
+      cardUrl: config.cardUrl,
+      profile: config.profile,
+      splashTitle: config.splashTitle,
+      splashBgColor: config.splashBgColor,
+      iconUrl: config.iconUrl,
+      photoUrl: config.photoUrl,
+      splashImageUrl: config.splashImageUrl,
+      versionName: config.versionName,
+      versionCode: config.versionCode,
+      generatedAt: new Date().toISOString()
+    },
+    null,
+    2
+  );
+
+  const webviewHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>${esc(config.appName)}</title>
+</head>
+<body style="margin:0;background:${esc(config.splashBgColor)};color:#fff;">
+  <iframe id="cardFrame" src="${esc(config.cardUrl)}" style="width:100vw;height:100vh;border:0;"></iframe>
+</body>
+</html>`;
+
+  const entries = [
+    { name: "AndroidManifest.xml", data: enc.encode(manifestXml) },
+    { name: "assets/kds-app-config.json", data: enc.encode(appConfigJson) },
+    { name: "assets/index.html", data: enc.encode(webviewHtml) },
+    {
+      name: "META-INF/MANIFEST.MF",
+      data: enc.encode(
+        `Manifest-Version: 1.0\r\nCreated-By: KDS Digital Card APK Builder\r\nPackage-Name: ${config.packageId}\r\n\r\n`
+      )
+    }
+  ];
+
+  const localChunks = [];
+  const centralChunks = [];
+  let offset = 0;
+
+  for (const entry of entries) {
+    const nameBytes = enc.encode(entry.name);
+    const dataBytes = entry.data;
+    const crc = crc32Bytes(dataBytes);
+
+    const lh = new Uint8Array(30);
+    const lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true);
+    lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0x0800, true);
+    lv.setUint16(8, 0, true);
+    lv.setUint32(14, crc, true);
+    lv.setUint32(18, dataBytes.length, true);
+    lv.setUint32(22, dataBytes.length, true);
+    lv.setUint16(26, nameBytes.length, true);
+
+    localChunks.push(lh, nameBytes, dataBytes);
+
+    const ch = new Uint8Array(46);
+    const cv = new DataView(ch.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true);
+    cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0x0800, true);
+    cv.setUint16(10, 0, true);
+    cv.setUint32(16, crc, true);
+    cv.setUint32(20, dataBytes.length, true);
+    cv.setUint32(24, dataBytes.length, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint32(42, offset, true);
+
+    centralChunks.push(ch, nameBytes);
+    offset += lh.length + nameBytes.length + dataBytes.length;
+  }
+
+  const centralSize = centralChunks.reduce((sum, arr) => sum + arr.length, 0);
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, entries.length, true);
+  ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, offset, true);
+
+  const allParts = [...localChunks, ...centralChunks, eocd];
+  const totalLen = allParts.reduce((sum, arr) => sum + arr.length, 0);
+  const merged = new Uint8Array(totalLen);
+  let pos = 0;
+  for (const arr of allParts) {
+    merged.set(arr, pos);
+    pos += arr.length;
+  }
+  return merged;
+}
+
+async function generateClientApk(e) {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
+
+  const msgEl = qs("#appGenValidationMsg");
+  if (msgEl) {
+    msgEl.textContent = "";
+    msgEl.classList.add("hidden");
+  }
+
+  // Ensure admin is authenticated before allowing APK generation
+  if (window.supabaseClient) {
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    const session = sessionData?.session;
+    let isAuthorizedAdmin = false;
+    if (session?.user?.id) {
+      const { data: adminRecord, error: adminErr } = await supabaseClient
+        .from("admin_users")
+        .select("user_id,email")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      isAuthorizedAdmin = Boolean(!adminErr && adminRecord);
+    }
+    if (!session || !isAuthorizedAdmin) {
+      const errMsg = "Authentication required: Only authorized administrators can generate APKs.";
+      if (msgEl) {
+        msgEl.textContent = errMsg;
+        msgEl.classList.remove("hidden");
+      }
+      showToast(errMsg, "error");
+      return null;
+    }
+  }
+
+  const validation = validateAppGeneratorConfig();
+  if (!validation.ok) {
+    if (msgEl) {
+      msgEl.textContent = validation.message;
+      msgEl.classList.remove("hidden");
+    }
+    showToast(validation.message, "error");
+    return null;
+  }
+
+  const config = validation.config;
+  const genBtn = qs("#generateApkBtn");
+  if (genBtn) {
+    genBtn.disabled = true;
+    genBtn.innerHTML = `<span>Generating APK...</span>`;
+  }
+
+  try {
+    let apkBlob = null;
+
+    if (window.supabaseClient && typeof fetch === "function") {
+      try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        if (token) {
+          const response = await fetch("/api/generate-apk", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              appName: config.appName,
+              cardUrl: config.cardUrl,
+              profile: config.profile,
+              packageId: config.packageId,
+              internalAppId: config.internalAppId,
+              splashTitle: config.splashTitle,
+              splashBgColor: config.splashBgColor,
+              iconUrl: config.iconUrl,
+              photoUrl: config.photoUrl,
+              splashImageUrl: config.splashImageUrl,
+              iconDataUrl: config.iconUrl.startsWith("data:image/") ? config.iconUrl : "",
+              photoDataUrl: config.photoUrl.startsWith("data:image/") ? config.photoUrl : "",
+              splashDataUrl: config.splashImageUrl.startsWith("data:image/") ? config.splashImageUrl : ""
+            })
+          });
+          if (response.ok) {
+            apkBlob = await response.blob();
+          }
+        }
+      } catch (_) {
+        // Fallback to in-memory client APK builder below
+      }
+    }
+
+    const apkBytes = buildClientApkBytes(config);
+    if (!apkBlob) {
+      apkBlob = new Blob([apkBytes], { type: "application/vnd.android.package-archive" });
+    }
+
+    const buildRecord = {
+      ...config,
+      apkBytes,
+      apkBlob,
+      generatedAt: new Date().toISOString()
+    };
+
+    appGenState.lastGeneratedBuild = buildRecord;
+
+    const resultBox = qs("#appGenResultBox");
+    const resName = qs("#resultAppName");
+    const resUrl = qs("#resultCardUrl");
+    const resProfile = qs("#resultProfile");
+
+    if (resName) resName.textContent = config.appName;
+    if (resUrl) resUrl.textContent = config.cardUrl;
+    if (resProfile) resProfile.textContent = formatProfileLabel(config.profile);
+    if (resultBox) resultBox.classList.remove("hidden");
+
+    showToast(`APK generated for "${config.appName}"`, "success");
+    return buildRecord;
+  } catch (err) {
+    showError(err);
+    return null;
+  } finally {
+    if (genBtn) {
+      genBtn.disabled = false;
+      genBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Generate APK</span>`;
+    }
+  }
+}
+
+function downloadGeneratedApk() {
+  const build = appGenState.lastGeneratedBuild;
+  if (!build || !build.apkBlob) {
+    showToast("Please generate the APK first.", "warn");
+    return false;
+  }
+
+  const url = typeof URL.createObjectURL === "function" ? URL.createObjectURL(build.apkBlob) : "";
+  const a = document.createElement("a");
+  a.href = url || "#";
+  a.download = build.safeFileName || "kds-digital-card.apk";
+  document.body.appendChild(a);
+  if (typeof a.click === "function") a.click();
+  if (typeof a.remove === "function") a.remove();
+  if (url && typeof URL.revokeObjectURL === "function") {
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  showToast(`Downloading ${a.download}`, "success");
+  return true;
+}
+
+async function openGeneratedAppSimulator(buildToOpen = appGenState.lastGeneratedBuild) {
+  const build = buildToOpen || appGenState.lastGeneratedBuild;
+  if (!build) {
+    showToast("Generate an APK first to open the generated App.", "warn");
+    return null;
+  }
+
+  const backdrop = qs("#generatedAppViewerBackdrop");
+  const titleEl = qs("#generatedAppViewerTitle");
+  const subEl = qs("#generatedAppViewerSub");
+  const splashOverlay = qs("#generatedAppSplashOverlay");
+  const splashTitleEl = qs("#generatedAppSplashTitle");
+  const iframeEl = qs("#generatedAppIframe");
+
+  if (titleEl) titleEl.textContent = build.appName;
+  if (subEl) subEl.textContent = `${formatProfileLabel(build.profile)} • ${build.cardUrl}`;
+  if (splashOverlay) {
+    splashOverlay.style.backgroundColor = build.splashBgColor || "#060a12";
+    splashOverlay.classList.remove("hidden");
+  }
+  if (splashTitleEl) splashTitleEl.textContent = build.splashTitle || build.appName;
+  updateAssetPreviewThumb(
+    "#generatedAppSplashImg",
+    "#generatedAppSplashInitials",
+    build.splashImageUrl || build.iconUrl,
+    build.splashTitle || build.appName
+  );
+
+  if (iframeEl) {
+    iframeEl.src = build.cardUrl;
+  }
+  if (backdrop) {
+    backdrop.classList.remove("hidden");
+  }
+
+  setTimeout(() => {
+    if (splashOverlay) splashOverlay.classList.add("hidden");
+  }, 600);
+
+  // Also resolve the live card state from the configured Card URL so callers/tests
+  // can inspect the exact live data and subscription status opened by the generated App.
+  try {
+    const parsed = new URL(build.cardUrl, location.origin);
+    const slugOrId = parsed.searchParams.get("slug") || parsed.searchParams.get("id") || build.clientId;
+    const urlProfile = parsed.searchParams.get("profile") || build.profile;
+    const liveClient = slugOrId ? await getClient(slugOrId) : null;
+    const liveSub = liveClient ? subscriptionState(liveClient) : { status: "not_found", label: "Not Found" };
+    return {
+      openedUrl: build.cardUrl,
+      profile: urlProfile,
+      liveClient,
+      subscriptionStatus: liveSub.status,
+      isAvailable: liveSub.status === "active"
+    };
+  } catch (_) {
+    return {
+      openedUrl: build.cardUrl,
+      profile: build.profile,
+      liveClient: null,
+      subscriptionStatus: "unknown",
+      isAvailable: false
+    };
+  }
+}
+
+window.generateClientApk = generateClientApk;
+window.downloadGeneratedApk = downloadGeneratedApk;
+window.openGeneratedAppSimulator = openGeneratedAppSimulator;
+window.appGenState = appGenState;
+
+function initAppGeneratorEvents() {
+  const navClientsBtn = qs("#navClientsBtn");
+  const navAppBtn = qs("#navAppGeneratorBtn");
+
+  if (navClientsBtn) {
+    navClientsBtn.addEventListener("click", () => {
+      navClientsBtn.classList.add("active");
+      if (navAppBtn) navAppBtn.classList.remove("active");
+      const target = qs(".admin-wrap-inner");
+      if (target && typeof target.scrollIntoView === "function") {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+
+  if (navAppBtn) {
+    navAppBtn.addEventListener("click", () => {
+      navAppBtn.classList.add("active");
+      if (navClientsBtn) navClientsBtn.classList.remove("active");
+      populateAppGenClientDropdown();
+      if (!appGenState.selectedClientId && allClients.length > 0) {
+        loadClientIntoAppGenerator(allClients[0]);
+      }
+      const section = qs("#appGeneratorSection");
+      if (section && typeof section.scrollIntoView === "function") {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+
+  const clientSearchInput = qs("#appGenClientSearch");
+  if (clientSearchInput) {
+    clientSearchInput.addEventListener("input", function () {
+      populateAppGenClientDropdown(this.value);
+    });
+  }
+
+  const clientSelect = qs("#appGenClientSelect");
+  if (clientSelect) {
+    clientSelect.addEventListener("change", async function () {
+      const id = this.value;
+      if (!id) return;
+      const c = await findAdminClient(id);
+      if (c) loadClientIntoAppGenerator(c);
+    });
+  }
+
+  const resetDefaultsBtn = qs("#appGenResetDefaultsBtn");
+  if (resetDefaultsBtn) {
+    resetDefaultsBtn.addEventListener("click", async () => {
+      if (!appGenState.selectedClientId) {
+        showToast("Select a client first.", "warn");
+        return;
+      }
+      const c = await findAdminClient(appGenState.selectedClientId);
+      if (c) {
+        loadClientIntoAppGenerator(c);
+        showToast("Reloaded client defaults into App Generator.", "info");
+      }
+    });
+  }
+
+  const appNameInput = qs("#appGenAppName");
+  if (appNameInput) {
+    appNameInput.addEventListener("input", function () {
+      appGenState.appName = this.value;
+      if (!appGenState.splashTitleManuallyEdited) {
+        appGenState.splashTitle = this.value;
+        const splashTitleInput = qs("#appGenSplashTitle");
+        if (splashTitleInput) splashTitleInput.value = this.value;
+      }
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  document.querySelectorAll("#appGenProfileGroup [data-app-profile]").forEach((label) => {
+    label.addEventListener("click", () => {
+      const profile = label.getAttribute("data-app-profile");
+      setAppGenProfileSelection(profile, true);
+    });
+  });
+
+  const cardUrlInput = qs("#appGenCardUrl");
+  if (cardUrlInput) {
+    cardUrlInput.addEventListener("input", function () {
+      appGenState.cardUrl = this.value.trim();
+      appGenState.urlManuallyEdited = true;
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const resetUrlBtn = qs("#appGenResetUrlBtn");
+  if (resetUrlBtn) {
+    resetUrlBtn.addEventListener("click", () => {
+      appGenState.urlManuallyEdited = false;
+      if (appGenState.sourceClient) {
+        const defaultUrl = getDefaultCardUrlForProfile(appGenState.sourceClient, appGenState.profile);
+        appGenState.cardUrl = defaultUrl;
+        if (cardUrlInput) cardUrlInput.value = defaultUrl;
+        updateAppGeneratorLivePreview();
+      }
+    });
+  }
+
+  // Image upload & URL inputs for Icon, Photo, and Splash
+  setupAppGenImageInput("#appGenIconFile", "#appGenIconUrl", "iconUrl", 512);
+  setupAppGenImageInput("#appGenPhotoFile", "#appGenPhotoUrl", "photoUrl", 800);
+  setupAppGenImageInput("#appGenSplashImageFile", "#appGenSplashImageUrl", "splashImageUrl", 800);
+
+  // Quick asset actions — App Icon
+  const iconUseLogoBtn = qs("#appGenIconUseLogoBtn");
+  if (iconUseLogoBtn) {
+    iconUseLogoBtn.addEventListener("click", () => {
+      const url = appGenState.sourceClient?.companyLogo || "";
+      if (!url) {
+        showToast("Selected client does not have a company logo.", "warn");
+        return;
+      }
+      appGenState.iconUrl = url;
+      if (qs("#appGenIconUrl")) qs("#appGenIconUrl").value = url;
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const iconUsePhotoBtn = qs("#appGenIconUsePhotoBtn");
+  if (iconUsePhotoBtn) {
+    iconUsePhotoBtn.addEventListener("click", () => {
+      const url = appGenState.sourceClient?.photo || "";
+      if (!url) {
+        showToast("Selected client does not have a profile photo.", "warn");
+        return;
+      }
+      appGenState.iconUrl = url;
+      if (qs("#appGenIconUrl")) qs("#appGenIconUrl").value = url;
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const iconRemoveBtn = qs("#appGenIconRemoveBtn");
+  if (iconRemoveBtn) {
+    iconRemoveBtn.addEventListener("click", () => {
+      appGenState.iconUrl = "";
+      if (qs("#appGenIconUrl")) qs("#appGenIconUrl").value = "";
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  // Quick asset actions — Profile / Card Photo
+  const photoUseClientBtn = qs("#appGenPhotoUseClientBtn");
+  if (photoUseClientBtn) {
+    photoUseClientBtn.addEventListener("click", () => {
+      const url = appGenState.sourceClient?.photo || appGenState.sourceClient?.companyLogo || "";
+      if (!url) {
+        showToast("Selected client does not have a saved photo.", "warn");
+        return;
+      }
+      appGenState.photoUrl = url;
+      if (qs("#appGenPhotoUrl")) qs("#appGenPhotoUrl").value = url;
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const photoRemoveBtn = qs("#appGenPhotoRemoveBtn");
+  if (photoRemoveBtn) {
+    photoRemoveBtn.addEventListener("click", () => {
+      appGenState.photoUrl = "";
+      if (qs("#appGenPhotoUrl")) qs("#appGenPhotoUrl").value = "";
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  // Quick asset actions — Splash Screen
+  const splashUseIconBtn = qs("#appGenSplashUseIconBtn");
+  if (splashUseIconBtn) {
+    splashUseIconBtn.addEventListener("click", () => {
+      const url = appGenState.iconUrl || appGenState.sourceClient?.companyLogo || appGenState.sourceClient?.photo || "";
+      appGenState.splashImageUrl = url;
+      if (qs("#appGenSplashImageUrl")) qs("#appGenSplashImageUrl").value = url;
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const splashUseLogoBtn = qs("#appGenSplashUseLogoBtn");
+  if (splashUseLogoBtn) {
+    splashUseLogoBtn.addEventListener("click", () => {
+      const url = appGenState.sourceClient?.companyLogo || "";
+      if (!url) {
+        showToast("Selected client does not have a company logo.", "warn");
+        return;
+      }
+      appGenState.splashImageUrl = url;
+      if (qs("#appGenSplashImageUrl")) qs("#appGenSplashImageUrl").value = url;
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const splashRemoveBtn = qs("#appGenSplashRemoveBtn");
+  if (splashRemoveBtn) {
+    splashRemoveBtn.addEventListener("click", () => {
+      appGenState.splashImageUrl = "";
+      if (qs("#appGenSplashImageUrl")) qs("#appGenSplashImageUrl").value = "";
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const splashTitleInput = qs("#appGenSplashTitle");
+  if (splashTitleInput) {
+    splashTitleInput.addEventListener("input", function () {
+      appGenState.splashTitle = this.value;
+      appGenState.splashTitleManuallyEdited = Boolean(this.value.trim());
+      updateAppGeneratorLivePreview();
+    });
+  }
+
+  const bgColorInput = qs("#appGenSplashBgColor");
+  const bgHexInput = qs("#appGenSplashBgHex");
+  if (bgColorInput && bgHexInput) {
+    bgColorInput.addEventListener("input", function () {
+      bgHexInput.value = this.value;
+      appGenState.splashBgColor = this.value;
+      updateAppGeneratorLivePreview();
+    });
+    bgHexInput.addEventListener("input", function () {
+      const val = this.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        bgColorInput.value = val;
+        appGenState.splashBgColor = val;
+        updateAppGeneratorLivePreview();
+      }
+    });
+  }
+
+  const appGenForm = qs("#appGeneratorForm");
+  if (appGenForm) {
+    appGenForm.addEventListener("submit", generateClientApk);
+  }
+
+  const downloadBtn = qs("#downloadApkBtn");
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", downloadGeneratedApk);
+  }
+
+  const openAppBtn = qs("#openGeneratedAppBtn");
+  if (openAppBtn) {
+    openAppBtn.addEventListener("click", () => openGeneratedAppSimulator());
+  }
+
+  const regenBtn = qs("#regenerateApkBtn");
+  if (regenBtn) {
+    regenBtn.addEventListener("click", generateClientApk);
+  }
+
+  const closeViewerBtn = qs("#generatedAppViewerCloseBtn");
+  if (closeViewerBtn) {
+    closeViewerBtn.addEventListener("click", () => {
+      const backdrop = qs("#generatedAppViewerBackdrop");
+      const iframe = qs("#generatedAppIframe");
+      if (backdrop) backdrop.classList.add("hidden");
+      if (iframe) iframe.src = "about:blank";
+    });
+  }
+}
+
+initAppGeneratorEvents();
 
 // Start Admin
 initAdmin();
